@@ -1,0 +1,13 @@
+*.pyc
+build
+nohup.out
+dist
+*.swp
+.#*
+*.mo
+*.pyo
+*.py#
+*po~
+*INFO#
+*.deb
+*.part
