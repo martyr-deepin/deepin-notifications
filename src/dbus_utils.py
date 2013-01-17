@@ -332,3 +332,167 @@ class DBusProperty(object):
     @dbus.service.signal(IFACE, signature="sa{sv}as", rel_path_keyword="rel")
     def PropertiesChanged(self, interface, changed, invalidated, rel=""):
         pass
+
+    
+class TypeConvert(object):
+
+    def __init__(self):
+        self.dbus_2py_dict = {"Array": "dbus_array_2py", "Boolean": "dbus_boolean_2py",
+                              "Byte": "dbus_byte_2py", "ByteArray": "dbus_bytearray_2py",
+                              "Dictionary": "dbus_dictionary_2py", "Double": "dbus_double_2py",
+                              "Int16": "dbus_int16_2py", "Int32": "dbus_int32_2py",
+                              "Int64": "dbus_int64_2py", "ObjectPath": "dbus_objectpath_2py",
+                              "Signature": "dbus_signature_2py", "String": "dbus_string_2py",
+                              "Struct": "dbus_struct_2py", "UInt16": "dbus_uint16_2py",
+                              "UInt32": "dbus_uint32_2py", "UInt64": "dbus_uint64_2py",
+                              "UTF8String": "dbus_utf8string_2py", "UnixFD": "dbus_unixfd_2py",
+                              "tuple":"tuple_dbus2py", "unicode": "dbus_string_2py"
+                              # "str": "str_2str"
+                              }
+
+    def dbus2py(self, prop):
+        # return getattr(self, self.dbus_2py_dict[type(prop).__name__])(prop)
+        if type(prop).__name__ in self.dbus_2py_dict.iterkeys():
+            return getattr(self, self.dbus_2py_dict[type(prop).__name__])(prop)
+        else:
+            return prop
+
+        # return apply(self.dbus_2py_dict[type(prop).__name, prop])
+
+    def py2dbus(self, prop):
+        pass
+
+    def str_2str(self, prop):
+        return str(prop)
+
+    def tuple_dbus2py(self, prop):
+        '''convert a python tuple who contains dbus type items'''
+        return tuple([self.dbus2py(x) for x in prop])
+
+    def dbus_array_2py(self, prop):
+        if isinstance(prop, dbus.Array):
+            return [self.dbus2py(x) for x in prop]
+
+    def dbus_boolean_2py(self, prop):
+        if isinstance(prop, dbus.Boolean):
+            return bool(prop)
+
+    def dbus_byte_2py(self, prop):
+        if isinstance(prop, dbus.Byte):
+            return int(prop)
+
+    def dbus_bytearray_2py(self, prop):
+        if isinstance(prop, dbus.ByteArray):
+            return str(prop)
+
+    def dbus_dictionary_2py(self, prop):
+        if isinstance(prop, dbus.Dictionary):
+            return {self.dbus2py(key):self.dbus2py(value) for key,value in prop.iteritems()}
+
+    def dbus_double_2py(self, prop):
+        if isinstance(prop, dbus.Double):
+            return float(prop)
+
+    def dbus_int16_2py(self, prop):
+        if isinstance(prop, dbus.Int16):
+            return int(prop)
+
+    def dbus_int32_2py(self, prop):
+        if isinstance(prop, dbus.Int32):
+            return int(prop)
+
+    def dbus_int64_2py(self, prop):
+        if isinstance(prop, dbus.Int64):
+            return long(prop)
+
+    def dbus_objectpath_2py(self, prop):
+        if isinstance(prop, dbus.ObjectPath):
+            return str(prop)
+
+    def dbus_signature_2py(self, prop):
+        if isinstance(prop, dbus.Signature):
+            return str(prop)
+
+    def dbus_string_2py(self, prop):
+        if isinstance(prop, dbus.String):
+            return str(prop)
+
+    def dbus_struct_2py(self, prop):
+        if isinstance(prop, dbus.Struct):
+            return tuple(self.dbus2py(x) for x in prop)
+
+    def dbus_uint16_2py(self, prop):
+        if isinstance(prop, dbus.UInt16):
+            return int(prop)
+
+    def dbus_uint32_2py(self, prop):
+        if isinstance(prop, dbus.UInt32):
+            return long(prop)
+
+    def dbus_uint64_2py(self, prop):
+        if isinstance(prop, dbus.UInt64):
+            return long(prop)
+
+    def dbus_utf8string_2py(self, prop):
+        if isinstance(prop, dbus.UTF8String):
+            return str(prop)
+
+    def dbus_unixfd_2py(self, prop):
+        if isinstance(prop, dbus.UnixFD):
+            return int(prop)
+
+    def py2_dbus_array(self, prop):
+        return dbus.Array(prop, signature = dbus.Signature('s'))
+
+    def py2_dbus_boolean(self, prop):
+        return dbus.Boolean(prop)
+
+    def py2_dbus_byte(self, prop):
+        return dbus.Byte(prop)
+
+    def py2_dbus_bytearray(self, prop):
+        return dbus.Array([dbus.Byte(x) for x in prop], signature = dbus.Signature('y'))
+
+    def py2_dbus_dictionary(self, setting_dict):
+        return dbus.Dictionary(setting_dict, signature = dbus.Signature('sv'))
+
+    def py2_dbus_double(self, prop):
+        return dbus.Double(prop)
+
+    def py2_dbus_int16(self, prop):
+        return dbus.Int16(prop)
+
+    def py2_dbus_int32(self, prop):
+        return dbus.Int32(prop)
+
+    def py2_dbus_int64(self, prop):
+        return dbus.Int64(prop)
+
+    def py2_dbus_objectpath(self, prop):
+        return dbus.ObjectPath(prop)
+
+    def py2_dbus_signature(self, prop):
+        return dbus.Signature(prop)
+
+    def py2_dbus_string(self, prop):
+        try:
+            return dbus.String(unicode(prop,"utf-8"))
+        except:
+            return dbus.String(prop)
+
+    def py2_dbus_struct(self, prop):
+        return dbus.Struct(prop)
+
+    def py2_dbus_uint16(self, prop):
+        return dbus.UInt16(prop)
+
+    def py2_dbus_uint32(self, prop):
+        return dbus.UInt32(prop)
+
+    def py2_dbus_uint64(self, prop):
+        return dbus.UInt64(prop)
+
+    def py2_dbus_utf8string(self, prop):
+        return dbus.UTF8String(prop)
+    
+type_convert  = TypeConvert()    

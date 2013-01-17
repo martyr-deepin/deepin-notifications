@@ -20,6 +20,23 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import threading
+from functools import wraps
+
+def threaded(func):
+    """
+        A decorator that will make any function run in a new thread
+
+        :param func: the function to run threaded
+    """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        t = threading.Thread(target=func, args=args, kwargs=kwargs)
+        t.daemon = True
+        t.start()
+
+    return wrapper
+
 def enum(**enums):
     """
         Creates an enum type
@@ -27,3 +44,41 @@ def enum(**enums):
         :see: http://stackoverflow.com/a/1695250
     """
     return type('Enum', (), enums)
+
+class Storage(dict):
+    """
+    A Storage object is like a dictionary except `obj.foo` can be used
+    in addition to `obj['foo']`.
+    
+        >>> o = storage(a=1)
+        >>> o.a
+        1
+        >>> o['a']
+        1
+        >>> o.a = 2
+        >>> o['a']
+        2
+        >>> del o.a
+        >>> o.a
+        Traceback (most recent call last):
+            ...
+        AttributeError: 'a'
+    
+    """
+    def __getattr__(self, key): 
+        try:
+            return self[key]
+        except KeyError, k:
+            raise AttributeError, k
+    
+    def __setattr__(self, key, value): 
+        self[key] = value
+    
+    def __delattr__(self, key):
+        try:
+            del self[key]
+        except KeyError, k:
+            raise AttributeError, k
+    
+    def __repr__(self):     
+        return '<Storage ' + dict.__repr__(self) + '>'

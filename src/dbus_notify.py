@@ -21,7 +21,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import dbus
-from dbus_utils import DBusProperty, DBusIntrospectable
+from dbus_utils import DBusProperty, DBusIntrospectable, type_convert
+
+from events import event_manager
+from common import Storage
+
 
 REASON_EXPIRED = 1 # The notification expired.
 REASON_DISMISSED = 2 # The notification was dismissed by the user.
@@ -40,6 +44,23 @@ SERVER_CAPABILITIES = [
 "persistence", # The server supports persistence of notifications.
 "sound", # The server supports sounds on notifications .
 ]
+
+DEFAULT_STANDARD_HINST = Storage({
+    "action-icons" : False, # The icon name should be compliant with the Freedesktop.org Icon Naming Specification.
+    "category" : "",  # The type of notification this is.
+    "desktop-entry" : "",  # This specifies the name of the desktop filename representing the calling program.
+    "image-data"  : "", # This is a raw data image format.
+    "image-path" : "", # Alternative way to define the notification image.
+    "resident" : False, # This hint is likely only useful when the server has the "persistence" capability.
+    "sound-file" : "", # The path to a sound file to play when the notification pops up.
+    "sound-name" : "", # A themeable named sound from the freedesktop.org sound naming specification.
+    "suppress-sound" : False, # Causes the server to suppress playing any sounds, if it has that ability.
+    "transient" : False, 
+    "x" : None,
+    "y" : None,
+    "urgency" : 1 # 0 Low, 1 Normal, 2 Critical
+    })
+
 
 class Notifications(DBusProperty, DBusIntrospectable, dbus.service.Object):
     
@@ -91,8 +112,8 @@ class Notifications(DBusProperty, DBusIntrospectable, dbus.service.Object):
         dbus.service.Object.__init__(self, bus, self.PATH, name)
         
     @dbus.service.method(NOTIFY_IFACE, in_signature="i")    
-    def CloseNotification(self, notify_id):
-        print notify_id
+    def CloseNotification(self, replaces_id):
+        print replaces_id
         
     @dbus.service.method(NOTIFY_IFACE, out_signature="as")    
     def GetCapabilities(self):
@@ -103,9 +124,20 @@ class Notifications(DBusProperty, DBusIntrospectable, dbus.service.Object):
         return "Notifications", "LinuxDeepin", "0.1", "1.2"
     
     @dbus.service.method(NOTIFY_IFACE, in_signature="sisssasa{sv}i", out_signature="i")    
-    def Notify(self, app_name, notify_id, icon, summary, body, actions, hints, timeout):
-        print app_name, notify_id, icon, summary, body, actions, hints, timeout
-        return 0
+    def Notify(self, app_name, replaces_id, icon, summary, body, actions, hints, timeout):
+        
+        notify_storage = Storage({"app_name" : type_convert.dbus2py(app_name), 
+                                  "replaces_id" : type_convert.dbus2py(replaces_id),
+                                  "icon" : type_convert.dbus2py(icon),
+                                  "summary" : type_convert.dbus2py(summary), 
+                                  "body" : type_convert.dbus2py(body),
+                                  "hints" : type_convert.dbus2py(hints), 
+                                  "timeout" : type_convert.dbus2py(timeout)})
+        
+        event_manager.emit("notify", notify_storage)
+        
+        # print app_name, replaces_id, icon, summary, body, actions, hints, timeout
+        return replaces_id
         
 if __name__ == "__main__":        
     import dbus, dbus.mainloop.glib, gtk
