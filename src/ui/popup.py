@@ -236,17 +236,24 @@ class MinMessageBox(gtk.EventBox):
             self.active_alpha = 1.0 - status
             
         new_height = self.last_y - height
-        self.parent.move(self, self.last_x, int(new_height))
+        try:
+            self.parent.move(self, self.last_x, int(new_height))
+        except:    
+            pass
         
     def move_down(self, status):    
         if self.in_animation:
             try:
                 self.move_animation.stop()
             except: pass    
+            return
             
         height = status * MIN_ITEM_HEIGHT
         new_height = self.last_y + height
-        self.parent.move(self, self.last_x, int(new_height))
+        try:
+            self.parent.move(self, self.last_x, int(new_height))
+        except:    
+            pass
         
     def try_to_movedown(self, data):
         if self.level == 2:
