@@ -83,6 +83,12 @@ class MessageFixed(gtk.Fixed):
         self.show_all()
         self.start_animation()
         
+    @property    
+    def has_messages(self):
+        if len(self.get_children()) > 0:        
+            return True
+        return False
+            
     def start_animation(self):    
         if not self.in_animation:
             self.in_animation = True
@@ -92,7 +98,7 @@ class MessageFixed(gtk.Fixed):
             self.timeline.run()
              
     def update_animation(self, source, status):        
-        self.foreach(lambda w: w.move_to(status * MIN_ITEM_HEIGHT))
+        self.foreach(lambda w: w.move_to(status * MIN_ITEM_HEIGHT, status))
         
     def completed_animation(self, source):    
         self.in_animation = False
@@ -100,6 +106,7 @@ class MessageFixed(gtk.Fixed):
         if len(self.message_queue) > 0:
             message_box = self.message_queue.pop()
             self.put_message_box(message_box)
+        event_manager.emit("message-coming", None)    
             
 gobject.type_register(MessageFixed)        
         
@@ -121,10 +128,13 @@ class MinMessageBox(gtk.EventBox):
         
         self.animation_time = 500
         self.in_animation = False
+        self.in_move_animation = False
         self.animation_timeout_id = None
         self.active_alpha = 1.0
         self.delay_timeout = 3000
         self.level = 0
+        self.is_move_down = False
+        event_manager.connect("level-one-destroy", self.try_to_movedown)
         
     def get_icon_pixbuf(self):    
         hints = self.message.hints
@@ -219,17 +229,51 @@ class MinMessageBox(gtk.EventBox):
                        self.close_rect.width, self.close_rect.height)):
             self.manual_destroy()
             
-    def move_to(self, height):        
+    def move_to(self, height, status):        
+        if self.level == 0:
+            self.active_alpha = status
+        if self.level == 2:
+            self.active_alpha = 1.0 - status
+            
         new_height = self.last_y - height
         self.parent.move(self, self.last_x, int(new_height))
+        
+    def move_down(self, status):    
+        if self.in_animation:
+            try:
+                self.move_animation.stop()
+            except: pass    
+            
+        height = status * MIN_ITEM_HEIGHT
+        new_height = self.last_y + height
+        self.parent.move(self, self.last_x, int(new_height))
+        
+    def try_to_movedown(self, data):
+        if self.level == 2:
+            self.start_move_animation()
+            
+    def start_move_animation(self):
+        if not self.in_move_animation:
+            self.in_move_animation = True
+            self.move_timeline = Timeline(self.animation_time, CURVE_SINE)
+            self.move_timeline.connect("update", self.update_move_animation)
+            self.move_timeline.connect("completed", self.completed_move_animation)
+            self.move_timeline.run()
+            
+    def update_move_animation(self, source, status):
+        self.move_down(status)
+        
+    def completed_move_animation(self, source):
+        self.in_move_animation = False
+        self.last_y += MIN_ITEM_HEIGHT
         
     def start_alpha_animation(self):
         if not self.in_animation:
             self.in_animation = True
-            self.timeline = Timeline(self.animation_time, CURVE_SINE)
-            self.timeline.connect("update", self.update_animation)
-            self.timeline.connect("completed", lambda source : self.destroy_self())
-            self.timeline.run()
+            timeline = Timeline(self.animation_time, CURVE_SINE)
+            timeline.connect("update", self.update_animation)
+            timeline.connect("completed", lambda source : self.destroy_self())
+            timeline.run()
         return False    
             
     def update_animation(self, source, status):        
@@ -237,8 +281,16 @@ class MinMessageBox(gtk.EventBox):
         self.queue_draw()
         
     def destroy_self(self):    
-        self.parent.remove(self)
-        self.destroy()
+        if self.animation_timeout_id is not None:
+            gobject.source_remove(self.animation_timeout_id)
+        try:
+            self.parent.remove(self)
+            self.destroy()
+        except: pass    
+        
+        if self.level == 1:
+            event_manager.emit("level-one-destroy", None)
+        event_manager.emit("message-destroy", None)    
     
     def delay_destroy(self):
         if self.animation_timeout_id is None:
@@ -251,14 +303,13 @@ class MinMessageBox(gtk.EventBox):
         self.start_alpha_animation()    
         
     def notify_completed(self):
-        if not self.in_animation:
+        self.level += 1        
+        self.last_y -= MIN_ITEM_HEIGHT
+        if self.level == 1 and not self.in_animation:
             self.delay_destroy()
-            
-        self.level += 1
-        if self.level == 3 and not self.in_animation:
+        elif self.level == 3 and not self.in_animation:
             self.destroy_self()
-        else:    
-            self.last_y -= MIN_ITEM_HEIGHT
+
 
 class PopupWindow(gtk.Window):
     
@@ -276,12 +327,35 @@ class PopupWindow(gtk.Window):
         
         self.connect("expose-event", self.on_expose_event)
         event_manager.connect("notify", self.on_notify_event)
+        event_manager.connect("message-coming", self.on_message_coming)
+        event_manager.connect("message-destroy", self.on_message_destroy)
         
         self.add(self.control)
         self.reset_position()
         self.show_all()
         self.message_queue = deque()
         self.message_lock = Lock()
+        self.is_through = True
+        self.set_input_shape_mask(True)
+        
+        
+    def on_message_coming(self, data):    
+        if self.is_through:
+            self.set_input_shape_mask(False)
+            self.is_through = False
+            
+    def on_message_destroy(self, data):        
+        if not self.control.has_messages:
+           if not self.is_through: 
+               self.set_input_shape_mask(True)
+               self.is_through = True
+        
+    def set_input_shape_mask(self, disable_input):    
+        if disable_input:
+            region = gtk.gdk.Region()
+            self.window.input_shape_combine_region(region, 0, 0)
+        else:    
+            self.window.input_shape_combine_region(self.window.get_visible_region(), 0, 0)
         
     def reset_position(self):    
         screen_w, screen_h = get_screen_size()
