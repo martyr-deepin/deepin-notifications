@@ -34,9 +34,15 @@ from dtk.ui.utils import (propagate_expose, is_in_rect, get_content_size)
 import xdg
 from events import event_manager
 from ui.icons import icon_manager
-from dbus_utils import type_convert
+from ui.utils import get_screen_size
 
 MIN_ITEM_HEIGHT = 87
+WINDOW_WIDTH = 310
+WINDOW_HEIGHT = MIN_ITEM_HEIGHT * 2
+WINDOW_OFFSET_WIDTH = 10
+WINDOW_OFFSET_HEIGHT = 0
+DOCK_HEIGHT = 35
+
 APP_ICON_X = 6
 APP_ICON_WIDTH = 75
 
@@ -90,17 +96,10 @@ class MessageFixed(gtk.Fixed):
         
     def completed_animation(self, source):    
         self.in_animation = False
-        self.foreach(self.remove_widget)
+        self.foreach(lambda widget : widget.notify_completed())
         if len(self.message_queue) > 0:
             message_box = self.message_queue.pop()
             self.put_message_box(message_box)
-        
-    def remove_widget(self, widget):    
-        if widget.last_y <= 0:
-            self.remove(widget)
-            widget.destroy()
-        else:    
-            widget.last_y -= MIN_ITEM_HEIGHT
             
 gobject.type_register(MessageFixed)        
         
@@ -120,6 +119,13 @@ class MinMessageBox(gtk.EventBox):
         self.default_icon = gtk.gdk.pixbuf_new_from_file(xdg.get_image_path("icon.png"))
         self.message_icon = self.get_icon_pixbuf()
         
+        self.animation_time = 500
+        self.in_animation = False
+        self.animation_timeout_id = None
+        self.active_alpha = 1.0
+        self.delay_timeout = 3000
+        self.level = 0
+        
     def get_icon_pixbuf(self):    
         hints = self.message.hints
         pixbuf = None
@@ -132,15 +138,16 @@ class MinMessageBox(gtk.EventBox):
         image_path = hints.get("image-path", None) or hints.get("image-path", None)
         if image_path:
             try:
-                pixbuf = gtk.pixbuf_new_from_file_at_size(image_path, ICON_SIZE[0], ICON_SIZE[1])
-            except:
+                pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(image_path, ICON_SIZE[0], ICON_SIZE[1])
+            except Exception, e:
+                print e
                 pixbuf = None
                 
         if pixbuf: return pixbuf        
         
         app_icon = self.message.icon
         if app_icon:
-            pixbuf = icon_manager.pixbuf_from_icon_name(app_icon)
+            pixbuf = icon_manager.pixbuf_from_icon_name(app_icon, ICON_SIZE[0])
         if pixbuf:    
             return pixbuf
         return self.default_icon
@@ -167,7 +174,14 @@ class MinMessageBox(gtk.EventBox):
     def on_expose_event(self, widget, event):    
         cr = widget.window.cairo_create()
         rect = widget.allocation
-                
+        
+        cr.save()
+        self.draw_message(cr, rect, self.active_alpha)
+        cr.restore()
+        return True
+    
+    def draw_message(self, cr, rect, alpha):
+        cr.push_group()
         draw_pixbuf(cr, self.bg_pixbuf, rect.x, rect.y)
         
         icon_x = rect.x + self.close_rect.x
@@ -189,35 +203,67 @@ class MinMessageBox(gtk.EventBox):
         
         body_text_y = SUMMARY_TEXT_Y + _height + TEXT_PADDING_Y
         
-        # Draw body.
-        # cr.set_source_rgb(1, 0, 1)
-        # cr.rectangle(rect.x + TEXT_X, 
-        #              rect.y + body_text_y,
-        #              TEXT_WIDTH, BODY_TEXT_HEIGHT)
-        # cr.stroke()
-        
         draw_text(cr, self.message.body, 
                   rect.x + TEXT_X, rect.y + body_text_y,
                   TEXT_WIDTH, BODY_TEXT_HEIGHT,
                   wrap_width=TEXT_WIDTH,
                   text_color="#FFFFFF", text_size=8)
-        return True
+        
+        # set source to paint with alpha.
+        cr.pop_group_to_source()
+        cr.paint_with_alpha(alpha)
     
     def on_button_press_event(self, widget, event):
         if is_in_rect((event.x, event.y), 
                       (self.close_rect.x, self.close_rect.y, 
                        self.close_rect.width, self.close_rect.height)):
-            pass
+            self.manual_destroy()
             
     def move_to(self, height):        
         new_height = self.last_y - height
         self.parent.move(self, self.last_x, int(new_height))
         
+    def start_alpha_animation(self):
+        if not self.in_animation:
+            self.in_animation = True
+            self.timeline = Timeline(self.animation_time, CURVE_SINE)
+            self.timeline.connect("update", self.update_animation)
+            self.timeline.connect("completed", lambda source : self.destroy_self())
+            self.timeline.run()
+        return False    
+            
+    def update_animation(self, source, status):        
+        self.active_alpha = 1.0 - status
+        self.queue_draw()
+        
+    def destroy_self(self):    
+        self.parent.remove(self)
+        self.destroy()
+    
+    def delay_destroy(self):
+        if self.animation_timeout_id is None:
+            self.animation_timeout_id = gobject.timeout_add(self.delay_timeout, self.start_alpha_animation)
+            
+    def manual_destroy(self):        
+        if self.animation_timeout_id is not None:
+            gobject.source_remove(self.animation_timeout_id)
+            self.animation_timeout_id = None
+        self.start_alpha_animation()    
+        
+    def notify_completed(self):
+        if not self.in_animation:
+            self.delay_destroy()
+            
+        self.level += 1
+        if self.level == 3 and not self.in_animation:
+            self.destroy_self()
+        else:    
+            self.last_y -= MIN_ITEM_HEIGHT
 
 class PopupWindow(gtk.Window):
     
     def __init__(self):
-        gtk.Window.__init__(self)
+        gtk.Window.__init__(self, gtk.WINDOW_POPUP)
         self.set_skip_taskbar_hint(True)
         self.set_decorated(False)
         self.set_skip_pager_hint(True)
@@ -226,15 +272,22 @@ class PopupWindow(gtk.Window):
         self.set_keep_above(True)
         self.set_colormap(gtk.gdk.Screen().get_rgba_colormap() or gtk.gdk.Screen().get_rga_colormap())
         self.control = MessageFixed()
-        self.set_size_request(-1, MIN_ITEM_HEIGHT * 2)
+        self.set_size_request(WINDOW_WIDTH, WINDOW_HEIGHT)
         
         self.connect("expose-event", self.on_expose_event)
         event_manager.connect("notify", self.on_notify_event)
         
         self.add(self.control)
+        self.reset_position()
         self.show_all()
         self.message_queue = deque()
         self.message_lock = Lock()
+        
+    def reset_position(self):    
+        screen_w, screen_h = get_screen_size()
+        win_x = screen_w - WINDOW_WIDTH - WINDOW_OFFSET_WIDTH
+        win_y = screen_h - WINDOW_HEIGHT - DOCK_HEIGHT - WINDOW_OFFSET_HEIGHT
+        self.move(win_x, win_y)
         
     def new_message(self):    
         pass
@@ -260,4 +313,5 @@ class PopupWindow(gtk.Window):
             cr.fill()
             
         propagate_expose(widget, event)        
+        
         return True    

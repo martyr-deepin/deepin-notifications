@@ -125,7 +125,7 @@ class IconManager(object):
         self._sizes = [16, 22, 24, 32, 48, 'scalable']
         self._cache = {}
 
-    def pixbuf_from_icon_name(self, icon_name, size=gtk.ICON_SIZE_BUTTON):
+    def pixbuf_from_icon_name(self, icon_name, size=48):
         """
             Generates a pixbuf from an icon name
 
