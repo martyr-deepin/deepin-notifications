@@ -148,9 +148,8 @@ class MinMessageBox(gtk.EventBox):
         image_path = hints.get("image-path", None) or hints.get("image-path", None)
         if image_path:
             try:
-                pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(image_path, ICON_SIZE[0], ICON_SIZE[1])
-            except Exception, e:
-                print e
+                pixbuf = icon_manager.pixbuf_from_path(image_path, ICON_SIZE[0], ICON_SIZE[1])
+            except:
                 pixbuf = None
                 
         if pixbuf: return pixbuf        

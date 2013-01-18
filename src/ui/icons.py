@@ -170,6 +170,14 @@ class IconManager(object):
                 pixbuf = get_optimum_pixbuf(pixbuf, size[0], size[1])
             return pixbuf
         
+    def pixbuf_from_path(self, file_path, x, y):    
+        try:
+            pixbuf = gtk.gdk.pixbuf_new_from_file(file_path)
+        except:    
+            return None
+        else:
+            return get_optimum_pixbuf(pixbuf, x, y)
+        
     
     def pixbuf_from_data(self, data, size=None, keep_ratio=True, upscale=False):
         """
