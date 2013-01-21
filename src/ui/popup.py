@@ -205,18 +205,23 @@ class MinMessageBox(gtk.EventBox):
         # Draw summary.
         width, _height =  get_content_size(self.message.summary)
         draw_text(cr, 
-                  self.message.summary, 
+                  "<b>%s</b>" % self.message.summary, 
                   rect.x + TEXT_X, rect.y + SUMMARY_TEXT_Y, 
                   TEXT_WIDTH, _height,
                   text_color="#FFFFFF", text_size=10)
         
         body_text_y = SUMMARY_TEXT_Y + _height + TEXT_PADDING_Y
         
+        cr.save()
+        cr.rectangle(rect.x + TEXT_X, rect.y + body_text_y,
+                     TEXT_WIDTH, BODY_TEXT_HEIGHT)
+        cr.clip()
         draw_text(cr, self.message.body, 
                   rect.x + TEXT_X, rect.y + body_text_y,
                   TEXT_WIDTH, BODY_TEXT_HEIGHT,
                   wrap_width=TEXT_WIDTH,
                   text_color="#FFFFFF", text_size=8)
+        cr.restore()
         
         # set source to paint with alpha.
         cr.pop_group_to_source()

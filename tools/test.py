@@ -36,7 +36,7 @@ def alert(repo, error):
     notid = dbus.Interface(proxy, "org.freedesktop.Notifications")
 
     summary = "AutoSync"
-    text = ("Problems in repository <b>%s</b>: <i>%s</i>." %
+    text = ("Problems in repository <b>%s</b>: <i>%s</i>" %
             (repo, error))
 
     notid.Notify("AutoSync", NID, ICON, summary, text, [], {}, DURATION)
