@@ -27,7 +27,7 @@ import gobject
 
 from collections import deque
 from threading import Lock
-from dtk.ui.draw import  draw_pixbuf, draw_text
+from dtk.ui.draw import  draw_pixbuf, draw_text, TEXT_ALIGN_TOP
 from dtk.ui.timeline import Timeline, CURVE_SINE
 from dtk.ui.utils import (propagate_expose, is_in_rect, get_content_size)
 
@@ -38,23 +38,25 @@ from ui.utils import get_screen_size
 
 MIN_ITEM_HEIGHT = 87
 WINDOW_WIDTH = 310
-WINDOW_HEIGHT = MIN_ITEM_HEIGHT * 2
+WINDOW_HEIGHT = MIN_ITEM_HEIGHT * 3
 WINDOW_OFFSET_WIDTH = 10
 WINDOW_OFFSET_HEIGHT = 0
 DOCK_HEIGHT = 35
+
+CLOSE_OFFSET_WIDTH = 10
+CLOSE_OFFSET_HEIGHT = 8
 
 APP_ICON_X = 6
 APP_ICON_WIDTH = 75
 
 TEXT_PADDING_X = 10
-TEXT_PADDING_Y = 5
+TEXT_PADDING_Y = 8
 TEXT_X = APP_ICON_X + APP_ICON_WIDTH +  TEXT_PADDING_X
 TEXT_WIDTH = 218 - TEXT_PADDING_X * 2
 
 SUMMARY_TEXT_Y = 8
-SUMMARY_TEXT_HEIGHT = 15
 
-BODY_TEXT_Y = SUMMARY_TEXT_Y + SUMMARY_TEXT_HEIGHT
+BODY_OFFSET_HEIGHT = 20
 BODY_TEXT_HEIGHT = 50
 
 ICON_SIZE = (48, 48)
@@ -63,7 +65,7 @@ class MessageFixed(gtk.Fixed):
     
     def __init__(self):
         gtk.Fixed.__init__(self)
-        self.item_height = MIN_ITEM_HEIGHT * 2
+        self.item_height = MIN_ITEM_HEIGHT * 3
         
         self.in_animation = False
         self.animation_time = 500
@@ -81,6 +83,12 @@ class MessageFixed(gtk.Fixed):
     def put_message_box(self, widget):        
         self.put(widget, self.put_x, self.item_height)        
         self.show_all()
+        if self.parent.get_property("visible"):
+            self.start_animation()
+        else:    
+            self.parent.show_all()
+        
+    def delay_start_animation(self):    
         self.start_animation()
         
     @property    
@@ -165,15 +173,15 @@ class MinMessageBox(gtk.EventBox):
         self.last_y = y
         
     def init_size(self):    
-        self.close_offset = 6
         self.bg_pixbuf = gtk.gdk.pixbuf_new_from_file(xdg.get_image_path("mini.png"))
         self.close_pixbuf = gtk.gdk.pixbuf_new_from_file(xdg.get_image_path("close.png"))
         
-        width = int(self.bg_pixbuf.get_width() + self.close_pixbuf.get_width() / 2 - self.close_offset)
+        width = self.bg_pixbuf.get_width()
         height= self.bg_pixbuf.get_height()        
         self.total_height = height
-        self.close_rect = gtk.gdk.Rectangle(width - self.close_pixbuf.get_width(),
-                                            (height - self.close_pixbuf.get_height()) / 2,
+        
+        self.close_rect = gtk.gdk.Rectangle(width - self.close_pixbuf.get_width() - CLOSE_OFFSET_WIDTH,
+                                            CLOSE_OFFSET_HEIGHT,
                                             self.close_pixbuf.get_width(),
                                             self.close_pixbuf.get_height())
 
@@ -203,25 +211,24 @@ class MinMessageBox(gtk.EventBox):
         draw_pixbuf(cr, self.message_icon, icon_x, icon_y)
         
         # Draw summary.
+        
+        
         width, _height =  get_content_size(self.message.summary)
         draw_text(cr, 
                   "<b>%s</b>" % self.message.summary, 
                   rect.x + TEXT_X, rect.y + SUMMARY_TEXT_Y, 
-                  TEXT_WIDTH, _height,
+                  TEXT_WIDTH - self.close_pixbuf.get_width(), _height,
                   text_color="#FFFFFF", text_size=10)
         
         body_text_y = SUMMARY_TEXT_Y + _height + TEXT_PADDING_Y
         
-        cr.save()
-        cr.rectangle(rect.x + TEXT_X, rect.y + body_text_y,
-                     TEXT_WIDTH, BODY_TEXT_HEIGHT)
-        cr.clip()
         draw_text(cr, self.message.body, 
                   rect.x + TEXT_X, rect.y + body_text_y,
                   TEXT_WIDTH, BODY_TEXT_HEIGHT,
                   wrap_width=TEXT_WIDTH,
-                  text_color="#FFFFFF", text_size=8)
-        cr.restore()
+                  text_color="#FFFFFF", text_size=8, 
+                  vertical_alignment=TEXT_ALIGN_TOP,
+                  clip_line_count=3)
         
         # set source to paint with alpha.
         cr.pop_group_to_source()
@@ -238,6 +245,11 @@ class MinMessageBox(gtk.EventBox):
             self.active_alpha = status
         if self.level == 2:
             self.active_alpha = 1.0 - status
+            
+        if self.active_alpha < 0:    
+            self.active_alpha = 0
+        elif self.active_alpha > 1:    
+            self.active_alpha = 1
             
         new_height = self.last_y - height
         try:
@@ -330,35 +342,34 @@ class PopupWindow(gtk.Window):
         self.set_decorated(False)
         self.set_skip_pager_hint(True)
         self.set_app_paintable(True)
-        self.set_position(gtk.WIN_POS_CENTER)
+        # self.set_position(gtk.WIN_POS_CENTER)
         self.set_keep_above(True)
         self.set_colormap(gtk.gdk.Screen().get_rgba_colormap() or gtk.gdk.Screen().get_rga_colormap())
         self.control = MessageFixed()
         self.set_size_request(WINDOW_WIDTH, WINDOW_HEIGHT)
         
         self.connect("expose-event", self.on_expose_event)
+        self.connect_after("show", lambda widget: self.control.delay_start_animation())
         event_manager.connect("notify", self.on_notify_event)
         event_manager.connect("message-coming", self.on_message_coming)
         event_manager.connect("message-destroy", self.on_message_destroy)
-        
         self.add(self.control)
         self.reset_position()
-        self.show_all()
         self.message_queue = deque()
         self.message_lock = Lock()
         self.is_through = True
-        self.set_input_shape_mask(True)
-        
+        self.reset_position()                    
+        self.hide_all()
         
     def on_message_coming(self, data):    
         if self.is_through:
-            self.set_input_shape_mask(False)
+            self.show_all()
             self.is_through = False
             
     def on_message_destroy(self, data):        
         if not self.control.has_messages:
            if not self.is_through: 
-               self.set_input_shape_mask(True)
+               self.hide_all()
                self.is_through = True
         
     def set_input_shape_mask(self, disable_input):    
@@ -374,8 +385,6 @@ class PopupWindow(gtk.Window):
         win_y = screen_h - WINDOW_HEIGHT - DOCK_HEIGHT - WINDOW_OFFSET_HEIGHT
         self.move(win_x, win_y)
         
-    def new_message(self):    
-        pass
     
     def on_notify_event(self, data):
         message_box = MinMessageBox(data)
