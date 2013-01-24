@@ -54,10 +54,10 @@ TEXT_PADDING_Y = 8
 TEXT_X = APP_ICON_X + APP_ICON_WIDTH +  TEXT_PADDING_X
 TEXT_WIDTH = 218 - TEXT_PADDING_X * 2
 
-SUMMARY_TEXT_Y = 8
+SUMMARY_TEXT_Y = 10
 
 BODY_OFFSET_HEIGHT = 20
-BODY_TEXT_HEIGHT = 50
+BODY_TEXT_HEIGHT = 40
 
 ICON_SIZE = (48, 48)
 
@@ -136,10 +136,10 @@ class MinMessageBox(gtk.EventBox):
         
         self.animation_time = 500
         self.in_animation = False
-        self.in_move_animation = False
+        self.in_move_animation = False 
         self.animation_timeout_id = None
         self.active_alpha = 1.0
-        self.delay_timeout = 3000
+        self.delay_timeout = 10000
         self.level = 0
         self.is_move_down = False
         event_manager.connect("level-one-destroy", self.try_to_movedown)
@@ -226,9 +226,9 @@ class MinMessageBox(gtk.EventBox):
                   rect.x + TEXT_X, rect.y + body_text_y,
                   TEXT_WIDTH, BODY_TEXT_HEIGHT,
                   wrap_width=TEXT_WIDTH,
-                  text_color="#FFFFFF", text_size=8, 
+                  text_color="#FFFFFF", text_size=10, 
                   vertical_alignment=TEXT_ALIGN_TOP,
-                  clip_line_count=3)
+                  clip_line_count=2)
         
         # set source to paint with alpha.
         cr.pop_group_to_source()
