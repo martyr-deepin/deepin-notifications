@@ -139,7 +139,7 @@ class MinMessageBox(gtk.EventBox):
         self.in_move_animation = False 
         self.animation_timeout_id = None
         self.active_alpha = 1.0
-        self.delay_timeout = 10000
+        self.delay_timeout = 3000
         self.level = 0
         self.is_move_down = False
         event_manager.connect("level-one-destroy", self.try_to_movedown)
