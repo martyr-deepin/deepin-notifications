@@ -35,6 +35,7 @@ import xdg
 from events import event_manager
 from ui.icons import icon_manager
 from ui.utils import get_screen_size
+from tray import TrayIcon
 
 MIN_ITEM_HEIGHT = 87
 WINDOW_WIDTH = 310
@@ -153,7 +154,7 @@ class MinMessageBox(gtk.EventBox):
             
         if pixbuf: return pixbuf
         
-        image_path = hints.get("image-path", None) or hints.get("image-path", None)
+        image_path = hints.get("image-path", None) or hints.get("image_path", None)
         if image_path:
             try:
                 pixbuf = icon_manager.pixbuf_from_path(image_path, ICON_SIZE[0], ICON_SIZE[1])
@@ -357,6 +358,7 @@ class PopupWindow(gtk.Window):
         self.reset_position()
         self.message_queue = deque()
         self.message_lock = Lock()
+        self.trayicon = TrayIcon()
         self.is_through = True
         self.reset_position()                    
         self.hide_all()
@@ -384,7 +386,6 @@ class PopupWindow(gtk.Window):
         win_x = screen_w - WINDOW_WIDTH - WINDOW_OFFSET_WIDTH
         win_y = screen_h - WINDOW_HEIGHT - DOCK_HEIGHT - WINDOW_OFFSET_HEIGHT
         self.move(win_x, win_y)
-        
     
     def on_notify_event(self, data):
         message_box = MinMessageBox(data)
@@ -397,7 +398,7 @@ class PopupWindow(gtk.Window):
         # Clear color to transparent window.
         if self.is_composited():
             cr.rectangle(*rect)
-            cr.set_source_rgba(1, 1, 1, 0.0)
+            cr.set_source_rgba(1, 0, 0, 0.9)
             cr.set_operator(cairo.OPERATOR_SOURCE)                
             cr.paint()
         else:    
