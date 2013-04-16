@@ -35,7 +35,7 @@ import xdg
 from events import event_manager
 from ui.icons import icon_manager
 from ui.utils import get_screen_size
-from tray import TrayIcon
+from ui.tray import TrayIcon
 
 MIN_ITEM_HEIGHT = 87
 WINDOW_WIDTH = 310
