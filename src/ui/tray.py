@@ -29,6 +29,10 @@ class TrayIcon(gtk.StatusIcon):
         gtk.StatusIcon.__init__(self)
         
         self.set_from_pixbuf(app_theme.get_pixbuf("skin/logo.ico").get_pixbuf())
+        self.set_visible(False)
+        self.set_blinking(True)
         
     def get_menu_position(self, menu, icon):    
         return gtk.status_icon_position_menu(menu, icon)
+
+trayicon = TrayIcon()

@@ -35,7 +35,7 @@ import xdg
 from events import event_manager
 from ui.icons import icon_manager
 from ui.utils import get_screen_size
-from ui.tray import TrayIcon
+from ui.tray import trayicon
 
 MIN_ITEM_HEIGHT = 87
 WINDOW_WIDTH = 310
@@ -88,6 +88,9 @@ class MessageFixed(gtk.Fixed):
             self.start_animation()
         else:    
             self.parent.show_all()
+            
+        children_size = len(self.get_children())
+        event_manager.emit("popup-handle-input", children_size)
         
     def delay_start_animation(self):    
         self.start_animation()
@@ -140,7 +143,7 @@ class MinMessageBox(gtk.EventBox):
         self.in_move_animation = False 
         self.animation_timeout_id = None
         self.active_alpha = 1.0
-        self.delay_timeout = 3000
+        self.delay_timeout = 5000
         self.level = 0
         self.is_move_down = False
         event_manager.connect("level-one-destroy", self.try_to_movedown)
@@ -305,6 +308,8 @@ class MinMessageBox(gtk.EventBox):
         self.queue_draw()
         
     def destroy_self(self):    
+        lenth = len(self.parent.get_children()) - 1
+        
         if self.animation_timeout_id is not None:
             gobject.source_remove(self.animation_timeout_id)
         try:
@@ -315,6 +320,10 @@ class MinMessageBox(gtk.EventBox):
         if self.level == 1:
             event_manager.emit("level-one-destroy", None)
         event_manager.emit("message-destroy", None)    
+        
+        lenth = lenth if lenth < 3 else 3
+        event_manager.emit("popup-handle-input", lenth)
+        
     
     def delay_destroy(self):
         if self.animation_timeout_id is None:
@@ -352,18 +361,19 @@ class PopupWindow(gtk.Window):
         self.connect("expose-event", self.on_expose_event)
         self.connect_after("show", lambda widget: self.control.delay_start_animation())
         event_manager.connect("notify", self.on_notify_event)
+        event_manager.connect("popup-handle-input", self.handle_input)
         event_manager.connect("message-coming", self.on_message_coming)
         event_manager.connect("message-destroy", self.on_message_destroy)
         self.add(self.control)
         self.reset_position()
-        self.message_queue = deque()
-        self.message_lock = Lock()
-        self.trayicon = TrayIcon()
+
         self.is_through = True
         self.reset_position()                    
         self.hide_all()
         
     def on_message_coming(self, data):    
+        if not trayicon.get_visible(): # show trayicon blinking when new messages' coming
+            trayicon.set_visible(True)
         if self.is_through:
             self.show_all()
             self.is_through = False
@@ -374,7 +384,7 @@ class PopupWindow(gtk.Window):
                self.hide_all()
                self.is_through = True
         
-    def set_input_shape_mask(self, disable_input):    
+    def set_input_shape_mask(self, disable_input):
         if disable_input:
             region = gtk.gdk.Region()
             self.window.input_shape_combine_region(region, 0, 0)
@@ -391,6 +401,16 @@ class PopupWindow(gtk.Window):
         message_box = MinMessageBox(data)
         self.control.add_message_box(message_box)
         
+    def handle_input(self, lenth):
+        print lenth
+        message_lenth = lenth if lenth < 3 else 3
+        input_region_widht = WINDOW_WIDTH
+        input_region_height = (3 - message_lenth) * MIN_ITEM_HEIGHT
+
+        rect_region = (0, 0,  input_region_widht, input_region_height)
+        print rect_region
+        self.window.input_shape_combine_region(gtk.gdk.region_rectangle(rect_region), 0, input_region_height)
+        
     def on_expose_event(self, widget, event):    
         cr  = widget.window.cairo_create()
         rect = widget.allocation
@@ -398,7 +418,7 @@ class PopupWindow(gtk.Window):
         # Clear color to transparent window.
         if self.is_composited():
             cr.rectangle(*rect)
-            cr.set_source_rgba(1, 0, 0, 0.9)
+            cr.set_source_rgba(0, 0, 0, 0)
             cr.set_operator(cairo.OPERATOR_SOURCE)                
             cr.paint()
         else:    
