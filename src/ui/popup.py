@@ -358,7 +358,7 @@ class PopupWindow(gtk.Window):
         self.reset_position()
         self.message_queue = deque()
         self.message_lock = Lock()
-        self.trayicon = TrayIcon()
+        # self.trayicon = TrayIcon()
         self.is_through = True
         self.reset_position()                    
         self.hide_all()
