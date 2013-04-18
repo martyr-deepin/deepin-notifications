@@ -35,7 +35,6 @@ import xdg
 from events import event_manager
 from ui.icons import icon_manager
 from ui.utils import get_screen_size
-from ui.tray import TrayIcon
 
 MIN_ITEM_HEIGHT = 87
 WINDOW_WIDTH = 310
@@ -358,7 +357,6 @@ class PopupWindow(gtk.Window):
         self.reset_position()
         self.message_queue = deque()
         self.message_lock = Lock()
-        # self.trayicon = TrayIcon()
         self.is_through = True
         self.reset_position()                    
         self.hide_all()
@@ -398,7 +396,7 @@ class PopupWindow(gtk.Window):
         # Clear color to transparent window.
         if self.is_composited():
             cr.rectangle(*rect)
-            cr.set_source_rgba(1, 0, 0, 0.9)
+            cr.set_source_rgba(0, 0, 0, 0)
             cr.set_operator(cairo.OPERATOR_SOURCE)                
             cr.paint()
         else:    
