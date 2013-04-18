@@ -111,6 +111,8 @@ class Notifications(DBusProperty, DBusIntrospectable, dbus.service.Object):
         name = dbus.service.BusName(self.BUS_NAME, bus)
         dbus.service.Object.__init__(self, bus, self.PATH, name)
         
+        self.id_cursor = long(0)
+        
     @dbus.service.method(NOTIFY_IFACE, in_signature="i")    
     def CloseNotification(self, replaces_id):
         print replaces_id
@@ -137,7 +139,8 @@ class Notifications(DBusProperty, DBusIntrospectable, dbus.service.Object):
         event_manager.emit("notify", notify_storage)
         
         # print app_name, replaces_id, icon, summary, body, actions, hints, timeout
-        return replaces_id
+        self.id_cursor += self.id_cursor
+        return self.id_cursor
         
 if __name__ == "__main__":        
     import dbus, dbus.mainloop.glib, gtk

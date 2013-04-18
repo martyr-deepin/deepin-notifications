@@ -24,18 +24,20 @@
 import gtk
 import cairo
 import gobject
+import cPickle
 
 from collections import deque
-from threading import Lock
+from datetime import datetime
 from dtk.ui.draw import  draw_pixbuf, draw_text, TEXT_ALIGN_TOP
 from dtk.ui.timeline import Timeline, CURVE_SINE
 from dtk.ui.utils import (propagate_expose, is_in_rect, get_content_size)
+from notification_db import db
 
 import xdg
 from events import event_manager
 from ui.icons import icon_manager
 from ui.utils import get_screen_size
-from ui.tray import trayicon
+
 
 MIN_ITEM_HEIGHT = 87
 WINDOW_WIDTH = 310
@@ -124,7 +126,7 @@ gobject.type_register(MessageFixed)
         
 class MinMessageBox(gtk.EventBox):
     
-    def __init__(self, message):
+    def __init__(self, message, create_time):
         gtk.EventBox.__init__(self)
         self.set_visible_window(False)
         self.message = message
@@ -138,6 +140,7 @@ class MinMessageBox(gtk.EventBox):
         self.default_icon = gtk.gdk.pixbuf_new_from_file(xdg.get_image_path("icon.png"))
         self.message_icon = self.get_icon_pixbuf()
         
+        self.create_time = create_time
         self.animation_time = 500
         self.in_animation = False
         self.in_move_animation = False 
@@ -243,6 +246,10 @@ class MinMessageBox(gtk.EventBox):
                       (self.close_rect.x, self.close_rect.y, 
                        self.close_rect.width, self.close_rect.height)):
             self.manual_destroy()
+            db.remove(self.create_time) # remove this message from database
+            
+            print db.get_all()
+            
             
     def move_to(self, height, status):        
         if self.level == 0:
@@ -372,8 +379,6 @@ class PopupWindow(gtk.Window):
         self.hide_all()
         
     def on_message_coming(self, data):    
-        if not trayicon.get_visible(): # show trayicon blinking when new messages' coming
-            trayicon.set_visible(True)
         if self.is_through:
             self.show_all()
             self.is_through = False
@@ -398,8 +403,14 @@ class PopupWindow(gtk.Window):
         self.move(win_x, win_y)
     
     def on_notify_event(self, data):
-        message_box = MinMessageBox(data)
+        create_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+        message_box = MinMessageBox(data, create_time)
         self.control.add_message_box(message_box)
+        
+        db.add(create_time, cPickle.dumps(data))
+        
+        
+        print db.get_all()
         
     def handle_input(self, lenth):
         print lenth

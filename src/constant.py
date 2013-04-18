@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 
 # Copyright (C) 2011 ~ 2013 Deepin, Inc.
-#               2011 ~ 2013 Hou ShaoHui
+#               2011 ~ 2013 Wang Yaohua
 # 
-# Author:     Hou ShaoHui <houshao55@gmail.com>
-# Maintainer: Hou ShaoHui <houshao55@gmail.com>
+# Author:     Wang Yaohua <mr.asianwang@gmail.com>
+# Maintainer: Wang Yaohua <mr.asianwang@gmail.com>
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
