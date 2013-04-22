@@ -248,8 +248,6 @@ class MinMessageBox(gtk.EventBox):
             self.manual_destroy()
             db.remove(self.create_time) # remove this message from database
             
-            print db.get_all()
-            
             
     def move_to(self, height, status):        
         if self.level == 0:
@@ -403,14 +401,12 @@ class PopupWindow(gtk.Window):
         self.move(win_x, win_y)
     
     def on_notify_event(self, data):
-        create_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+        create_time = datetime.now().strftime("%H:%M:%S")
         message_box = MinMessageBox(data, create_time)
         self.control.add_message_box(message_box)
         
         db.add(create_time, cPickle.dumps(data))
         
-        
-        print db.get_all()
         
     def handle_input(self, lenth):
         print lenth

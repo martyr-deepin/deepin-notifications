@@ -6,6 +6,7 @@
 # 
 # Author:     Hou Shaohui <houshao55@gmail.com>
 # Maintainer: Hou Shaohui <houshao55@gmail.com>
+#             Wang Yaohua <mr.asianwang@gmail.com>
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,13 +22,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from events import event_manager
 from ui.tray import trayicon
+from ui.skin import app_theme
+
 
 class DeepinNotification(object):
-    
     def __init__(self):
         
         # run_preload
-        
         self.mainloop_init()
         
         import dbus_notify
@@ -35,16 +36,17 @@ class DeepinNotification(object):
         
         from ui.popup import PopupWindow
         app_instance = PopupWindow()
-        
+
+        event_manager.connect("message-coming", self.on_message_coming)
+                
         import gtk
         gtk.main()
         
-        event_manager.connect("message-coming", self.on_message_coming)
-        
+                
     #this method handle message coming for showing status icon
     def on_message_coming(self, data):
-        if not trayicon.get_visible():
-            trayicon.set_visible(True)
+        trayicon.set_from_pixbuf(app_theme.get_pixbuf("msg_white2.png").get_pixbuf())
+
             
     def run_preload(self):    
         pass
