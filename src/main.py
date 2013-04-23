@@ -45,7 +45,7 @@ class DeepinNotification(object):
                 
     #this method handle message coming for showing status icon
     def on_message_coming(self, data):
-        trayicon.set_from_pixbuf(app_theme.get_pixbuf("msg_white2.png").get_pixbuf())
+        trayicon.set_pixbuf_from_file("msg_white2.png")
 
             
     def run_preload(self):    

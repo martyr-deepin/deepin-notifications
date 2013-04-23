@@ -24,26 +24,43 @@ import gtk
 from ui.skin import app_theme
 from dtk.ui.menu import Menu
 
-from ui.window_view import BriefViewWindow
+from ui.window_view import brief_view_win
+from events import event_manager
 
 
 class TrayIcon(gtk.StatusIcon):    
     
     def __init__(self):
         gtk.StatusIcon.__init__(self)
-        self.set_from_pixbuf(app_theme.get_pixbuf("msg_white1.png").get_pixbuf())
+        self.set_pixbuf_from_file("msg_white1.png")
         self.menu = TrayMenu()
         self.connect("button-press-event", self.on_button_press_event)
+        event_manager.connect("show-unread", self.on_show_unread)
         
     def get_menu_position(self):    
         return gtk.status_icon_position_menu(gtk.Menu(), self)
     
     def on_button_press_event(self, widget, event):
         if event.button == 1:
-            BriefViewWindow().show_all()
-        elif event.button == 2:
+            event_manager.emit("show-unread", None)
+        elif event.button == 3:
+            print "show menu"
             (x, y, extra) = self.get_menu_position()
             self.menu.show((int(x), int(y)), (0, -32))
+            
+    def set_pixbuf_from_file(self, file_name):
+        self.pixbuf_file_name = file_name
+        self.set_from_pixbuf(app_theme.get_pixbuf(self.pixbuf_file_name).get_pixbuf())
+        
+            
+    def on_show_unread(self, data):
+        '''
+        docs
+        '''
+        brief_view_win.show_all()
+        if self.pixbuf_file_name == "msg_white2.png":
+            self.set_pixbuf_from_file("msg_white1.png")
+    
     
 
 class TrayMenu(Menu):
@@ -73,7 +90,7 @@ class TrayMenu(Menu):
         '''
         docs
         '''
-        BriefViewWindow().show_all()
+        event_manager.emit("show-unread", None)
     
     def on_show_preference(self):
         '''

@@ -78,8 +78,8 @@ class BriefViewWindow(DialogBox):
 
         self.prev = Button("&lt;")
         self.next = Button("&gt;")
-        self.prev.set_size_request(20, 20)
-        self.next.set_size_request(20, 20)
+        self.prev.set_size_request(25, 25)
+        self.next.set_size_request(25, 25)
         self.prev.connect("clicked", self.on_prev_clicked)
         self.next.connect("clicked", self.on_next_clicked)
         self.left_button_box.pack_start(self.prev, False, False, 1)
@@ -89,7 +89,7 @@ class BriefViewWindow(DialogBox):
         i = 1
         while i <= self.page_count:
             b = Button(str(i))
-            b.set_size_request(20, 20)
+            b.set_size_request(25, 25)
             b.connect("clicked", self.on_num_clicked)
             self.button_list.append(b)
             self.left_button_box.pack_start(b, False, False, 0)
@@ -101,7 +101,7 @@ class BriefViewWindow(DialogBox):
         '''
         self.last_page_index = self.page_index
         self.page_index = widget.label
-    
+        event_manager.emit("page-changed", None)
     
     def on_prev_clicked(self, widget):
         '''
@@ -117,11 +117,12 @@ class BriefViewWindow(DialogBox):
         '''
         self.last_page_index = self.page_index
         self.page_index = str(int(self.page_index) + 1)
-
         event_manager.emit("page-changed", None)
     
             
     def on_page_changed(self, data):
+        self.update_listview()
+        
         if self.page_index == "1":
             self.prev.set_sensitive(False)
         if self.page_index == str(self.page_count):
@@ -142,14 +143,15 @@ class BriefViewWindow(DialogBox):
         docs
         '''
         items = self.paged_items[self.page_index]
-        if hasattr(self, "listview"):
-            del self.listview
-        self.listview = TreeView(items)
-        self.listview.set_expand_column(0)
-        self.listview.set_column_titles(["The content of the message", "Time"],
-                                        [self.sort_by_content, self.sort_by_time])
+        self.body_box.foreach(lambda child : self.body_box.remove(child))
+
+        listview = TreeView(items)
+        listview.set_expand_column(0)
+        listview.set_column_titles(["The content of the message", "Time"],
+                                   [self.sort_by_content, self.sort_by_time])
         
-        self.body_box.pack_start(self.listview, False, False, 1)
+        self.body_box.pack_start(listview, False, False, 1)
+        self.body_box.show_all()
         
         
     def init_items_from_database(self):
@@ -205,10 +207,11 @@ class BriefViewItem(TreeItem):
         TreeItem.__init__(self)
         self.content = content
         self.time = time
-        self.item_height = 50
+        self.item_height = 52
         self.content_width = 100
         self.time_width = 100
-        self.draw_padding_x = 5
+        self.draw_padding_x = 10
+        self.draw_padding_y = 10
         self.column_index = 0
         self.is_select = False
         self.is_hover = False
@@ -246,9 +249,13 @@ class BriefViewItem(TreeItem):
         else:    
             text_color = "#000000"
             
-        draw_text(cr, self.content, rect.x + self.draw_padding_x,
-                  rect.y, rect.width - self.draw_padding_x * 2, 
-                  rect.height, text_size=10, 
+        draw_text(cr, self.content, 
+                  rect.x + self.draw_padding_x, 
+                  rect.y + self.draw_padding_y,
+                  rect.width - self.draw_padding_x * 2, 
+                  rect.height - self.draw_padding_y * 2, 
+                  wrap_width = 25 * 10,
+                  clip_line_count = 2,
                   text_color = text_color,
                   alignment=pango.ALIGN_LEFT)    
         
@@ -263,11 +270,11 @@ class BriefViewItem(TreeItem):
         else:    
             text_color = "#000000"
             
-        draw_text(cr, self.time, rect.x + self.draw_padding_x, 
-                  rect.y, rect.width - self.draw_padding_x * 2,
-                  rect.height, text_size=10, 
+        draw_text(cr, self.time, rect.x,
+                  rect.y, rect.width,
+                  rect.height, 
                   text_color = text_color,
-                  alignment=pango.ALIGN_LEFT)    
+                  alignment=pango.ALIGN_CENTER)    
     
     def unhover(self, column, offset_x, offset_y):
         self.is_hover = False
@@ -276,3 +283,8 @@ class BriefViewItem(TreeItem):
     def hover(self, column, offset_x, offset_y):
         self.is_hover = True
         self.emit_redraw_request()
+        
+    def __str__(self):
+        return self.content + ": " + self.time
+
+brief_view_win = BriefViewWindow()
