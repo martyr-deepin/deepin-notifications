@@ -22,26 +22,42 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from events import event_manager
 from ui.tray import trayicon
-from ui.skin import app_theme
+from ui.bubble import Bubble
+from ui.utils import handle_message
 
+from collections import deque
 
 class DeepinNotification(object):
     def __init__(self):
         
+        self.notification_queue = deque()
         # run_preload
         self.mainloop_init()
         
         import dbus_notify
         self.dbus = dbus_notify.Notifications()
         
-        from ui.popup import PopupWindow
-        app_instance = PopupWindow()
+        #from ui.popup import PopupWindow
+        #app_instance = PopupWindow()
 
         event_manager.connect("message-coming", self.on_message_coming)
+        event_manager.connect("notify", self.on_notify)
                 
         import gtk
         gtk.main()
         
+    def on_notify(self, data):
+        '''
+        docs
+        '''
+        message = handle_message(data)
+        height = 87 if len(message["actions"]) == 0 else 110
+        
+        if len(list(self.notification_queue)) > 0:
+            event_manager.emit("ready-to-move-up", height)
+
+        self.notification_queue.append(Bubble(message, height))
+    
                 
     #this method handle message coming for showing status icon
     def on_message_coming(self, data):

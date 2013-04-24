@@ -21,7 +21,30 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import gtk
+import re
 
 def get_screen_size():
     root_window = gtk.gdk.get_default_root_window()
     return root_window.get_size()
+
+def get_hyperlink_support_str(raw_str):
+    result = {"result" : "", "actions" : []}
+    
+    def replace_hyper_with_underline(match_obj):
+        result["actions"].append({match_obj.group(1) : match_obj.group(2)})
+        return "<u>" + match_obj.group(3) + "</u>"
+    
+    regex = re.compile(r'<a\s+([^\s]+)\s*=\s*([^\s/<>]+)\s*>([^<>\/].*?)</a>')
+    
+    result["result"] = regex.sub(replace_hyper_with_underline, raw_str)
+    return result
+
+def handle_message(message):
+    hyperlink_support_str = get_hyperlink_support_str(message["body"])
+    message["body"] = hyperlink_support_str["result"]
+    message["hints"]["x-vendor-hyperlinks"] = hyperlink_support_str["actions"]
+    return message
+    
+if __name__ == "__main__":
+    raw_str = '''this is a test <a href="www.baidu.com">baidu</a>, another test <a href="www.google.com">google</a>'''
+    print get_hyperlink_support_str(raw_str)

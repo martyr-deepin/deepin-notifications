@@ -133,9 +133,11 @@ class Notifications(DBusProperty, DBusIntrospectable, dbus.service.Object):
                                   "icon" : type_convert.dbus2py(icon),
                                   "summary" : type_convert.dbus2py(summary), 
                                   "body" : type_convert.dbus2py(body),
+                                  "actions" : type_convert.dbus2py(actions),
                                   "hints" : type_convert.dbus2py(hints), 
                                   "timeout" : type_convert.dbus2py(timeout)})
         
+
         event_manager.emit("notify", notify_storage)
         
         # print app_name, replaces_id, icon, summary, body, actions, hints, timeout

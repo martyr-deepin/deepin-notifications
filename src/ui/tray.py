@@ -44,7 +44,6 @@ class TrayIcon(gtk.StatusIcon):
         if event.button == 1:
             event_manager.emit("show-unread", None)
         elif event.button == 3:
-            print "show menu"
             (x, y, extra) = self.get_menu_position()
             self.menu.show((int(x), int(y)), (0, -32))
             
