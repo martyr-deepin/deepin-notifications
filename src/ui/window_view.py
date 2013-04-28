@@ -207,15 +207,15 @@ class ListviewFactory:
         cr.fill()
         
     def on_listview_right_press_items(self, widget, root_x, root_y, current_item, select_items):
-        def on_delete_selected_record():
-            for item in select_items:
-                db.remove(item.time)
-        
-        def on_delete_all_record():
-            db.clear()
-            
-        
-        if self.owner == "detail":
+        if self.owner == "detail":        
+            def on_delete_selected_record():
+                for item in select_items:
+                    db.remove(item.time)
+                    
+            def on_delete_all_record():
+                db.clear()
+                
+                
             Menu([(None, "Delete selected record", on_delete_selected_record),
                   (None, "Delete all record", on_delete_all_record)], True).show((root_x, root_y))
         
@@ -345,6 +345,7 @@ class ListViewItem(TreeItem):
     def select(self):        
         self.is_select = True
         self.emit_redraw_request()
+        
         
     def render_content(self, cr, rect):        
         # Draw select background.
@@ -500,7 +501,7 @@ class SearchEntry(InputEntry):
         super(SearchEntry, self).__init__(action_button=entry_button, *args, **kwargs)        
         
         self.action_button = entry_button
-        self.set_size(200, TOOLBAR_ENTRY_HEIGHT)
+        self.set_size(150, TOOLBAR_ENTRY_HEIGHT)
         
 gobject.type_register(SearchEntry)        
 
@@ -668,6 +669,10 @@ class DetailViewWindow(Window):
         self.main_view_box.connect("expose-event", self.on_main_view_box_expose_event)
         
         self.add_titlebar()        
+        self.treeview_box = gtk.VBox()
+        self.main_view_box.pack_start(self.treeview_box, False, False)
+        self.listview_box = gtk.VBox()
+        self.main_view_box.pack_start(self.listview_box, True, True)
         self.refresh_view() #add treeview and listview 
 
         self.info_area_box = gtk.HBox()
@@ -720,7 +725,9 @@ class DetailViewWindow(Window):
             align = gtk.Alignment(0.5, 0.5, 1, 1)
             align.set_padding(0, 0, 450, 0)
             align.add(Label("(Empty)"))
-            self.main_view_box.pack_start(align, True, True)
+            self.treeview_box.foreach(lambda widget : self.treeview_box.remove(widget))
+            self.listview_box.foreach(lambda widget : self.listview_box.remove(widget))
+            self.listview_box.pack_start(align, True, True)
         self.main_view_box.show_all()
         self.add_toolbar()
         
@@ -772,8 +779,6 @@ class DetailViewWindow(Window):
         
                 
     def add_treeview(self):
-        self.treeview_box = gtk.VBox()
-        self.main_view_box.pack_start(self.treeview_box, False, False)
         
         items = self.classified_items.keys()
 
@@ -797,17 +802,16 @@ class DetailViewWindow(Window):
         '''
         docs
         '''
-        self.listview_box = gtk.VBox()
-        self.main_view_box.pack_start(self.listview_box, True, True)
+        self.listview_box.foreach(lambda widget : self.listview_box.remove(widget))
         
         if len(items) != 0:
             self.factory = ListviewFactory(items, 65535, "detail")
             self.listview = self.factory.listview
             self.button_list = self.factory.button_list
             
-            self.listview_box.foreach(lambda widget : self.listview_box.remove(widget))
             self.listview_box.pack_start(self.listview)
-            self.listview_box.show_all()
+            
+        self.listview_box.show_all()
         
     def get_items_from_treeview_highlight(self):
         '''
