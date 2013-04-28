@@ -24,23 +24,21 @@ from events import event_manager
 from ui.tray import trayicon
 from ui.bubble import Bubble
 from ui.utils import handle_message
+from notification_db import db
+from blacklist import blacklist
 
 from collections import deque
+from datetime import datetime
 
 class DeepinNotification(object):
     def __init__(self):
         
         self.notification_queue = deque()
-        # run_preload
+
         self.mainloop_init()
-        
         import dbus_notify
         self.dbus = dbus_notify.Notifications()
         
-        #from ui.popup import PopupWindow
-        #app_instance = PopupWindow()
-
-        event_manager.connect("message-coming", self.on_message_coming)
         event_manager.connect("notify", self.on_notify)
                 
         import gtk
@@ -50,27 +48,18 @@ class DeepinNotification(object):
         '''
         docs
         '''
-        message = handle_message(data)
+        message = handle_message(data) # replace hyper<a> with underline <u> AND place hyper actions in hints["x-deepin-hyperlinks"]
         height = 87 if len(message["actions"]) == 0 else 110
+        create_time = datetime.now().strftime("%Y/%m/%d-%H:%M:%S")
         
         if len(list(self.notification_queue)) > 0:
             event_manager.emit("ready-to-move-up", height)
 
-        self.notification_queue.append(Bubble(message, height))
-    
-                
-    #this method handle message coming for showing status icon
-    def on_message_coming(self, data):
+        if message.app_name not in blacklist.bl:
+            self.notification_queue.append(Bubble(message, height, create_time))
+        db.add(create_time, message)
         trayicon.set_pixbuf_from_file("msg_white2.png")
 
-            
-    def run_preload(self):    
-        pass
-    
-    
-    def __init(self):
-        pass
-        
         
     def mainloop_init(self):    
         import gobject

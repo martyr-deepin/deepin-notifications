@@ -22,6 +22,8 @@
 
 import os
 import xdg
+import cPickle
+import shutil
 import sqlite3
 
 class NotificationDB:
@@ -33,12 +35,14 @@ class NotificationDB:
         '''
         init docs
         '''
+        self.db_path = db_path
         self.conn = sqlite3.connect(db_path)
         self.cursor = self.conn.cursor()
         if create:
             self.cursor.execute('''create table notifications (time text unique, message text) ''')
                 
     def add(self, time, message):
+        message = cPickle.dumps(message)
         try:
             self.cursor.execute('''insert into notifications values (?, ?)''', (time, message))
             self.conn.commit()
@@ -46,6 +50,7 @@ class NotificationDB:
             print "Already in database."
         
     def remove(self, time_id):
+        print "remove", time_id
         self.cursor.execute('''delete from notifications where time=?''', (time_id,))
         self.conn.commit()
         
@@ -53,12 +58,30 @@ class NotificationDB:
         '''
         docs
         '''
-        self.cursor.execute('''select * from notifications order by time''')
-        return self.cursor.fetchall()
+        self.cursor.execute('''select * from notifications order by time desc''')
+        result = self.cursor.fetchall()
+        
+        return [(x[0], cPickle.loads(str(x[1]))) for x in result]
     
     def close(self):
         self.cursor.close()
         self.conn.close()
+        
+    def clear(self):
+        self.cursor.execute('''delete from notifications''')
+        
+    def export_db(self, export_path):
+        shutil.copy(self.db_path, export_path)
+        
+        
+    def import_db(self, import_path):
+        tmp_conn = sqlite3.connect(import_path)
+        tmp_cursor = tmp_conn.cursor()
+        
+        result = tmp_cursor.execute("select * from notifications")
+        for x in result.fetchall():
+            self.add(x[0], cPickle.loads(str(x[1])))
+        
     
 app_data_path = os.path.join(xdg.get_config_dir(), "data")
 app_db_path = os.path.join(app_data_path, "notifications.db")

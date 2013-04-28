@@ -30,21 +30,16 @@ class Preference:
     class docs
     '''
 	
-    def __init__(self, app_name):
+    def __init__(self, config_path):
         '''
         init docs
         '''
-        self.app_config_path = os.path.expanduser("~/.config/" + app_name + "/preference.ini")
-        if not os.path.exists(self.app_config_path):
-            token = self.app_config_path.split("/")
-            print token
-            os.mkdir("/".join(token[0:-1]))
-            config_parser = ConfigParser()
-            config_parser.add_section("section")
-            config_parser.set("section", "option", 5)
-            config_file = open(self.app_config_path, "w")
-            config_parser.write(config_file)
-            config_file.close()
+        config_parser = ConfigParser()
+        config_parser.add_section("section")
+        config_parser.set("section", "option", 5)
+        config_file = open(self.app_config_path, "w")
+        config_parser.write(config_file)
+        config_file.close()
             
         self.parser = ConfigParser().read(self.app_config_path)
             
@@ -90,6 +85,18 @@ class Editor:
         self.parser.write(config_file)
         config_file.close()
         event_manager.emit("preference-changed")
+        
+app_data_path = os.path.join(xdg.get_config_dir(), "data")
+app_config_path = os.path.join(app_data_path, "notifications.ini")
+
+config = None
+
+if not os.path.exists(app_data_path):
+    os.makedirs(app_data_path)
+if not os.path.exists(app_config_path):
+    config = Preference(app_config_path, True)
+else:
+    config = Preference(app_config_path, False)
 
 if __name__ == "__main__":
     Preference("preference-test")

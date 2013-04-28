@@ -6,6 +6,7 @@
 #
 # Author:     Hou Shaohui <houshao55@gmail.com>
 # Maintainer: Hou ShaoHui <houshao55@gmail.com>
+#             Wang Yaohua <mr.asianwang@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,7 +25,7 @@ import gtk
 from ui.skin import app_theme
 from dtk.ui.menu import Menu
 
-from ui.window_view import brief_view_win
+from ui.window_view import BriefViewWindow, DetailViewWindow
 from events import event_manager
 
 
@@ -36,6 +37,7 @@ class TrayIcon(gtk.StatusIcon):
         self.menu = TrayMenu()
         self.connect("button-press-event", self.on_button_press_event)
         event_manager.connect("show-unread", self.on_show_unread)
+        event_manager.connect("show-manager", self.on_show_manager)
         
     def get_menu_position(self):    
         return gtk.status_icon_position_menu(gtk.Menu(), self)
@@ -55,11 +57,19 @@ class TrayIcon(gtk.StatusIcon):
     def on_show_unread(self, data):
         '''
         docs
-        '''
-        brief_view_win.show_all()
+        '''                     
+        BriefViewWindow().show_all() 
         if self.pixbuf_file_name == "msg_white2.png":
             self.set_pixbuf_from_file("msg_white1.png")
     
+    def on_show_manager(self, data):
+        '''
+        docs
+        '''
+        DetailViewWindow().show_all() 
+        if self.pixbuf_file_name == "msg_white2.png":
+            self.set_pixbuf_from_file("msg_white1.png")
+   
     
 
 class TrayMenu(Menu):
@@ -79,11 +89,10 @@ class TrayMenu(Menu):
         docs
         '''
         self.menu_item = []
-        self.menu_item.append((None, "Show Unread", self.on_show_unread))
-        self.menu_item.append((None, "Preference", self.on_show_preference))
-        self.menu_item.append(None)
-        self.menu_item.append((None, "No-Disturb", self.on_no_disturb_toggled))
-        self.menu_item.append((None, "Normal Mode", self.on_normal_mode_toggled))
+        self.menu_item.append((None, "Unread Messages", self.on_show_unread))
+        self.menu_item.append(None)        
+        self.menu_item.append((None, "Message Manager", self.on_show_manager))
+        
         
     def on_show_unread(self):
         '''
@@ -91,20 +100,12 @@ class TrayMenu(Menu):
         '''
         event_manager.emit("show-unread", None)
     
-    def on_show_preference(self):
+    def on_show_manager(self):
         '''
         docs
         '''
-        pass
+        event_manager.emit("show-manager", None)
     
-    def on_no_disturb_toggled(self):
-        '''
-        docs
-        '''
-        pass
-    
-    def on_normal_mode_toggled(self):
-        pass
     
 
 trayicon = TrayIcon()

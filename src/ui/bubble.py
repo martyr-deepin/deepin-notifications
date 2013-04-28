@@ -22,25 +22,25 @@
 
 import gtk
 import cairo
-import pango
-import pangocairo
 import gobject
-from ui.utils import get_screen_size, get_hyperlink_support_str
+import webbrowser
+
+from ui.utils import get_screen_size, render_hyperlink_support_text
 from dtk.ui.timeline import Timeline, CURVE_SINE
 from dtk.ui.draw import draw_pixbuf, draw_text, TEXT_ALIGN_TOP, TEXT_ALIGN_MIDDLE, TEXT_ALIGN_BOTTOM
 
-from dtk.ui.utils import (propagate_expose, is_in_rect, get_content_size, cairo_state, color_hex_to_cairo)
-from dtk.ui.constant import DEFAULT_FONT, DEFAULT_FONT_SIZE
+from dtk.ui.utils import (propagate_expose, is_in_rect, get_content_size)
 from events import event_manager
 from ui.skin import app_theme
 from ui.icons import icon_manager
+from notification_db import db
 
 
 WINDOW_OFFSET_WIDTH = 10
 WINDOW_OFFSET_HEIGHT = 0
 DOCK_HEIGHT = 35
 
-TIMEOUT = 50000
+TIMEOUT = 5000
 
 CLOSE_OFFSET_WIDTH = 10
 CLOSE_OFFSET_HEIGHT = 8
@@ -67,12 +67,13 @@ class Bubble(gtk.Window):
     class docs
     '''
 	
-    def __init__(self, message, height):
+    def __init__(self, message, height, create_time):
         '''
         init docs
         '''
         gtk.Window.__init__(self, gtk.WINDOW_POPUP)
         self.message = message
+        self.create_time = create_time
         self.init_size(height)
         self.init_pixbuf()
         self.set_colormap(gtk.gdk.Screen().get_rgba_colormap() or gtk.gdk.Screen().get_rga_colormap())
@@ -198,122 +199,14 @@ class Bubble(gtk.Window):
         
         body_text_y = SUMMARY_TEXT_Y + _height + TEXT_PADDING_Y
         
-        self.render_text(cr, self.message.body, 
-                       rect.x + TEXT_X, rect.y + body_text_y,
-                       TEXT_WIDTH, BODY_TEXT_HEIGHT,
-                       wrap_width=TEXT_WIDTH,
-                       text_color="#FFFFFF", text_size=10, 
-                       vertical_alignment=TEXT_ALIGN_TOP,
-                       clip_line_count=2)
+        render_hyperlink_support_text(self, cr, self.message.body, 
+                                      rect.x + TEXT_X, rect.y + body_text_y,
+                                      TEXT_WIDTH, BODY_TEXT_HEIGHT,
+                                      wrap_width=TEXT_WIDTH,
+                                      text_color="#FFFFFF", text_size=10, 
+                                      vertical_alignment=TEXT_ALIGN_TOP,
+                                      clip_line_count=2)
         
-        
-    def render_text(self, cr, markup, 
-                    x, y, w, h, 
-                    text_size=DEFAULT_FONT_SIZE, 
-                    text_color="#000000", 
-                    text_font=DEFAULT_FONT, 
-                    alignment=pango.ALIGN_LEFT,
-                    wrap_width=None, 
-                    underline=False,
-                    vertical_alignment=TEXT_ALIGN_MIDDLE,
-                    clip_line_count=None,
-                    ellipsize=pango.ELLIPSIZE_END,
-                    ):
-        print x, y
-        with cairo_state(cr):
-            # Set color.
-            cr.set_source_rgb(*color_hex_to_cairo(text_color))
-        
-            # Create pangocairo context.
-            context = pangocairo.CairoContext(cr)
-            
-            # Set layout.
-            layout = context.create_layout()
-            layout.set_font_description(pango.FontDescription("%s %s" % (text_font, text_size)))
-            layout.set_markup(markup)
-            layout.set_alignment(alignment)
-            if wrap_width == None:
-                layout.set_single_paragraph_mode(True)
-                layout.set_width(w * pango.SCALE)
-                layout.set_ellipsize(ellipsize)
-            else:
-                layout.set_width(wrap_width * pango.SCALE)
-                layout.set_wrap(pango.WRAP_WORD)
-                
-            (text_width, text_height) = layout.get_pixel_size()
-            
-            if underline:
-                if alignment == pango.ALIGN_LEFT:
-                    cr.rectangle(x, y + text_height + (h - text_height) / 2, text_width, 1)
-                elif alignment == pango.ALIGN_CENTER:
-                    cr.rectangle(x + (w - text_width) / 2, y + text_height + (h - text_height) / 2, text_width, 1)
-                else:
-                    cr.rectangle(x + w - text_width, y + text_height + (h - text_height) / 2, text_width, 1)
-                cr.fill()
-                
-            # Set render y coordinate.
-            if vertical_alignment == TEXT_ALIGN_TOP:
-                render_y = y
-            elif vertical_alignment == TEXT_ALIGN_MIDDLE:
-                render_y = y + max(0, (h - text_height) / 2)
-            else:
-                render_y = y + max(0, h - text_height)
-                
-            # Clip area.
-            if clip_line_count:
-                line_count = layout.get_line_count()
-                if line_count > 0:
-                    line_height = text_height / line_count
-                    cr.rectangle(x, render_y, text_width, line_height * clip_line_count)
-                    cr.clip()
-                
-            # Draw text.
-            cr.move_to(x, render_y)
-            context.update_layout(layout)
-            context.show_layout(layout)
-            
-            self.get_pointer_hand_rectangles(markup, layout, x, render_y)
-            print self.pointer_hand_rectangles
-            
-                        
-    def get_pointer_hand_rectangles(self, text, pango_layout, render_x, render_y):
-        u_start_index = []
-        u_end_index = []
-        start_index = 0
-        end_index = 0
-        
-        while text.find("<u>", start_index) != -1 and text.find("</u>", end_index != -1):
-            start_index = text.find("<u>", start_index) 
-            end_index = text.find("</u>", end_index)
-            
-            u_start_index.append(start_index)
-            u_end_index.append(end_index)
-            
-            start_index += 1
-            end_index += 1
-            
-        print u_start_index, u_end_index
-        
-        i = 0
-        while i < len(text):
-            print i, [x / pango.SCALE for x in pango_layout.index_to_pos(i)]
-            i += 1
-
-        i = 0
-        while i < len(u_start_index):
-            print u_start_index[i], u_end_index[i]
-            rect1 = [x1, y1, width1, height1] = [x / pango.SCALE for x in pango_layout.index_to_pos(u_start_index[i])]
-            rect2 = [x2, y2, width2, height2] = [x / pango.SCALE for x in pango_layout.index_to_pos(u_end_index[i])]
-            
-            print rect1, rect2
-
-            rect_x = x1 + render_x
-            rect_y = y1 + render_y
-            rect_width = x2 - x1 + width2
-            rect_height = y2 - y1 + height2
-            
-            self.pointer_hand_rectangles.append((rect_x, rect_y, rect_width, rect_height))
-            i += 1
 
     def on_motion_notify_event(self, widget, event):
         for rect in self.pointer_hand_rectangles:
@@ -332,6 +225,14 @@ class Bubble(gtk.Window):
             gobject.source_remove(self.timeout_id)
             self.destroy()
             event_manager.emit("manual-cancelled", (self.window_height))
+            return 
+            
+        for index, rect in enumerate(self.pointer_hand_rectangles):
+            if is_in_rect((event.x, event.y), rect):
+                action = self.message["hints"]["x-deepin-hyperlinks"][index]
+                if action.has_key("href"):
+                    webbrowser.open_new_tab(action.get("href"))
+                return
     
 
     def _get_position(self):
@@ -342,6 +243,7 @@ class Bubble(gtk.Window):
         return win_x, win_y
     
     def start_destroy_animation(self):
+        self.destroy()
         timeline = Timeline(self.animation_time, CURVE_SINE)
         timeline.connect("update", lambda source, status : self.set_opacity(1 - status))
         timeline.connect("completed", lambda source : self.destroy)
@@ -368,6 +270,7 @@ class Bubble(gtk.Window):
         
         
     def move_down(self, data):
+        db.remove(self.create_time)
         if self.level == 2:
             (move_down_height) = data
             self.move_up_timeline = Timeline(self.animation_time, CURVE_SINE)
@@ -381,7 +284,7 @@ class Bubble(gtk.Window):
         self.win_y -= self.move_up_height
         if self.level >= 3:
             gobject.source_remove(self.timeout_id)
-            if self.get_opacity() > 0:
+            if self.get_opacity() > 0.5:
                 self.start_destroy_animation()
 
         self.move_up_moving = False
