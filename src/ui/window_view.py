@@ -145,9 +145,11 @@ class ListviewFactory(object):
             def on_delete_selected_record():
                 for item in select_items:
                     db.remove(item.time)
-                    
+                widget.delete_items(select_items)                    
+                
             def on_delete_all_record():
                 db.clear()
+                widget.clear()
                 
                 
             Menu([(None, "Delete selected record", on_delete_selected_record),
@@ -856,7 +858,6 @@ class DetailViewWindow(Window):
                 
         for item in total_search_result:
             item_message = item.message
-            print item_message.body
             if item_message.body.find(search_str) != -1:
                 yield item
             
@@ -889,6 +890,8 @@ class DetailViewWindow(Window):
         for row in self.listview.select_rows:
             db.remove(self.listview.visible_items[row].time)
             
+        self.listview.delete_items([self.listview.visible_items[row] for row in self.listview.select_rows])            
+        
         event_manager.emit("deleted", "Deleted")
         
     def on_toolbar_refresh_clicked(self, widget):
