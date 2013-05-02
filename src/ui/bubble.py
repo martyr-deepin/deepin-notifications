@@ -159,23 +159,22 @@ class Bubble(gtk.Window):
             cr.rectangle(*rect)
             cr.set_source_rgba(0, 0, 0, 0)
             cr.set_operator(cairo.OPERATOR_SOURCE)                
-            cr.paint()
+            cr.fill()            
         else:    
             cr.rectangle(rect.x, rect.y, rect.width, rect.height)            
             cr.set_operator(cairo.OPERATOR_SOURCE)
             cr.set_source_rgb(0.9, 0.9, 0.9)
             cr.fill()
             
-        cr.save()
+
+        cr.set_operator(cairo.OPERATOR_OVER)            
         self.draw_message(cr, rect)
-        cr.restore()
         
         propagate_expose(widget, event)        
         
         return True
     
     def draw_message(self, cr, rect):
-        cr.set_operator(cairo.OPERATOR_OVER)
         draw_pixbuf(cr, self.bg_pixbuf, rect.x, rect.y)
         
         icon_x = rect.x + self.close_rect.x
@@ -197,15 +196,17 @@ class Bubble(gtk.Window):
                   TEXT_WIDTH - self.close_pixbuf.get_width(), _height,
                   text_color="#FFFFFF", text_size=10)
         
+        #Draw body 
         body_text_y = SUMMARY_TEXT_Y + _height + TEXT_PADDING_Y
-        
         render_hyperlink_support_text(self, cr, self.message.body, 
-                                      rect.x + TEXT_X, rect.y + body_text_y,
-                                      TEXT_WIDTH - self.close_pixbuf.get_width(), BODY_TEXT_HEIGHT,
-                                      wrap_width=TEXT_WIDTH,
+                                      rect.x + TEXT_X, rect.y + body_text_y, 
+                                      TEXT_WIDTH - self.close_pixbuf.get_width(),
+                                      BODY_TEXT_HEIGHT,
+                                      wrap_width=TEXT_WIDTH - self.close_pixbuf.get_width() + 5,
                                       text_color="#FFFFFF", text_size=10, 
                                       vertical_alignment=TEXT_ALIGN_TOP,
                                       clip_line_count=2)
+
         
 
     def on_motion_notify_event(self, widget, event):
