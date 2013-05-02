@@ -23,10 +23,14 @@
 
 from dtk.ui.init_skin import init_skin
 from deepin_utils.file import get_parent_dir
+from dtk.ui.skin_config import skin_config
 import os
 
 PROGRAM_NAME = "deepin-notifications" 
 PROGRAM_VERSION = "1.0"
+
+WINDOW_WIDTH = 1000
+WINDOW_HEIGHT = 700
 
 app_theme = init_skin(
     PROGRAM_NAME,
@@ -36,3 +40,4 @@ app_theme = init_skin(
     os.path.join(get_parent_dir(__file__, 3), "app_theme"),
     )
 
+skin_config.set_application_window_size(WINDOW_WIDTH, WINDOW_HEIGHT)

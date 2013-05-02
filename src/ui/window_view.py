@@ -20,7 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from dtk.ui.dialog import DialogBox, DIALOG_MASK_GLASS_PAGE, OpenFileDialog, SaveFileDialog
+from dtk.ui.dialog import DialogBox, DIALOG_MASK_GLASS_PAGE, OpenFileDialog, SaveFileDialog, ConfirmDialog
 from dtk.ui.button import ImageButton, Button
 from dtk.ui.treeview import TreeView, TreeItem
 from dtk.ui.window import Window
@@ -30,7 +30,8 @@ from dtk.ui.menu import Menu
 from dtk.ui.draw import draw_text, draw_pixbuf
 from dtk.ui.entry import InputEntry
 from dtk.ui.combo import ComboBox
-from dtk.ui.utils import color_hex_to_cairo, is_in_rect, container_remove_all
+from dtk.ui.utils import color_hex_to_cairo, is_in_rect, container_remove_all, place_center
+from dtk.ui.skin import SkinWindow
 from ui.skin import app_theme
 from ui.utils import render_hyperlink_support_text, draw_line
 from notification_db import db
@@ -142,14 +143,32 @@ class ListviewFactory(object):
         
     def on_listview_right_press_items(self, widget, root_x, root_y, current_item, select_items):
         if self.owner == "detail":        
+            
             def on_delete_selected_record():
-                for item in select_items:
-                    db.remove(item.time)
-                widget.delete_items(select_items)                    
+                
+                def on_ok_clicked():
+                    print "ok"
+                    for item in select_items:
+                        db.remove(item.time)
+                        widget.delete_items(select_items)                    
+                
+                dialog = ConfirmDialog(
+                    "Delete skin",
+                    "Are you sure delete selected items?",
+                    confirm_callback = on_ok_clicked)
+                dialog.show_all()
+                
                 
             def on_delete_all_record():
-                db.clear()
-                widget.clear()
+                def on_ok_clicked():
+                    db.clear()
+                    widget.clear()
+
+                dialog = ConfirmDialog(
+                    "Delete skin",
+                    "Are you sure delete all items?",
+                    confirm_callback = on_ok_clicked)
+                dialog.show_all()
                 
                 
             Menu([(None, "Delete selected record", on_delete_selected_record),
@@ -355,9 +374,9 @@ class ToolbarSep(gtk.HBox):
         cr.fill()
         
         
-        
 TOOLBAR_ITEM_HEIGHT = 30
 TOOLBAR_ITEM_WIDTH = 70
+
 class ToolbarItem(gtk.Button):
     '''
     class docs
@@ -565,6 +584,7 @@ timedelta_dict = {
     "The recent year" : timedelta(days=365)
     }
     
+
 class DetailViewWindow(Window):
     '''
     class docs
@@ -577,7 +597,7 @@ class DetailViewWindow(Window):
         Window.__init__(self)
         self.set_size_request(WINDOW_WIDTH, WINDOW_HEIGHT)
         self.set_icon(app_theme.get_pixbuf("icon.png").get_pixbuf())
-        self.resizable = False
+        self.resizable = True
 
         self.classified_items = None
         self.__init_pixbuf()
@@ -632,6 +652,7 @@ class DetailViewWindow(Window):
         self.delete_btn_pixbuf = gtk.gdk.pixbuf_new_from_file(app_theme.get_theme_file_path("image/msg_white1.png"))
         self.refresh_btn_pixbuf = gtk.gdk.pixbuf_new_from_file(app_theme.get_theme_file_path("image/msg_white1.png"))
         
+        self.skin_preview_pixbuf = app_theme.get_pixbuf("frame.png")
         
     def __init_data(self):
         self.classified_items = {}
@@ -747,7 +768,7 @@ class DetailViewWindow(Window):
     
     
     def add_titlebar(self, 
-                     button_mask=["min", "close"],
+                     button_mask=["theme", "min", "max", "close"],
                      icon_dpixbuf=None, 
                      app_name="Message Manager", 
                      title=None, 
@@ -766,6 +787,8 @@ class DetailViewWindow(Window):
                                  enable_gaussian=enable_gaussian,
                                  )
 
+        self.titlebar.theme_button.connect("clicked", self.theme_callback)
+        self.titlebar.max_button.connect("clicked", lambda w: self.toggle_max_window())
         self.titlebar.min_button.connect("clicked", lambda w: self.min_window())
         self.titlebar.close_button.connect("clicked", self.close_callback)
         
@@ -774,6 +797,15 @@ class DetailViewWindow(Window):
         self.add_move_event(self.titlebar)
 
         self.titlebar_box.add(self.titlebar)
+        
+    def theme_callback(self, widget):
+        print "theme_callback"
+        skin_window = SkinWindow(self.skin_preview_pixbuf)
+        skin_window.show_all()
+        place_center(self, skin_window)
+
+        return False
+        
         
     def add_toolbar(self):
         
@@ -828,16 +860,17 @@ class DetailViewWindow(Window):
         search_entry_align.set(0.5, 0.5, 0, 0)
         search_entry_align.add(search_entry)
         
+        #Align left
         self.toolbar_box.pack_start(toolbar_btn_box_align, False, False, 5)
-        self.toolbar_box.pack_start(ToolbarSep(), False, False, 5)
-        
-        self.toolbar_box.pack_start(look_in_Label, False, False, 5)
 
-        self.toolbar_box.pack_start(combos_box_align, False, False, 0)
+        #Align right
+        self.toolbar_box.pack_end(search_entry_align, False, True, 5)
+        self.toolbar_box.pack_end(find_content_Label, False, False, 5)
+        self.toolbar_box.pack_end(combos_box_align, False, False, 0) 
+        self.toolbar_box.pack_end(look_in_Label, False, False, 5)       
+        self.toolbar_box.pack_end(ToolbarSep(), False, False, 5)        
         
-        self.toolbar_box.pack_start(find_content_Label, False, False, 5)
-        self.toolbar_box.pack_start(search_entry_align, False, True)
-
+        
     def get_search_result_iter(self, search_str):
         search_category = self.category_comb.get_current_item()[0]
         search_timedelta = timedelta_dict[self.time_comb.get_current_item()[0]]
@@ -887,12 +920,19 @@ class DetailViewWindow(Window):
         event_manager.emit("export-finished", "Export Finished")
         
     def on_toolbar_delete_clicked(self, widget):
-        for row in self.listview.select_rows:
-            db.remove(self.listview.visible_items[row].time)
-            
-        self.listview.delete_items([self.listview.visible_items[row] for row in self.listview.select_rows])            
+        def on_ok_clicked():
+            for row in self.listview.select_rows:
+                db.remove(self.listview.visible_items[row].time)
+                
+            self.listview.delete_items([self.listview.visible_items[row] for row in self.listview.select_rows])            
+            event_manager.emit("deleted", "Deleted")
+                
+        dialog = ConfirmDialog(
+                "Delete skin",
+                "Are you sure delete selected items?",
+                confirm_callback = on_ok_clicked)
+        dialog.show_all()
         
-        event_manager.emit("deleted", "Deleted")
         
     def on_toolbar_refresh_clicked(self, widget):
         self.refresh_view()
