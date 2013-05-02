@@ -201,7 +201,7 @@ class Bubble(gtk.Window):
         
         render_hyperlink_support_text(self, cr, self.message.body, 
                                       rect.x + TEXT_X, rect.y + body_text_y,
-                                      TEXT_WIDTH, BODY_TEXT_HEIGHT,
+                                      TEXT_WIDTH - self.close_pixbuf.get_width(), BODY_TEXT_HEIGHT,
                                       wrap_width=TEXT_WIDTH,
                                       text_color="#FFFFFF", text_size=10, 
                                       vertical_alignment=TEXT_ALIGN_TOP,
@@ -224,7 +224,7 @@ class Bubble(gtk.Window):
                        self.close_rect.width, self.close_rect.height)):
             gobject.source_remove(self.timeout_id)
             self.destroy()
-            event_manager.emit("manual-cancelled", (self.window_height))
+            event_manager.emit("manual-cancelled", self)
             return 
             
         for index, rect in enumerate(self.pointer_hand_rectangles):
@@ -243,7 +243,6 @@ class Bubble(gtk.Window):
         return win_x, win_y
     
     def start_destroy_animation(self):
-        self.destroy()
         timeline = Timeline(self.animation_time, CURVE_SINE)
         timeline.connect("update", lambda source, status : self.set_opacity(1 - status))
         timeline.connect("completed", lambda source : self.destroy)
@@ -269,10 +268,10 @@ class Bubble(gtk.Window):
         self.move_up_timeline.run()
         
         
-    def move_down(self, data):
-        db.remove(self.create_time)
+    def move_down(self, send_obj):
+        db.remove(send_obj.create_time)
         if self.level == 2:
-            (move_down_height) = data
+            (move_down_height) = send_obj.window_height
             self.move_up_timeline = Timeline(self.animation_time, CURVE_SINE)
             self.move_up_timeline.connect("update", 
                                           lambda source, status :

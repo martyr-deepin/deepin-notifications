@@ -88,7 +88,7 @@ def render_hyperlink_support_text(obj, cr, markup,
             layout.set_ellipsize(ellipsize)
         else:
             layout.set_width(wrap_width * pango.SCALE)
-            layout.set_wrap(pango.WRAP_WORD)
+            layout.set_wrap(pango.WRAP_WORD_CHAR)
             
         (text_width, text_height) = layout.get_pixel_size()
         
@@ -114,9 +114,9 @@ def render_hyperlink_support_text(obj, cr, markup,
             line_count = layout.get_line_count()
             if line_count > 0:
                 line_height = text_height / line_count
-                cr.rectangle(x, render_y, text_width, line_height * clip_line_count)
+                cr.rectangle(x, render_y, text_width, clip_line_count * line_height)
                 cr.clip()
-            
+                
         # Draw text.
         cr.move_to(x, render_y)
         context.update_layout(layout)

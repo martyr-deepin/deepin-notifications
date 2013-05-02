@@ -54,57 +54,26 @@ def draw_single_mask(cr, x, y, width, height, color_name):
 TIME = 0
 MESSAGE = 1
 
+COUNT_PER_PAGE = 20
 
-class ListviewFactory:
+class ListviewFactory(object):
     '''
     class docs
     '''
 	
-    def __init__(self, items, count_per_page, owner):
+    def __init__(self, items, owner):
         '''
         init docs
         '''
         self.items = [ListViewItem(x) for x in items]
-        self.count_per_page = count_per_page
         self.owner = owner
         self.listview = None
-        self.button_list = []
         
         self.page_count = 0
-        self.page_index = "1"
-        self.last_page_index = "-1"
+        self.page_index = 0
         self.paged_items = self.get_paged_items()
         
-        self.update_listview()
-        self.init_button_list()  
-        event_manager.connect("%s-page-changed" % self.owner, self.on_page_changed)
-        event_manager.emit("%s-page-changed" % self.owner, None)        
-        
-        
-    def init_button_list(self):
-        '''
-        docs
-        '''
-
-        self.prev = Button("&lt;")
-        self.next = Button("&gt;")
-        self.prev.set_size_request(25, 25)
-        self.next.set_size_request(25, 25)
-        self.prev.connect("clicked", self.on_prev_clicked)
-        self.next.connect("clicked", self.on_next_clicked)
-        
-        self.button_list.append(self.prev)
-
-            
-        i = 1
-        while i <= self.page_count:
-            b = Button(str(i))
-            b.set_size_request(25, 25)
-            b.connect("clicked", self.on_num_clicked)
-            self.button_list.append(b)
-            i += 1
-            
-        self.button_list.append(self.next)
+        self.init_listview()
         
         
     def on_listview_button_pressed(self, widget, event, listview):
@@ -141,54 +110,12 @@ class ListviewFactory:
         else:
             widget.window.set_cursor(None)
          
-         
-            
-    def on_num_clicked(self, widget):
-        '''
-        docs
-        '''
-        self.last_page_index = self.page_index
-        self.page_index = widget.label
-        event_manager.emit("%s-page-changed" % self.owner, None)
-    
-    def on_prev_clicked(self, widget):
-        '''
-        docs
-        '''
-        self.last_page_index = self.page_index
-        self.page_index = str(int(self.page_index) - 1)
-        event_manager.emit("%s-page-changed" % self.owner, None)        
-    
-    def on_next_clicked(self, widget):
-        '''
-        docs
-        '''
-        self.last_page_index = self.page_index
-        self.page_index = str(int(self.page_index) + 1)
-        event_manager.emit("%s-page-changed" % self.owner, None)    
-            
-    def on_page_changed(self, data):
-        self.update_listview()
-        if self.page_index == "1":
-            self.prev.set_sensitive(False)
-        if self.page_index == str(self.page_count):
-            self.next.set_sensitive(False)
-        if self.last_page_index == "1":
-            self.prev.set_sensitive(True)
-        if self.last_page_index == str(self.page_count):
-            self.next.set_sensitive(True)
-            
-        for b in self.button_list:
-            if b.label == self.page_index:
-                b.set_sensitive(False)
-            if b.label == self.last_page_index:
-                b.set_sensitive(True)
         
-    def update_listview(self):
+    def init_listview(self):
         '''
         docs
         '''
-        items = self.paged_items[self.page_index]
+        items = self.paged_items[0]
 
         self.listview = TreeView(items)
         self.listview.draw_mask = self.on_listview_draw_mask
@@ -199,6 +126,14 @@ class ListviewFactory:
         self.listview.draw_area.connect_after("button-press-event", self.on_listview_button_pressed, self.listview)
         self.listview.draw_area.connect_after("motion-notify-event", self.on_listview_motion_notify, self.listview)
         self.listview.connect("right-press-items", self.on_listview_right_press_items)
+        self.listview.scrolled_window.connect("vscrollbar-state-changed", self.update_listview)
+        
+    def update_listview(self, widget, state):
+        if state == "bottom":
+            if self.page_index < self.page_count - 1:
+                self.page_index = self.page_index + 1
+                items = self.paged_items[self.page_index]
+                self.listview.add_items(items)
         
     def on_listview_draw_mask(self, cr, x, y, w, h):
         cr.set_source_rgb(1, 1, 1)
@@ -223,16 +158,11 @@ class ListviewFactory:
         paged_items = {}
         
         index = 1
-        cursor = 1
         for item in self.items:
-            if cursor > self.count_per_page:
-                index += 1
-                cursor = 1
-            paged_items.setdefault(str(index), []).append(item)
-            cursor += 1
+            paged_items.setdefault(index / COUNT_PER_PAGE, []).append(item)
+            index += 1
             
-        self.page_count = index
-        
+        self.page_count = len(paged_items)
         return paged_items
         
 
@@ -264,10 +194,8 @@ class BriefViewWindow(DialogBox):
         self.init_items_from_database()
      
         if len(self.items) != 0:
-            self.factory = ListviewFactory(self.items, 6, "brief")
+            self.factory = ListviewFactory(self.items, "brief")
             self.add_listview()
-            self.add_buttons()
-            event_manager.connect("brief-page-changed", self.add_listview)
         else:
             align = gtk.Alignment(0.5, 0.5, 1, 1)
             align.set_padding(0, 0, 150, 0)
@@ -277,14 +205,9 @@ class BriefViewWindow(DialogBox):
         
     def add_listview(self, data=None):
         listview = self.factory.listview
-        container_remove_all(self.body_box)
         self.body_box.pack_start(listview, True, True, 1)
         self.body_box.show_all()
         
-    def add_buttons(self):
-        button_list = self.factory.button_list
-        for button in button_list:
-            self.left_button_box.pack_start(button, False, False, 1)
         
     def init_items_from_database(self):
         '''
@@ -651,6 +574,7 @@ class DetailViewWindow(Window):
         '''
         Window.__init__(self)
         self.set_size_request(WINDOW_WIDTH, WINDOW_HEIGHT)
+        self.set_icon(app_theme.get_pixbuf("icon.png").get_pixbuf())
         self.resizable = False
 
         self.classified_items = None
@@ -805,7 +729,7 @@ class DetailViewWindow(Window):
         container_remove_all(self.listview_box)
         
         if len(items) != 0:
-            self.factory = ListviewFactory(items, 65535, "detail")
+            self.factory = ListviewFactory(items, "detail")
             self.listview = self.factory.listview
             
             self.listview_box.pack_start(self.listview)
