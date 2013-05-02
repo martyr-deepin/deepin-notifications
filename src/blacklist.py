@@ -44,7 +44,6 @@ class Blacklist(object):
             self.bl = cPickle.loads(file_content)
         else:
             self.bl = []
-        self.bl_file.close()
 
     def add(self, black):
         self.bl.append(black)

@@ -30,7 +30,7 @@ from dtk.ui.menu import Menu
 from dtk.ui.draw import draw_text, draw_pixbuf
 from dtk.ui.entry import InputEntry
 from dtk.ui.combo import ComboBox
-from dtk.ui.utils import color_hex_to_cairo, is_in_rect
+from dtk.ui.utils import color_hex_to_cairo, is_in_rect, container_remove_all
 from ui.skin import app_theme
 from ui.utils import render_hyperlink_support_text, draw_line
 from notification_db import db
@@ -38,7 +38,6 @@ from blacklist import blacklist
 from events import event_manager
 
 import gtk
-import cairo
 import pango
 import gobject
 import webbrowser
@@ -65,7 +64,7 @@ class ListviewFactory:
         '''
         init docs
         '''
-        self.items = items
+        self.items = [ListViewItem(x) for x in items]
         self.count_per_page = count_per_page
         self.owner = owner
         self.listview = None
@@ -278,7 +277,7 @@ class BriefViewWindow(DialogBox):
         
     def add_listview(self, data=None):
         listview = self.factory.listview
-        self.body_box.foreach(lambda widget : self.body_box.remove(widget))
+        container_remove_all(self.body_box)
         self.body_box.pack_start(listview, True, True, 1)
         self.body_box.show_all()
         
@@ -294,7 +293,7 @@ class BriefViewWindow(DialogBox):
         rows = db.get_all()
 
         for row in rows:
-            self.items.append(ListViewItem(row))
+            self.items.append(row)
     
         
         
@@ -682,6 +681,7 @@ class DetailViewWindow(Window):
         self.status_bar.set_size_request(100, -1)
         info_area_box_align.add(self.status_bar)
         self.info_area_box.pack_start(info_area_box_align, False, False)
+        
         self.main_box.pack_start(self.titlebar_box, False, False)
         self.main_box.pack_start(self.toolbar_box, False, False)
         self.main_box.pack_start(self.main_view_box, False, False)
@@ -713,7 +713,7 @@ class DetailViewWindow(Window):
 
         for row in rows:
             app_name = row[MESSAGE].app_name
-            self.classified_items.setdefault(app_name, []).append(ListViewItem(row))
+            self.classified_items.setdefault(app_name, []).append(row)
         
             
     def refresh_view(self):
@@ -725,8 +725,8 @@ class DetailViewWindow(Window):
             align = gtk.Alignment(0.5, 0.5, 1, 1)
             align.set_padding(0, 0, 450, 0)
             align.add(Label("(Empty)"))
-            self.treeview_box.foreach(lambda widget : self.treeview_box.remove(widget))
-            self.listview_box.foreach(lambda widget : self.listview_box.remove(widget))
+            container_remove_all(self.treeview_box)
+            container_remove_all(self.listview_box)
             self.listview_box.pack_start(align, True, True)
         self.main_view_box.show_all()
         self.add_toolbar()
@@ -794,7 +794,7 @@ class DetailViewWindow(Window):
         self.treeview.connect("single-click-item", self.on_treeview_click_item)
         self.treeview.connect("right-press-items", self.on_treeview_right_press_items)
         
-        self.treeview_box.foreach(lambda widget : self.treeview_box.remove(widget))
+        container_remove_all(self.treeview_box)
         self.treeview_box.pack_start(self.treeview, True, True)
         self.treeview_box.show_all()
         
@@ -802,12 +802,11 @@ class DetailViewWindow(Window):
         '''
         docs
         '''
-        self.listview_box.foreach(lambda widget : self.listview_box.remove(widget))
+        container_remove_all(self.listview_box)
         
         if len(items) != 0:
             self.factory = ListviewFactory(items, 65535, "detail")
             self.listview = self.factory.listview
-            self.button_list = self.factory.button_list
             
             self.listview_box.pack_start(self.listview)
             
