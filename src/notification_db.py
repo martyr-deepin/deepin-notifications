@@ -94,18 +94,3 @@ if not os.path.exists(app_db_path):
     db = NotificationDB(app_db_path, True)
 else:
     db = NotificationDB(app_db_path, False)
-
-if __name__ == "__main__":
-    db.add("time1", "message1")
-    db.add("time2", "message2")
-    db.add("time3", "message3")
-    db.add("time4", "message4")
-    
-    print db.get_all()
-
-    db.remove("time2")
-    db.remove("time5")
-    
-    print db.get_all()
-    
-    db.close()

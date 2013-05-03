@@ -32,6 +32,7 @@ from dtk.ui.entry import InputEntry
 from dtk.ui.combo import ComboBox
 from dtk.ui.utils import color_hex_to_cairo, is_in_rect, container_remove_all, place_center
 from dtk.ui.skin import SkinWindow
+from dtk.ui.cache_pixbuf import CachePixbuf
 from ui.skin import app_theme
 from ui.utils import render_hyperlink_support_text, draw_line
 from notification_db import db
@@ -213,23 +214,33 @@ class BriefViewWindow(DialogBox):
         
         self.items = []
         self.init_items_from_database()
-     
+        
+        self.align = gtk.Alignment(0.5, 0.5, 1, 1)
+        self.align.connect("expose-event", self.on_main_align_expose)
+        self.body_box.pack_start(self.align, True, True)     
+        
         if len(self.items) != 0:
             self.factory = ListviewFactory(self.items, "brief")
             self.add_listview()
         else:
-            align = gtk.Alignment(0.5, 0.5, 1, 1)
-            align.set_padding(0, 0, 150, 0)
-            align.add(Label("(Empty)"))
-            self.body_box.pack_start(align, True, True)
+            self.align.add(Label("(Empty)"))
             
+        self.body_box.show_all()
+            
+    def on_main_align_expose(self, widget, event):
+        cr = widget.window.cairo_create()
+        rect = widget.allocation
+        
+        cr.rectangle(*rect)
+        cr.set_source_rgb(*STROKE_LINE_COLOR)
+        cr.stroke_preserve()
+        cr.set_source_rgb(1, 1, 1)
+        cr.fill()
         
     def add_listview(self, data=None):
         listview = self.factory.listview
-        self.body_box.pack_start(listview, True, True, 1)
-        self.body_box.show_all()
-        
-        
+        self.align.add(listview)
+
     def init_items_from_database(self):
         '''
         docs
@@ -348,9 +359,11 @@ class ListViewItem(TreeItem):
 WINDOW_WIDTH = 1000
 WINDOW_HEIGHT = 700
 TITLEBAR_HEIGHT = 25
-TOOLBAR_HEIGHT = 50
+TOOLBAR_HEIGHT = 40
 INFO_AREA_HEIGHT = 40
 TOOLBAR_ENTRY_HEIGHT = 24
+
+STROKE_LINE_COLOR = (0.8, 0.8, 0.8)
 
 class ToolbarSep(gtk.HBox):
     
@@ -628,16 +641,17 @@ class DetailViewWindow(Window):
         info_area_box_align.add(self.status_bar)
         self.info_area_box.pack_start(info_area_box_align, False, False)
         
-        self.main_box.pack_start(self.titlebar_box, False, False)
         self.main_box.pack_start(self.toolbar_box, False, False)
         self.main_box.pack_start(self.main_view_box, False, False)
         self.main_box.pack_start(self.info_area_box, False, False)
         
-        main_box_align = gtk.Alignment(1, 1, 1, 1)        
-        main_box_align.set_padding(0, 0, 2, 2)
+        main_box_align = gtk.Alignment(0.5, 0.5, 1, 1)        
+        main_box_align.set_padding(7, 7, 7, 7)
         main_box_align.add(self.main_box)
 
-        self.window_frame.add(main_box_align)
+        self.window_frame.pack_start(self.titlebar_box, False, False)
+        self.window_frame.pack_start(main_box_align)
+        
         event_manager.connect('import-started', self.update_status_bar)
         event_manager.connect('import-finished', self.update_status_bar)
         event_manager.connect('export-started', self.update_status_bar)
@@ -653,6 +667,8 @@ class DetailViewWindow(Window):
         self.refresh_btn_pixbuf = gtk.gdk.pixbuf_new_from_file(app_theme.get_theme_file_path("image/msg_white1.png"))
         
         self.skin_preview_pixbuf = app_theme.get_pixbuf("frame.png")
+        self.toolbar_bg_pixbuf = app_theme.get_pixbuf("bar.png")
+        self.cache_toolbar_bg_pixbuf = CachePixbuf()
         
     def __init_data(self):
         self.classified_items = {}
@@ -669,8 +685,7 @@ class DetailViewWindow(Window):
             self.add_treeview()        
             self.add_listview(self.get_items_from_treeview_highlight())        
         else:
-            align = gtk.Alignment(0.5, 0.5, 1, 1)
-            align.set_padding(0, 0, 450, 0)
+            align = gtk.Alignment(0.5, 0.5, 0, 0)
             align.add(Label("(Empty)"))
             container_remove_all(self.treeview_box)
             container_remove_all(self.listview_box)
@@ -683,17 +698,23 @@ class DetailViewWindow(Window):
         cr = widget.window.cairo_create()
         rect = widget.allocation
         
-        cr.set_source_rgb(1, 1, 1)
         cr.rectangle(*rect)
+        cr.set_source_rgb(*STROKE_LINE_COLOR)
+        cr.stroke_preserve()
+        cr.set_source_rgb(1, 1, 1)
         cr.fill()
         
     def on_toolbar_expose_event(self, widget, event):    
         cr = widget.window.cairo_create()
         rect = widget.allocation
         
-        cr.set_source_rgb(0.8, 0.8, 0.8)
+        cr.set_source_rgb(*STROKE_LINE_COLOR)
         cr.rectangle(*rect)
-        cr.fill()
+        cr.stroke()
+        
+        self.cache_toolbar_bg_pixbuf.scale(self.toolbar_bg_pixbuf.get_pixbuf(), rect.width, rect.height)
+        cr.set_source_pixbuf(self.cache_toolbar_bg_pixbuf.get_cache(), rect.x, rect.y)
+        cr.paint()
         
     def on_treeview_draw_mask(self, cr, x, y, w, h):    
         cr.set_source_rgb(1, 1, 1)
@@ -810,8 +831,7 @@ class DetailViewWindow(Window):
     def add_toolbar(self):
         
         toolbar_btn_box = gtk.HBox()
-        toolbar_btn_box_align = gtk.Alignment(0.5, 0.5, 1, 1)
-        toolbar_btn_box_align.set_padding(10, 10, 0, 0)
+        toolbar_btn_box_align = gtk.Alignment(0.5, 0.5, 0, 0)
         
         import_btn = ToolbarItem(self.import_btn_pixbuf, "Import")
         import_btn.connect("clicked", self.on_toolbar_import_clicked)
