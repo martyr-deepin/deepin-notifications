@@ -790,7 +790,7 @@ class DetailViewWindow(Window):
     
     def add_titlebar(self, 
                      button_mask=["theme", "min", "max", "close"],
-                     icon_dpixbuf=None, 
+                     icon_path=None, 
                      app_name="Message Manager", 
                      title=None, 
                      add_separator=False, 
@@ -800,7 +800,7 @@ class DetailViewWindow(Window):
 
         # Init titlebar.
         self.titlebar = Titlebar(button_mask, 
-                                 icon_dpixbuf, 
+                                 icon_path, 
                                  app_name, 
                                  title, 
                                  add_separator, 
