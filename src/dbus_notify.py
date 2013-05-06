@@ -141,13 +141,7 @@ class Notifications(DBusProperty, DBusIntrospectable, dbus.service.Object):
         event_manager.emit("notify", notify_storage)
         
         # print app_name, replaces_id, icon, summary, body, actions, hints, timeout
-        self.id_cursor += self.id_cursor
-        return self.id_cursor
+        self.id_cursor += 1
         
-if __name__ == "__main__":        
-    import dbus, dbus.mainloop.glib, gtk
-    dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
-    dbus.mainloop.glib.threads_init()
-    dbus.mainloop.glib.gthreads_init()
-    a = Notifications()
-    gtk.main()
+        # return dbus.Int32(self.id_cursor)
+        return self.id_cursor

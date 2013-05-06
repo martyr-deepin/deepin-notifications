@@ -31,6 +31,11 @@ from dtk.ui.constant import DEFAULT_FONT, DEFAULT_FONT_SIZE
 
 from ui.skin import app_theme
 
+def root_coords_to_widget_coords(root_x, root_y, widget):
+    (widget_x, widget_y) = widget.get_position()
+    
+    return (int(root_x - widget_x), int(root_y - widget_y))
+
 def get_screen_size():
     root_window = gtk.gdk.get_default_root_window()
     return root_window.get_size()

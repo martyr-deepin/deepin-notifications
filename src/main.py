@@ -30,6 +30,9 @@ from blacklist import blacklist
 from collections import deque
 from datetime import datetime
 
+
+from ui.traypop import TrayPop
+
 class DeepinNotification(object):
     def __init__(self):
         

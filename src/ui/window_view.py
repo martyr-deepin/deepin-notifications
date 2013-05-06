@@ -635,7 +635,7 @@ class DetailViewWindow(Window):
 
         self.info_area_box = gtk.HBox()
         info_area_box_align = gtk.Alignment(0.5, 0.5, 1, 1)
-        info_area_box_align.set_padding(5, 0, 100, 0)
+        info_area_box_align.set_padding(6, 0, 100, 0)
         self.status_bar = Label()
         self.status_bar.set_size_request(100, -1)
         info_area_box_align.add(self.status_bar)
@@ -651,13 +651,6 @@ class DetailViewWindow(Window):
 
         self.window_frame.pack_start(self.titlebar_box, False, False)
         self.window_frame.pack_start(main_box_align)
-        
-        event_manager.connect('import-started', self.update_status_bar)
-        event_manager.connect('import-finished', self.update_status_bar)
-        event_manager.connect('export-started', self.update_status_bar)
-        event_manager.connect('export-finished', self.update_status_bar)
-        event_manager.connect('deleted', self.update_status_bar)
-        event_manager.connect('refresh', self.update_status_bar)
         
 
     def __init_pixbuf(self):
@@ -920,24 +913,28 @@ class DetailViewWindow(Window):
         self.add_listview(list(search_result_iter))
         
     def on_toolbar_import_clicked(self, widget):
-        event_manager.emit("import-started", "Import Started")
         
         def ok_clicked(filename):
             db.import_db(filename)
+            self.update_status_bar("Import finished, congratulations!")
+            
+        def cancel_clicked():
+            self.update_status_bar("Import cancelled.")
             
         OpenFileDialog("File To Import:", self, ok_clicked, None)
         
-        event_manager.emit("import-finished", "Import Finished")
         
     def on_toolbar_export_clicked(self, widget):
-        event_manager.emit("export-started", "Export Started")
         
         def ok_clicked(filename):
             db.export_db(filename)
-        
+            event_manager.emit("export-finished", "Export Finished")
+            
+        def cancel_clicked():
+            self.update_status_bar("Export cancelled.")
+            
         SaveFileDialog("File To Export:", self, ok_clicked, None)
         
-        event_manager.emit("export-finished", "Export Finished")
         
     def on_toolbar_delete_clicked(self, widget):
         def on_ok_clicked():
@@ -961,8 +958,11 @@ class DetailViewWindow(Window):
         
         
     def update_status_bar(self, message):
-        self.status_bar.text = ""
+        def pop_message():
+            self.status_bar.text = ""
         self.status_bar.text = message
+        
+        gobject.timeout_add(pop_message, 3000)
             
     
     def close_callback(self, widget):
