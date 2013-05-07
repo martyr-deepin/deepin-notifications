@@ -21,7 +21,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from dtk.ui.dialog import DialogBox, DIALOG_MASK_GLASS_PAGE, OpenFileDialog, SaveFileDialog, ConfirmDialog
-from dtk.ui.button import ImageButton, Button
+from dtk.ui.button import ImageButton
 from dtk.ui.treeview import TreeView, TreeItem
 from dtk.ui.window import Window
 from dtk.ui.titlebar import Titlebar
@@ -39,10 +39,12 @@ from notification_db import db
 from blacklist import blacklist
 from events import event_manager
 
+
 import gtk
 import pango
 import gobject
 import webbrowser
+import itertools
 from datetime import datetime, timedelta
 
 
@@ -179,7 +181,7 @@ class ListviewFactory(object):
     def get_paged_items(self):
         paged_items = {}
         
-        index = 1
+        index = 0
         for item in self.items:
             paged_items.setdefault(index / COUNT_PER_PAGE, []).append(item)
             index += 1

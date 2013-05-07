@@ -143,5 +143,4 @@ class Notifications(DBusProperty, DBusIntrospectable, dbus.service.Object):
         # print app_name, replaces_id, icon, summary, body, actions, hints, timeout
         self.id_cursor += 1
         
-        # return dbus.Int32(self.id_cursor)
-        return self.id_cursor
+        return dbus.Int32(self.id_cursor)

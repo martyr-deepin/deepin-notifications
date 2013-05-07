@@ -140,8 +140,8 @@ def get_pointer_hand_rectangles(obj, text, pango_layout, render_x, render_y):
         start_index = text.find("<u>", start_index) + 1
         end_index = text.find("</u>", end_index) + 1
         
-        start = start_index - record * (4 + 3)
-        end = end_index - (record + 1) * 3 - record * 4
+        start = start_index - record * (4 + 3) - 1
+        end = end_index - (record + 1) * 3 - record * 4 - 1
         
         u_start_index.append(start)
         u_end_index.append(end)

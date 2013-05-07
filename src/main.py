@@ -60,6 +60,8 @@ class DeepinNotification(object):
 
         if message.app_name not in blacklist.bl:
             self.notification_queue.append(Bubble(message, height, create_time))
+            trayicon.unread_items.append((message, create_time))
+            
         db.add(create_time, message)
         trayicon.set_pixbuf_from_file("msg_white2.png")
 

@@ -206,7 +206,6 @@ class Bubble(gtk.Window):
                                       text_color="#FFFFFF", text_size=10, 
                                       vertical_alignment=TEXT_ALIGN_TOP,
                                       clip_line_count=2)
-
         
 
     def on_motion_notify_event(self, widget, event):
