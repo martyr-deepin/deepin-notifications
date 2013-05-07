@@ -1,3 +1,4 @@
+
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
@@ -202,58 +203,7 @@ class ListviewFactory(object):
         '''
         return sorted(items, key=lambda item : item.time, reverse=reverse)
         
-
-class BriefViewWindow(DialogBox):
-    '''
-    class docs
-    '''
-	
-    def __init__(self):
-        '''
-        init docs
-        '''
-        DialogBox.__init__(self, "MessageView", 370, 400, mask_type=DIALOG_MASK_GLASS_PAGE, close_callback=self.hide_all)
-        
-        self.items = []
-        self.init_items_from_database()
-        
-        self.align = gtk.Alignment(0.5, 0.5, 1, 1)
-        self.align.connect("expose-event", self.on_main_align_expose)
-        self.body_box.pack_start(self.align, True, True)     
-        
-        if len(self.items) != 0:
-            self.factory = ListviewFactory(self.items, "brief")
-            self.add_listview()
-        else:
-            self.align.add(Label("(Empty)"))
-            
-        self.body_box.show_all()
-            
-    def on_main_align_expose(self, widget, event):
-        cr = widget.window.cairo_create()
-        rect = widget.allocation
-        
-        cr.rectangle(*rect)
-        cr.set_source_rgb(*STROKE_LINE_COLOR)
-        cr.stroke_preserve()
-        cr.set_source_rgb(1, 1, 1)
-        cr.fill()
-        
-    def add_listview(self, data=None):
-        listview = self.factory.listview
-        self.align.add(listview)
-
-    def init_items_from_database(self):
-        '''
-        docs
-        '''
-        rows = db.get_all()
-
-        for row in rows:
-            self.items.append(row)
     
-        
-        
 class ListViewItem(TreeItem):
     '''
     class docs
@@ -429,7 +379,7 @@ class ToolbarItem(gtk.Button):
         cr.rectangle(*rect)
         cr.fill()
         
-        draw_pixbuf(cr, self.pixbuf, rect.x, rect.y + 10)
+        draw_pixbuf(cr, self.pixbuf, rect.x, rect.y + 5)
         
         (pixbuf_width, pixbuf_height) = self.get_pixbuf_size()
         draw_text(cr, self.content,
@@ -463,6 +413,8 @@ class SearchEntry(InputEntry):
         
 gobject.type_register(SearchEntry)        
 
+pixbuf_blacklist_white = app_theme.get_pixbuf("blacklist_white.png").get_pixbuf()
+pixbuf_blacklist_grey = app_theme.get_pixbuf("blacklist_grey.png").get_pixbuf()
 
 class TreeViewItem(TreeItem):
     
@@ -493,7 +445,7 @@ class TreeViewItem(TreeItem):
         else:    
             self.row_index = 1
             
-        self.child_offset = 10
+        self.child_offset = 15
     
     def get_title(self):
         return self.title
@@ -656,10 +608,10 @@ class DetailViewWindow(Window):
         
 
     def __init_pixbuf(self):
-        self.import_btn_pixbuf = gtk.gdk.pixbuf_new_from_file(app_theme.get_theme_file_path("image/msg_white1.png"))
-        self.export_btn_pixbuf = gtk.gdk.pixbuf_new_from_file(app_theme.get_theme_file_path("image/msg_white1.png"))
-        self.delete_btn_pixbuf = gtk.gdk.pixbuf_new_from_file(app_theme.get_theme_file_path("image/msg_white1.png"))
-        self.refresh_btn_pixbuf = gtk.gdk.pixbuf_new_from_file(app_theme.get_theme_file_path("image/msg_white1.png"))
+        self.import_btn_pixbuf = gtk.gdk.pixbuf_new_from_file(app_theme.get_theme_file_path("image/toolbar_import.png"))
+        self.export_btn_pixbuf = gtk.gdk.pixbuf_new_from_file(app_theme.get_theme_file_path("image/toolbar_export.png"))
+        self.delete_btn_pixbuf = gtk.gdk.pixbuf_new_from_file(app_theme.get_theme_file_path("image/toolbar_delete.png"))
+        self.refresh_btn_pixbuf = gtk.gdk.pixbuf_new_from_file(app_theme.get_theme_file_path("image/toolbar_refresh.png"))
         
         self.skin_preview_pixbuf = app_theme.get_pixbuf("frame.png")
         self.toolbar_bg_pixbuf = app_theme.get_pixbuf("bar.png")

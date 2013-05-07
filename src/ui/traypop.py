@@ -28,11 +28,11 @@ from dtk.ui.button import Button
 from dtk.ui.draw import draw_text, draw_hlinear
 from dtk.ui.utils import propagate_expose, color_hex_to_cairo, container_remove_all, is_in_rect
 
-
 import gtk
 import cairo
 import pango
 
+from ui.window_view import DetailViewWindow
 from ui.utils import root_coords_to_widget_coords, render_hyperlink_support_text
 
 ARROW_WIDHT = 10
@@ -46,6 +46,8 @@ LIST_CONTENT_HEIGHT = 50
 LIST_TIME_WIDTH = 100
 
 COUNT_PER_PAGE = 2
+
+COLOR_BLUE = "#d2f9fe"
 
 class ListItem(gtk.EventBox):
     '''
@@ -78,7 +80,7 @@ class ListItem(gtk.EventBox):
         cr.translate(rect.x, rect.y) # only the toplevel window has the gtk.gdk.window? all cr location is relative to it?
         
         draw_round_rectangle(cr, 0, 0, rect.width, rect.height, 5)
-        cr.set_source_rgb(*color_hex_to_cairo("#d2f9fe"))
+        cr.set_source_rgb(*color_hex_to_cairo(COLOR_BLUE))
         cr.fill()
         
         render_hyperlink_support_text(self, cr, self.message.body, 
@@ -106,10 +108,7 @@ class ListItem(gtk.EventBox):
         
         
         for rect in self.pointer_hand_rectangles:
-            print x, y , rect
-            print is_in_rect((x + 5, y + 5), rect)
             if is_in_rect((x, y), rect):
-                print "yes"
                 flag = True
                 break
             
@@ -163,7 +162,6 @@ class ViewFlipper(gtk.VBox):
             self.paged_items.setdefault(index / COUNT_PER_PAGE + 1, []).append(item)
             index += 1
             
-        print self.paged_items
         self.page_count = len(self.paged_items) or 1
         
         
@@ -247,8 +245,11 @@ class TrayPop(gtk.Window):
         
         self.view_flipper = ViewFlipper(items)
         self.flipper_align = gtk.Alignment(0.5, 0.5, 1, 1)
+        self.flipper_align.connect("expose-event", self.on_flipper_align_expose)
         self.flipper_align.set_padding(5, 5, 10, 10)
         self.flipper_align.add(self.view_flipper)
+        
+        self.on_open_message_manager()
         
         footer_box = gtk.HBox()
         self.left_button = Button("&lt;")
@@ -257,8 +258,9 @@ class TrayPop(gtk.Window):
         self.right_button = Button("&gt;")
         self.right_button.set_size_request(50, 20)
         self.right_button.connect("clicked", self.on_right_btn_clicked)        
-        footer_box.pack_start(self.left_button, False, False, 2)
-        footer_box.pack_end(self.right_button, False, False, 2)
+
+        footer_box.pack_start(self.left_button, False, False, 5)
+        footer_box.pack_end(self.right_button, False, False, 5)
         
         main_box.pack_start(header_box, False, False, 5)
         main_box.pack_start(self.flipper_align)
@@ -266,6 +268,17 @@ class TrayPop(gtk.Window):
         
         self.add(main_box_align)
         
+        
+    def on_flipper_align_expose(self, widget, event):
+        cr = widget.window.cairo_create()
+        rect = widget.allocation
+        
+        draw_hlinear(cr, rect.x, rect.y + rect.height, rect.width, 1, [(0, ("#ffffff", 0)),
+                                                                       (0.5, ("#2b2b2b", 0.5)), 
+                                                                       (1, ("#ffffff", 0))])
+
+    def on_open_message_manager(self):
+        DetailViewWindow().show_all()
         
     def on_left_btn_clicked(self, widget):
         self.view_flipper.flip_backward()

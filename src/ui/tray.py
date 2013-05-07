@@ -24,9 +24,7 @@
 import gtk
 from ui.skin import app_theme
 from ui.traypop import TrayPop
-from dtk.ui.menu import Menu
 
-from ui.window_view import BriefViewWindow, DetailViewWindow
 from events import event_manager
 
 
