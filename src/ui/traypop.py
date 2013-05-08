@@ -26,7 +26,7 @@ from dtk.ui.draw import draw_round_rectangle
 from dtk.ui.label import Label
 from dtk.ui.button import Button
 from dtk.ui.draw import draw_text, draw_hlinear
-from dtk.ui.utils import propagate_expose, color_hex_to_cairo, container_remove_all, is_in_rect
+from dtk.ui.utils import propagate_expose, color_hex_to_cairo, container_remove_all, is_in_rect, alpha_color_hex_to_cairo
 from dtk.ui.popup_grab_window import PopupGrabWindow, wrap_grab_window
 
 
@@ -214,50 +214,6 @@ class ViewFlipper(gtk.VBox):
         self.content_box.show_all()
         
         
-# pointer_grab_window = gtk.Window(gtk.WINDOW_POPUP)
-# invisible_window(pointer_grab_window)
-# pointer_grab_window.registered_pop = None
-# pointer_grab_window.show()
-
-# def pointer_grab_window_grab():
-#     pointer_grab_window.grab_add()
-#     gtk.gdk.pointer_grab(
-#         pointer_grab_window.window, 
-#         True,
-#         gtk.gdk.BUTTON_PRESS_MASK | gtk.gdk.POINTER_MOTION_MASK,
-#         None, None, gtk.gdk.CURRENT_TIME)
-    
-#     print "grab"
-    
-# def pointer_grab_window_ungrab():
-#     pointer_grab_window.grab_remove()
-#     gtk.gdk.pointer_ungrab(gtk.gdk.CURRENT_TIME)
-
-#     print "ungrab"
-
-# def pointer_grab_window_button_press(widget, event):
-#     ex, ey =  event.x, event.y
-#     registered_pop = widget.registered_pop
-    
-#     if registered_pop:
-#         rect = registered_pop.allocation
-        
-#         if not is_in_rect((ex, ey), rect):
-#             registered_pop.dismiss()
-            
-# def pointer_grab_window_motion_notify(widget, event):
-#     ex, ey =  event.x, event.y
-#     registered_pop = widget.registered_pop
-    
-#     if registered_pop:
-#         rect = registered_pop.allocation
-        
-#         if is_in_rect((ex, ey), rect):
-#             pointer_grab_window_ungrab()
-        
-    
-# pointer_grab_window.connect("button-press-event", pointer_grab_window_button_press)
-# pointer_grab_window.connect("motion-notify-event", pointer_grab_window_motion_notify)
 
 
 
@@ -346,15 +302,21 @@ class TrayPop(gtk.Window):
         cr = widget.window.cairo_create()
         rect = widget.allocation
         
-        cr.set_source_rgb(1, 1, 1)        
-        
         cr.set_operator(cairo.OPERATOR_CLEAR)
         cr.rectangle(*rect)
         cr.fill()
     
         cr.set_operator(cairo.OPERATOR_SOURCE)
         draw_round_rectangle(cr, rect.x, rect.y, rect.width, rect.height - ARROW_HEIGHT, 10)
+        cr.set_source_rgb(1, 1, 1)   
         cr.fill()
+        
+        #draw alpha border to realize the effect like background blur
+        draw_round_rectangle(cr, rect.x, rect.y, rect.width, rect.height - ARROW_HEIGHT, 10)
+        cr.set_source_rgba(*alpha_color_hex_to_cairo(("#b2b2b2", 0.5)))
+        cr.set_line_width(3)
+        cr.stroke()
+        
         
         # trayicon's location is relavant to root, but cairo need coordinates related to this widget.
         (self.x, self.y) = root_coords_to_widget_coords(self.x, self.y, self)
