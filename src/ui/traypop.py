@@ -27,6 +27,8 @@ from dtk.ui.label import Label
 from dtk.ui.button import Button
 from dtk.ui.draw import draw_text, draw_hlinear
 from dtk.ui.utils import propagate_expose, color_hex_to_cairo, container_remove_all, is_in_rect
+from dtk.ui.popup_grab_window import PopupGrabWindow, wrap_grab_window
+
 
 import gtk
 import cairo
@@ -211,6 +213,53 @@ class ViewFlipper(gtk.VBox):
             self.content_box.pack_start(ListItem(*item), False, False, 2)
         self.content_box.show_all()
         
+        
+# pointer_grab_window = gtk.Window(gtk.WINDOW_POPUP)
+# invisible_window(pointer_grab_window)
+# pointer_grab_window.registered_pop = None
+# pointer_grab_window.show()
+
+# def pointer_grab_window_grab():
+#     pointer_grab_window.grab_add()
+#     gtk.gdk.pointer_grab(
+#         pointer_grab_window.window, 
+#         True,
+#         gtk.gdk.BUTTON_PRESS_MASK | gtk.gdk.POINTER_MOTION_MASK,
+#         None, None, gtk.gdk.CURRENT_TIME)
+    
+#     print "grab"
+    
+# def pointer_grab_window_ungrab():
+#     pointer_grab_window.grab_remove()
+#     gtk.gdk.pointer_ungrab(gtk.gdk.CURRENT_TIME)
+
+#     print "ungrab"
+
+# def pointer_grab_window_button_press(widget, event):
+#     ex, ey =  event.x, event.y
+#     registered_pop = widget.registered_pop
+    
+#     if registered_pop:
+#         rect = registered_pop.allocation
+        
+#         if not is_in_rect((ex, ey), rect):
+#             registered_pop.dismiss()
+            
+# def pointer_grab_window_motion_notify(widget, event):
+#     ex, ey =  event.x, event.y
+#     registered_pop = widget.registered_pop
+    
+#     if registered_pop:
+#         rect = registered_pop.allocation
+        
+#         if is_in_rect((ex, ey), rect):
+#             pointer_grab_window_ungrab()
+        
+    
+# pointer_grab_window.connect("button-press-event", pointer_grab_window_button_press)
+# pointer_grab_window.connect("motion-notify-event", pointer_grab_window_motion_notify)
+
+
 
 class TrayPop(gtk.Window):
     '''
@@ -232,6 +281,8 @@ class TrayPop(gtk.Window):
         self.__init_view(items)
         
         self.connect("expose-event", self.on_expose_event)
+        
+        wrap_grab_window(pop_tray_window, self)
         
     def __init_view(self, items):
         main_box = gtk.VBox()
@@ -316,6 +367,9 @@ class TrayPop(gtk.Window):
         cr.close_path()        
         cr.fill()
 
-        
         propagate_expose(widget, event)
+        
         return True
+    
+    
+pop_tray_window = PopupGrabWindow(TrayPop)        

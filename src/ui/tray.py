@@ -47,12 +47,20 @@ class TrayIcon(gtk.StatusIcon):
         self.pixbuf_file_name = file_name
         self.set_from_pixbuf(app_theme.get_pixbuf(self.pixbuf_file_name).get_pixbuf())
         
+        
+    def generate_traypop_position(self):
+        x, y, not_important = gtk.status_icon_position_menu(gtk.Menu(), self)
+        
+        return x + 7, y - 25
             
+    
     def on_show_unread(self, data):
         '''
         docs
         '''                     
-        TrayPop(1000, 500, self.unread_items).show_all()
+        x, y = self.generate_traypop_position()
+        
+        TrayPop(x, y, self.unread_items).show_all()
         
         if self.pixbuf_file_name == "msg_white2.png":
             self.set_pixbuf_from_file("msg_white1.png")
