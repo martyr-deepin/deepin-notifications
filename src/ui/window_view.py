@@ -418,7 +418,7 @@ pixbuf_blacklist_grey = app_theme.get_pixbuf("blacklist_grey.png").get_pixbuf()
 
 class TreeViewItem(TreeItem):
     
-    def __init__(self, title, is_parent=False):
+    def __init__(self, title, is_parent=False, is_in_blacklist=False):
         '''
         init docs
         '''
@@ -439,11 +439,13 @@ class TreeViewItem(TreeItem):
         self.is_highlight = False
         
         self.is_parent = is_parent
+        self.is_in_blacklist = is_in_blacklist
         
         if is_parent:
             self.row_index = 0
         else:    
             self.row_index = 1
+            
             
         self.child_offset = 15
     
@@ -510,13 +512,30 @@ class TreeViewItem(TreeItem):
         else:        
             text_color = "#000000"
             
+        pixbuf_width = 18            
+        
         if not self.is_parent:    
             rect.x += self.child_offset
             rect.width -= self.child_offset
             
-        temp_text = self.title if self.is_parent else "-" + self.title
+            if self.is_in_blacklist:
+                if self.is_highlight:
+                    self.pixbuf = pixbuf_blacklist_white
+                else:
+                    self.pixbuf = pixbuf_blacklist_grey
+            else:
+                self.pixbuf = None
+        
+            if self.pixbuf:
+                draw_pixbuf(cr, self.pixbuf, rect.x + self.draw_padding_x, rect.y + 5)
+        else:
+             pixbuf_width = 0
+            
+        temp_text = self.title if self.is_parent else " - " + self.title
+        text_color = "#0000ff" if self.is_parent else "#000000"
+        
         draw_text(cr, temp_text,
-                  rect.x + self.draw_padding_x, 
+                  rect.x + self.draw_padding_x + pixbuf_width, 
                   rect.y,
                   rect.width - self.draw_padding_x * 2, 
                   rect.height, 
@@ -683,12 +702,18 @@ class DetailViewWindow(Window):
         if not current_item.is_parent:
             def on_add_to_bl():
                 blacklist.add(current_item.title)
+                current_item.is_in_blacklist = True
+                current_item.emit_redraw_request()
             def on_remove_from_bl():
                 blacklist.remove(current_item.title)
+                current_item.is_in_blacklist = False
+                current_item.emit_redraw_request()
             
-            menu_items = [(None, "Add to Blacklist", on_add_to_bl)]
+            menu_items = []
             if current_item.title in blacklist.bl:
                 menu_items.append((None, "Remove from Blacklist", on_remove_from_bl))
+            else:
+                menu_items.append((None, "Add to Blacklist", on_add_to_bl))
     
             Menu(menu_items, True).show((int(root_x), int(root_y)))
         
@@ -698,6 +723,7 @@ class DetailViewWindow(Window):
         items = self.classified_items.keys()
 
         eles = [TreeViewItem(item) for item in items]
+        eles[0].is_in_blacklist = True
         root_ele_software = TreeViewItem("Software Messages", True)
         self.treeview = TreeView([root_ele_software], expand_column=0)
         root_ele_software.add_child_items(eles)        
