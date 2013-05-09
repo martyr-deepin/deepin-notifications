@@ -422,6 +422,9 @@ gobject.type_register(SearchEntry)
 pixbuf_blacklist_white = app_theme.get_pixbuf("blacklist_white.png").get_pixbuf()
 pixbuf_blacklist_grey = app_theme.get_pixbuf("blacklist_grey.png").get_pixbuf()
 
+pixbuf_arrow_down = app_theme.get_pixbuf("down_normal.png").get_pixbuf()
+pixbuf_arrow_right = app_theme.get_pixbuf("right_normal.png").get_pixbuf()
+
 class TreeViewItem(TreeItem):
     
     def __init__(self, title, is_parent=False, is_in_blacklist=False):
@@ -491,7 +494,7 @@ class TreeViewItem(TreeItem):
     def unexpand(self):
         self.is_expand = False
         
-        self.delete_chlid_item(self.child_items)
+        self.delete_items_callback(self.child_items)
     
         if self.redraw_request_callback:
             self.redraw_request_callback(self)
@@ -515,33 +518,38 @@ class TreeViewItem(TreeItem):
                 text_color = "#FFFFFF"
             else:    
                 text_color = "#000000"
-        else:        
-            text_color = "#000000"
             
-        pixbuf_width = 18            
-        
+        left_pixbuf_width = 18            
         if not self.is_parent:    
             rect.x += self.child_offset
             rect.width -= self.child_offset
             
             if self.is_in_blacklist:
                 if self.is_highlight:
-                    self.pixbuf = pixbuf_blacklist_white
+                    pixbuf = pixbuf_blacklist_white
                 else:
-                    self.pixbuf = pixbuf_blacklist_grey
+                    pixbuf = pixbuf_blacklist_grey
             else:
-                self.pixbuf = None
+                pixbuf = None
         
-            if self.pixbuf:
-                draw_pixbuf(cr, self.pixbuf, rect.x + self.draw_padding_x, rect.y + 5)
+            if pixbuf:
+                draw_pixbuf(cr, pixbuf, rect.x + self.draw_padding_x, rect.y + 5)
         else:
-             pixbuf_width = 0
+            left_pixbuf_width = 0
+            
+            if self.is_expand:
+                pixbuf = pixbuf_arrow_down
+            else:
+                pixbuf = pixbuf_arrow_right
+                
+            draw_pixbuf(cr, pixbuf, rect.x + rect.width - 80, rect.y + 10)
+
             
         temp_text = self.title if self.is_parent else " - " + self.title
         text_color = "#0000ff" if self.is_parent else "#000000"
         
         draw_text(cr, temp_text,
-                  rect.x + self.draw_padding_x + pixbuf_width, 
+                  rect.x + self.draw_padding_x + left_pixbuf_width, 
                   rect.y,
                   rect.width - self.draw_padding_x * 2, 
                   rect.height, 
@@ -588,7 +596,6 @@ class DetailViewWindow(Window):
         '''
         Window.__init__(self)
         self.set_size_request(WINDOW_WIDTH, WINDOW_HEIGHT)
-        self.set_icon(app_theme.get_pixbuf("icon.png").get_pixbuf())
         self.resizable = True
 
         self.classified_items = None
@@ -700,6 +707,13 @@ class DetailViewWindow(Window):
             
             self.add_listview(self.get_items_from_treeview_highlight())
             
+    def on_treeview_double_click_item(self, widget, item, column, x, y):
+        if item.is_parent:
+            if item.is_expand:
+                item.unexpand()
+            else:
+                item.expand()
+            
     def on_treeview_right_press_items(self, widget, root_x, root_y, current_item, select_items):
         '''
         docs
@@ -737,9 +751,11 @@ class DetailViewWindow(Window):
         
         self.treeview.set_highlight_item(eles[0])
 
-        self.treeview.set_size_request(250, -1)
+        self.treeview.set_size_request(220, -1)
         self.treeview.connect("single-click-item", self.on_treeview_click_item)
         self.treeview.connect("right-press-items", self.on_treeview_right_press_items)
+        self.treeview.connect("double-click-item", self.on_treeview_double_click_item)
+
         
         container_remove_all(self.treeview_box)
         self.treeview_box.pack_start(self.treeview, True, True)
@@ -769,7 +785,7 @@ class DetailViewWindow(Window):
     
     def add_titlebar(self, 
                      button_mask=["theme", "min", "max", "close"],
-                     icon_path=None, 
+                     icon_path=app_theme.get_theme_file_path("image/icon_little.png"),
                      app_name="Message Manager", 
                      title=None, 
                      add_separator=False, 
