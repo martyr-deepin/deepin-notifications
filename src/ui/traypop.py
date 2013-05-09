@@ -26,13 +26,13 @@ from dtk.ui.draw import draw_round_rectangle
 from dtk.ui.label import Label
 from dtk.ui.button import Button
 from dtk.ui.draw import draw_text, draw_hlinear
-from dtk.ui.utils import propagate_expose, color_hex_to_cairo, container_remove_all, is_in_rect, alpha_color_hex_to_cairo
-from dtk.ui.popup_grab_window import PopupGrabWindow, wrap_grab_window
-
+from dtk.ui.utils import (propagate_expose, color_hex_to_cairo, container_remove_all,
+                          is_in_rect, alpha_color_hex_to_cairo)
 
 import gtk
 import cairo
 import pango
+import gobject
 
 from ui.window_view import DetailViewWindow
 from ui.utils import root_coords_to_widget_coords, render_hyperlink_support_text
@@ -190,9 +190,12 @@ class ViewFlipper(gtk.VBox):
         cr = widget.window.cairo_create()
         rect = widget.allocation
         
+        cr.set_source_rgb(0, 0, 0)
+        cr.rectangle(rect.x, rect.y, rect.width, 1)
+        cr.fill()
+        
         width_average = rect.width / self.page_count
         cr.rectangle(rect.x + (self.index - 1) * width_average, rect.y, width_average, rect.height)
-        cr.set_source_rgb(0, 0, 1)
         cr.fill()
         
     def flip_forward(self):
@@ -238,7 +241,7 @@ class TrayPop(gtk.Window):
         
         self.connect("expose-event", self.on_expose_event)
         
-        wrap_grab_window(pop_tray_window, self)
+
         
     def __init_view(self, items):
         main_box = gtk.VBox()
@@ -248,15 +251,17 @@ class TrayPop(gtk.Window):
         
         header_box = gtk.HBox()
         title_label = Label("Message View")
+        manager_label = Label("<u>Open Message Manager</u>")
+        manager_label.add_events(gtk.gdk.BUTTON_PRESS_MASK)
+        manager_label.connect("button-press-event", self.on_open_message_manager)
         header_box.pack_start(title_label, False, False)
+        header_box.pack_end(manager_label, False, False)
         
         self.view_flipper = ViewFlipper(items)
         self.flipper_align = gtk.Alignment(0.5, 0.5, 1, 1)
         self.flipper_align.connect("expose-event", self.on_flipper_align_expose)
         self.flipper_align.set_padding(5, 5, 10, 10)
         self.flipper_align.add(self.view_flipper)
-        
-        self.on_open_message_manager()
         
         footer_box = gtk.HBox()
         self.left_button = Button("&lt;")
@@ -283,8 +288,37 @@ class TrayPop(gtk.Window):
         draw_hlinear(cr, rect.x, rect.y + rect.height, rect.width, 1, [(0, ("#ffffff", 0)),
                                                                        (0.5, ("#2b2b2b", 0.5)), 
                                                                        (1, ("#ffffff", 0))])
+        
+    def pointer_grab(self):
+        gtk.gdk.pointer_grab(
+            self.window,
+            True,
+            gtk.gdk.BUTTON_PRESS_MASK,
+            None,
+            None,
+            gtk.gdk.CURRENT_TIME)
+        
+        gtk.gdk.keyboard_grab(
+                self.window, 
+                owner_events=False, 
+                time=gtk.gdk.CURRENT_TIME)
+        
+        self.grab_add()
+        self.connect("button-press-event", self.on_button_press)
+        
+    def pointer_ungrab(self):
+        gtk.gdk.pointer_ungrab(gtk.gdk.CURRENT_TIME)
+        gtk.gdk.keyboard_ungrab(gtk.gdk.CURRENT_TIME)
+        self.grab_remove()
+        
+    def on_button_press(self, widget, event):
+        ex, ey =  event.x, event.y
+        rect = self.allocation
+        
+        if not is_in_rect((ex, ey), rect):
+            self.dismiss()
 
-    def on_open_message_manager(self):
+    def on_open_message_manager(self, widget, event):
         DetailViewWindow().show_all()
         
     def on_left_btn_clicked(self, widget):
@@ -313,7 +347,7 @@ class TrayPop(gtk.Window):
         
         #draw alpha border to realize the effect like background blur
         draw_round_rectangle(cr, rect.x, rect.y, rect.width, rect.height - ARROW_HEIGHT, 10)
-        cr.set_source_rgba(*alpha_color_hex_to_cairo(("#b2b2b2", 0.5)))
+        cr.set_source_rgba(*alpha_color_hex_to_cairo(("#b2b2b2", 0.3)))
         cr.set_line_width(3)
         cr.stroke()
         
@@ -333,5 +367,12 @@ class TrayPop(gtk.Window):
         
         return True
     
+    def show_up(self):
+        self.show_all()
+        self.pointer_grab()
+        
+    def dismiss(self):
+        self.destroy()
+        self.pointer_ungrab()
     
-pop_tray_window = PopupGrabWindow(TrayPop)        
+gobject.type_register(TrayPop)    
