@@ -25,8 +25,6 @@ import gtk
 from ui.skin import app_theme
 from ui.traypop import TrayPop
 
-from events import event_manager
-
 
 class TrayIcon(gtk.StatusIcon):    
     
@@ -37,11 +35,10 @@ class TrayIcon(gtk.StatusIcon):
         self.unread_items = []
 
         self.connect("button-press-event", self.on_button_press_event)
-        event_manager.connect("show-unread", self.on_show_unread)
         
     def on_button_press_event(self, widget, event):
         if event.button == 1:
-            event_manager.emit("show-unread", None)
+            self.show_unread()
             
     def set_pixbuf_from_file(self, file_name):
         self.pixbuf_file_name = file_name
@@ -53,8 +50,7 @@ class TrayIcon(gtk.StatusIcon):
         
         return x + 7, y - 25
             
-    
-    def on_show_unread(self, data):
+    def show_unread(self):
         '''
         docs
         '''                     

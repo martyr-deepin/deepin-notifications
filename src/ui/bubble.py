@@ -76,7 +76,7 @@ class Bubble(gtk.Window):
         self.create_time = create_time
         self.init_size(height)
         self.init_pixbuf()
-        self.set_colormap(gtk.gdk.Screen().get_rgba_colormap() or gtk.gdk.Screen().get_rga_colormap())
+        self.set_colormap(gtk.gdk.Screen().get_rgba_colormap() or gtk.gdk.Screen().get_rgb_colormap())
         self.set_keep_above(True)
         self.add_events(gtk.gdk.BUTTON_PRESS_MASK | gtk.gdk.POINTER_MOTION_MASK | gtk.gdk.POINTER_MOTION_HINT_MASK)
         self.connect("expose-event", self.on_expose_event)

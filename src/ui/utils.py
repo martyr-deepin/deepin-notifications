@@ -19,6 +19,7 @@
 # 
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+from math import pi
 
 import gtk
 import re
@@ -173,6 +174,41 @@ def draw_line(cr, start, end, color_name):
         cr.move_to(*start)
         cr.line_to(*end)
         cr.stroke()
+        
+        
+def draw_round_rectangle_with_triangle(cr, x, y, width, height, r, arrow_width, arrow_height):
+    height = height - arrow_height
+    
+    # Top side.
+    cr.move_to(x + r, y)
+    cr.line_to(x + width - r, y)
+    
+    # Top-right corner.
+    cr.arc(x + width - r, y + r, r, pi * 3 / 2, pi * 2)
+    
+    # Right side.
+    cr.line_to(x + width, y + height - r)
+    
+    # Bottom-right corner.
+    cr.arc(x + width - r, y + height - r, r, 0, pi / 2)
+    
+    # Bottom side.
+    cr.line_to(x + width / 2 + arrow_width / 2, y + height)
+    cr.line_to(x + width / 2, y + height + arrow_height)
+    cr.line_to(x + width / 2 - arrow_width / 2, y + height)
+    
+    # Bottom-left corner.
+    cr.arc(x + r, y + height - r, r, pi / 2, pi)
+    
+    # Left side.
+    cr.line_to(x, y + r)
+    
+    # Top-left corner.
+    cr.arc(x + r, y + r, r, pi, pi * 3 / 2)
+
+    # Close path.
+    cr.close_path()
+    
 
         
 if __name__ == "__main__":

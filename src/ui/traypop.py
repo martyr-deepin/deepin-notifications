@@ -22,12 +22,13 @@
 
 import webbrowser
 
-from dtk.ui.draw import draw_round_rectangle
 from dtk.ui.label import Label
 from dtk.ui.button import Button
-from dtk.ui.draw import draw_text, draw_hlinear
+from dtk.ui.draw import draw_text, draw_hlinear, draw_round_rectangle
+from dtk_cairo_blur import gaussian_blur
 from dtk.ui.utils import (propagate_expose, color_hex_to_cairo, container_remove_all,
                           is_in_rect, alpha_color_hex_to_cairo)
+
 
 import gtk
 import cairo
@@ -35,12 +36,15 @@ import pango
 import gobject
 
 from ui.window_view import DetailViewWindow
-from ui.utils import root_coords_to_widget_coords, render_hyperlink_support_text
+from ui.utils import root_coords_to_widget_coords, render_hyperlink_support_text, draw_round_rectangle_with_triangle
 
 ARROW_WIDHT = 10
 ARROW_HEIGHT = 5
-WINDOW_WIDHT = 300
-WINDOW_HEIGHT = 400
+ROUND_RADIUS = 10
+
+BORDER_LINE_WIDTH = 5
+WINDOW_WIDHT = 300 + 2 * BORDER_LINE_WIDTH 
+WINDOW_HEIGHT = 400 + 2 * BORDER_LINE_WIDTH
 
 LIST_HEIGHT = 70
 LIST_PADDING = 5
@@ -231,12 +235,12 @@ class TrayPop(gtk.Window):
         '''
         gtk.Window.__init__(self, gtk.WINDOW_POPUP)
         
-        self.x, self.y = x, y
+        self.x, self.y = x - WINDOW_WIDHT / 2, y - WINDOW_HEIGHT
         self.set_size_request(WINDOW_WIDHT, WINDOW_HEIGHT)
-        self.set_colormap(gtk.gdk.Screen().get_rgba_colormap() or gtk.gdk.Screen().get_rga_colormap())
+        self.set_colormap(gtk.gdk.Screen().get_rgba_colormap() or gtk.gdk.Screen().get_rgb_colormap())
         self.set_keep_above(True)
         
-        self.move(x - WINDOW_WIDHT / 2, y - WINDOW_HEIGHT)
+        self.move(self.x, self.y)
         self.__init_view(items)
         
         self.connect("expose-event", self.on_expose_event)
@@ -246,7 +250,7 @@ class TrayPop(gtk.Window):
     def __init_view(self, items):
         main_box = gtk.VBox()
         main_box_align = gtk.Alignment(1, 1, 1, 1)
-        main_box_align.set_padding(5, 5, 5, 5)
+        main_box_align.set_padding(10, 10, 10, 10)
         main_box_align.add(main_box)
         
         header_box = gtk.HBox()
@@ -328,7 +332,7 @@ class TrayPop(gtk.Window):
     def on_right_btn_clicked(self, widget):
         self.view_flipper.flip_forward()
     
-
+        
     def on_expose_event(self, widget, event):
         '''
         docs
@@ -340,29 +344,37 @@ class TrayPop(gtk.Window):
         cr.rectangle(*rect)
         cr.fill()
     
-        cr.set_operator(cairo.OPERATOR_SOURCE)
-        draw_round_rectangle(cr, rect.x, rect.y, rect.width, rect.height - ARROW_HEIGHT, 10)
-        cr.set_source_rgb(1, 1, 1)   
-        cr.fill()
-        
-        #draw alpha border to realize the effect like background blur
-        draw_round_rectangle(cr, rect.x, rect.y, rect.width, rect.height - ARROW_HEIGHT, 10)
-        cr.set_source_rgba(*alpha_color_hex_to_cairo(("#b2b2b2", 0.3)))
-        cr.set_line_width(3)
-        cr.stroke()
-        
         
         # trayicon's location is relavant to root, but cairo need coordinates related to this widget.
         (self.x, self.y) = root_coords_to_widget_coords(self.x, self.y, self)
-
+        
+        
+        # draw border and blur
+        img_surf = cairo.ImageSurface(cairo.FORMAT_ARGB32, WINDOW_WIDHT, WINDOW_HEIGHT)
+        img_surf_cr = cairo.Context(img_surf)
+        draw_round_rectangle_with_triangle(img_surf_cr, rect.x + BORDER_LINE_WIDTH, rect.y + BORDER_LINE_WIDTH,
+                                           rect.width - 2 * BORDER_LINE_WIDTH, 
+                                           rect.height - 2 * BORDER_LINE_WIDTH,
+                                           ROUND_RADIUS, ARROW_WIDHT, ARROW_HEIGHT)
+        
+        img_surf_cr.set_line_width(1)
+        img_surf_cr.stroke()
+        gaussian_blur(img_surf, 2)
+        
+        cr.set_operator(cairo.OPERATOR_SOURCE)
+        cr.set_source_surface(img_surf, 0, 0)
+        cr.rectangle(*rect)
+        cr.fill()
+        
+        #draw content background
+        draw_round_rectangle_with_triangle(cr, rect.x + BORDER_LINE_WIDTH, rect.y + BORDER_LINE_WIDTH,
+                                           rect.width - 2 * BORDER_LINE_WIDTH, 
+                                           rect.height - 2 * BORDER_LINE_WIDTH,
+                                           ROUND_RADIUS, ARROW_WIDHT, ARROW_HEIGHT)
         cr.set_source_rgb(1, 1, 1)
-        cr.move_to(self.x + 50 , self.y + 50)
-        cr.line_to(self.x - ARROW_WIDHT / 2, self.y - ARROW_HEIGHT)
-        cr.line_to(self.x + ARROW_WIDHT / 2, self.y - ARROW_HEIGHT)
-        cr.line_to(self.x, self.y)
-        cr.close_path()        
         cr.fill()
 
+        
         propagate_expose(widget, event)
         
         return True
