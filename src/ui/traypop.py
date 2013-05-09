@@ -23,7 +23,7 @@
 import webbrowser
 
 from dtk.ui.label import Label
-from dtk.ui.button import Button
+from dtk.ui.button import Button, ImageButton
 from dtk.ui.draw import draw_text, draw_hlinear, draw_round_rectangle
 from dtk_cairo_blur import gaussian_blur
 from dtk.ui.utils import (propagate_expose, color_hex_to_cairo, container_remove_all,
@@ -36,6 +36,7 @@ import pango
 import gobject
 
 from ui.window_view import DetailViewWindow
+from ui.skin import app_theme
 from ui.utils import root_coords_to_widget_coords, render_hyperlink_support_text, draw_round_rectangle_with_triangle
 
 ARROW_WIDHT = 10
@@ -86,7 +87,7 @@ class ListItem(gtk.EventBox):
         cr.translate(rect.x, rect.y) # only the toplevel window has the gtk.gdk.window? all cr location is relative to it?
         
         draw_round_rectangle(cr, 0, 0, rect.width, rect.height, 5)
-        cr.set_source_rgb(*color_hex_to_cairo(COLOR_BLUE))
+        cr.set_source_rgb(*color_hex_to_cairo("#b2b2b2"))
         cr.fill()
         
         render_hyperlink_support_text(self, cr, self.message.body, 
@@ -97,8 +98,8 @@ class ListItem(gtk.EventBox):
                               alignment=pango.ALIGN_LEFT)    
         
         draw_hlinear(cr, 0, 0 + LIST_CONTENT_HEIGHT, rect.width, 1, [(0, ("#ffffff", 0)),
-                                                                               (0.5, ("#2b2b2b", 0.5)), 
-                                                                               (1, ("#ffffff", 0))])
+                                                                     (0.5, ("#2b2b2b", 0.5)), 
+                                                                     (1, ("#ffffff", 0))])
         
         time = self.time.split("-")[1]
         draw_text(cr, time, 0 + LIST_PADDING, 
@@ -139,90 +140,7 @@ class ListItem(gtk.EventBox):
                         return
 
     
-
-
-class ViewFlipper(gtk.VBox):
-    '''
-    class docs
-    '''
-	
-    def __init__(self, items):
-        '''
-        init docs
-        '''
-        gtk.VBox.__init__(self)
         
-        self.__init_data(items)
-        self.__init_view()
-        
-        
-    def __init_data(self, items):
-        self.items = items
-        self.paged_items = {}
-        
-        self.index = 1
-        self.page_count = 1
-        
-        index = 0
-        for item in self.items:
-            self.paged_items.setdefault(index / COUNT_PER_PAGE + 1, []).append(item)
-            index += 1
-            
-        self.page_count = len(self.paged_items) or 1
-        
-        
-    def __init_view(self):
-        self.flipper_index = gtk.HBox()
-        self.flipper_index.set_size_request(-1, 5)
-        self.flipper_index.connect("expose-event", self.on_flipper_index_expose)
-        
-        self.content_box = gtk.VBox()
-        
-        if len(self.paged_items) != 0:
-            for item in self.paged_items[self.index]:
-                self.content_box.pack_start(ListItem(*item), False, False, 2)
-        else:
-            align = gtk.Alignment(0.5, 0.5, 0, 0)
-            align.add(Label("(Empty)"))
-            self.content_box.pack_start(align)
-        
-        self.pack_start(self.flipper_index, False, False, 2)
-        self.pack_start(self.content_box)
-        
-
-    def on_flipper_index_expose(self, widget, event):
-        cr = widget.window.cairo_create()
-        rect = widget.allocation
-        
-        cr.set_source_rgb(0, 0, 0)
-        cr.rectangle(rect.x, rect.y, rect.width, 1)
-        cr.fill()
-        
-        width_average = rect.width / self.page_count
-        cr.rectangle(rect.x + (self.index - 1) * width_average, rect.y, width_average, rect.height)
-        cr.fill()
-        
-    def flip_forward(self):
-        if self.index != self.page_count:
-            self.index += 1
-            self.update_view()
-            
-    def flip_backward(self):
-        if self.index != 1:
-            self.index -= 1
-            self.update_view()
-        
-    def update_view(self):
-        self.flipper_index.queue_draw()
-        
-        container_remove_all(self.content_box)
-        for item in self.paged_items[self.index]:
-            self.content_box.pack_start(ListItem(*item), False, False, 2)
-        self.content_box.show_all()
-        
-        
-
-
 
 class TrayPop(gtk.Window):
     '''
@@ -255,11 +173,10 @@ class TrayPop(gtk.Window):
         
         header_box = gtk.HBox()
         title_label = Label("Message View")
-        manager_label = Label("<u>Open Message Manager</u>")
-        manager_label.add_events(gtk.gdk.BUTTON_PRESS_MASK)
-        manager_label.connect("button-press-event", self.on_open_message_manager)
+        settings_button = SettingButton()
+        settings_button.connect("clicked", self.on_settings_button_clicked)
         header_box.pack_start(title_label, False, False)
-        header_box.pack_end(manager_label, False, False)
+        header_box.pack_end(settings_button, False, False)
         
         self.view_flipper = ViewFlipper(items)
         self.flipper_align = gtk.Alignment(0.5, 0.5, 1, 1)
@@ -322,8 +239,9 @@ class TrayPop(gtk.Window):
         if not is_in_rect((ex, ey), rect):
             self.dismiss()
 
-    def on_open_message_manager(self, widget, event):
+    def on_settings_button_clicked(self, widget):
         DetailViewWindow().show_all()
+        
         
     def on_left_btn_clicked(self, widget):
         self.view_flipper.flip_backward()

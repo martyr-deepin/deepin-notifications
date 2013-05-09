@@ -28,7 +28,7 @@ from dtk.ui.window import Window
 from dtk.ui.titlebar import Titlebar
 from dtk.ui.label import Label
 from dtk.ui.menu import Menu
-from dtk.ui.draw import draw_text, draw_pixbuf
+from dtk.ui.draw import draw_text, draw_pixbuf, draw_vlinear
 from dtk.ui.entry import InputEntry
 from dtk.ui.combo import ComboBox
 from dtk.ui.utils import color_hex_to_cairo, is_in_rect, container_remove_all, place_center
@@ -45,7 +45,6 @@ import gtk
 import pango
 import gobject
 import webbrowser
-import itertools
 from datetime import datetime, timedelta
 
 
@@ -334,9 +333,16 @@ class ToolbarSep(gtk.HBox):
         cr = widget.window.cairo_create()
         rect = widget.allocation
         
-        cr.set_source_rgb(0, 0, 0)
-        cr.rectangle(rect.x, rect.y + (rect.height - 20) / 2, rect.width, 20)
-        cr.fill()
+        # sep height is 2/3 of hbox
+        x = rect.x 
+        y = rect.y + rect.height / 6
+        width = 1
+        height = rect.height * 2 / 3
+        
+        draw_vlinear(cr, x, y, width, height, [(0, ("#ffffff", 0)),
+                                               (0.5, ("#2b2b2b", 0.5)), 
+                                               (1, ("#ffffff", 0))])
+        
         
         
 TOOLBAR_ITEM_HEIGHT = 30
@@ -427,7 +433,7 @@ class TreeViewItem(TreeItem):
         self.title = title
         
         self.item_height = 26
-        self.item_width = 100
+        self.item_width = 200
         
         self.draw_padding_x = 10
         self.draw_padding_y = 10
@@ -731,7 +737,7 @@ class DetailViewWindow(Window):
         
         self.treeview.set_highlight_item(eles[0])
 
-        self.treeview.set_size_request(180, -1)
+        self.treeview.set_size_request(250, -1)
         self.treeview.connect("single-click-item", self.on_treeview_click_item)
         self.treeview.connect("right-press-items", self.on_treeview_right_press_items)
         
