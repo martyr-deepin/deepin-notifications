@@ -23,27 +23,32 @@
 import os
 from ConfigParser import ConfigParser
 
-from events import event_manager
+import xdg
+import sys
 
-class Preference:
+class Preference(object):
     '''
     class docs
     '''
 	
-    def __init__(self, config_path):
+    def __init__(self, create_file):
         '''
         init docs
         '''
-        config_parser = ConfigParser()
-        config_parser.add_section("section")
-        config_parser.set("section", "option", 5)
-        config_file = open(self.app_config_path, "w")
-        config_parser.write(config_file)
+        if create_file:
+            config_parser = ConfigParser()
+            config_parser.add_section("general")
+            config_parser.set("general", "disable-bubble", "False")
+            config_file = open(app_config_path, "w")
+            config_parser.write(config_file)
+            config_file.close()
+            
+        config_file = open(app_config_path)
+        self.parser = ConfigParser()
+        self.parser.readfp(config_file)
         config_file.close()
             
-        self.parser = ConfigParser().read(self.app_config_path)
-            
-    
+        
     def get(self, section, option, default):
         '''
         docs
@@ -51,22 +56,6 @@ class Preference:
         if self.parser.has_option(section, option):
             return self.parser.get(section, option)
         return default
-    
-    def edit(self):
-        
-        return Editor(self)
-    
-class Editor:
-    '''
-    class docs
-    '''
-	
-    def __init__(self, preference):
-        '''
-        init docs
-        '''
-        self.preference = preference
-        self.parser = ConfigParser().read(self.preference.app_config_path)
     
     def set(self, section, option, value):
         '''
@@ -76,15 +65,19 @@ class Editor:
             self.parser.add_section(section)
             
         self.parser.set(section, option, value)
-    
+        self.commit()
+        
+        
     def commit(self):
-        '''
-        docs
-        '''
-        config_file = open(self.preference.app_config_path, "w")
+        config_file = open(app_config_path, "w")
         self.parser.write(config_file)
         config_file.close()
-        event_manager.emit("preference-changed")
+        
+        
+    disable_bubble = property(lambda obj : obj.get("general", "disable-bubble", "False") == "True", # getter
+                              lambda obj, value : obj.set("general", "disable-bubble", str(value)) # setter
+                              )
+    
         
 app_data_path = os.path.join(xdg.get_config_dir(), "data")
 app_config_path = os.path.join(app_data_path, "notifications.ini")
@@ -94,9 +87,6 @@ config = None
 if not os.path.exists(app_data_path):
     os.makedirs(app_data_path)
 if not os.path.exists(app_config_path):
-    config = Preference(app_config_path, True)
+    preference = Preference(True)
 else:
-    config = Preference(app_config_path, False)
-
-if __name__ == "__main__":
-    Preference("preference-test")
+    preference = Preference(False)

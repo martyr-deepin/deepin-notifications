@@ -20,6 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from dtk.ui.button import SwitchButton
 from dtk.ui.label import Label
 from dtk.ui.draw import draw_text, draw_hlinear
 from dtk_cairo_blur import gaussian_blur
@@ -31,6 +32,7 @@ import cairo
 import pango
 import gobject
 
+from preference import preference
 from ui.window_view import DetailWindow
 from ui.skin import app_theme
 from ui.listview_factory import ListviewFactory
@@ -154,6 +156,10 @@ class TrayPop(gtk.Window):
         title_image = gtk.Image()
         title_image.set_from_pixbuf(self.title_pixbuf)
         title_label = Label("Message View", text_size=FONT_SIZE)
+        title_switch = SwitchButton(not preference.disable_bubble)
+        title_switch.set_tooltip_text("No more notifications")
+        title_switch.connect("toggled", self.on_title_switch_toggled)
+        header_box.pack_end(title_switch, False, False, 5)
         header_box.pack_start(title_image, False, False, 2)
         header_box.pack_start(title_label, False, False)
         
@@ -211,6 +217,13 @@ class TrayPop(gtk.Window):
         
         if not is_in_rect((ex, ey), (x, y, w, h)):
             self.dismiss()
+            
+    def on_title_switch_toggled(self, widget):
+        print "toggled"
+        if widget.get_active():
+            preference.disable_bubble = False
+        else:
+            preference.disable_bubble = True
 
     def on_more_button_clicked(self, widget):
         DetailWindow().show_all()

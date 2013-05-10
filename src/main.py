@@ -26,6 +26,7 @@ from ui.bubble import Bubble
 from ui.utils import handle_message
 from notification_db import db
 from blacklist import blacklist
+from preference import preference
 
 from collections import deque
 from datetime import datetime
@@ -58,12 +59,13 @@ class DeepinNotification(object):
         if len(list(self.notification_queue)) > 0:
             event_manager.emit("ready-to-move-up", height)
 
-        if message.app_name not in blacklist.bl:
-            self.notification_queue.append(Bubble(message, height, create_time))
-            trayicon.unread_items.append((create_time, message))
+        if not preference.disable_bubble:
+            if message.app_name not in blacklist.bl:
+                self.notification_queue.append(Bubble(message, height, create_time))
+                trayicon.unread_items.append((create_time, message))
+            trayicon.set_pixbuf_from_file("msg_white2.png")                
             
         db.add(create_time, message)
-        trayicon.set_pixbuf_from_file("msg_white2.png")
 
         
     def mainloop_init(self):    
