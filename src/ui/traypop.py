@@ -161,6 +161,10 @@ class TrayPop(gtk.Window):
         listview = ListviewFactory(items, "brief").listview if len(items) else None
         if listview:
             body_box.pack_start(listview, True, True)
+        else:
+            align = gtk.Alignment(0.5, 0.5, 0, 0)
+            align.add(Label("(Empty)"))
+            body_box.pack_start(align, True, True)
         
         footer_box = gtk.HBox()
         button_more = SelectButton("More Advanced Options... ")
@@ -200,9 +204,12 @@ class TrayPop(gtk.Window):
         
     def on_button_press(self, widget, event):
         ex, ey =  event.x, event.y
-        rect = self.allocation
         
-        if not is_in_rect((ex, ey), rect):
+        win = widget.get_toplevel()
+        x, y = win.get_position()
+        tmp_x, tmp_y, w, h = win.allocation
+        
+        if not is_in_rect((ex, ey), (x, y, w, h)):
             self.dismiss()
 
     def on_more_button_clicked(self, widget):

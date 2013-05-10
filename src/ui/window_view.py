@@ -240,7 +240,8 @@ class TreeViewItem(TreeItem):
     def unexpand(self):
         self.is_expand = False
         
-        self.delete_items_callback(self.child_items)
+        if self.child_items:
+            self.delete_items_callback(self.child_items)
     
         if self.redraw_request_callback:
             self.redraw_request_callback(self)
@@ -488,16 +489,22 @@ class DetailWindow(Window):
     def add_treeview(self):
         
         items = self.classified_items.keys()
-
-        eles = [TreeViewItem(item) for item in items]
-        eles[0].is_in_blacklist = True
+        # root eles
         root_ele_software = TreeViewItem("Software Messages", True)
-        self.treeview = TreeView([root_ele_software], expand_column=0)
+        root_ele_system = TreeViewItem("System Message", True)
+        self.treeview = TreeView([root_ele_software, root_ele_system], expand_column=0)
+        
+        # add child items , CAN'T add_child_items before treeview constructed
+        eles = [TreeViewItem(item) for item in items]
+        
+        for item in items:
+            if item in blacklist.bl:
+                item.is_in_blacklist = True
+        
         root_ele_software.add_child_items(eles)        
         self.treeview.draw_mask = self.on_treeview_draw_mask
         
         self.treeview.set_highlight_item(eles[0])
-
         self.treeview.set_size_request(220, -1)
         self.treeview.connect("single-click-item", self.on_treeview_click_item)
         self.treeview.connect("right-press-items", self.on_treeview_right_press_items)
