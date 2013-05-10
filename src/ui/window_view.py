@@ -495,16 +495,17 @@ class DetailWindow(Window):
         self.treeview = TreeView([root_ele_software, root_ele_system], expand_column=0)
         
         # add child items , CAN'T add_child_items before treeview constructed
-        eles = [TreeViewItem(item) for item in items]
-        
+        software_children = []
         for item in items:
+            treeview_item = TreeViewItem(item)
             if item in blacklist.bl:
-                item.is_in_blacklist = True
+                treeview_item.is_in_blacklist = True
+            software_children.append(treeview_item)
         
-        root_ele_software.add_child_items(eles)        
+        root_ele_software.add_child_items(software_children)        
         self.treeview.draw_mask = self.on_treeview_draw_mask
         
-        self.treeview.set_highlight_item(eles[0])
+        self.treeview.set_highlight_item(software_children[0])
         self.treeview.set_size_request(220, -1)
         self.treeview.connect("single-click-item", self.on_treeview_click_item)
         self.treeview.connect("right-press-items", self.on_treeview_right_press_items)

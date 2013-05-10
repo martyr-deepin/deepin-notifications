@@ -203,7 +203,7 @@ class TrayPop(gtk.Window):
         self.grab_remove()
         
     def on_button_press(self, widget, event):
-        ex, ey =  event.x, event.y
+        ex, ey =  event.x_root, event.y_root
         
         win = widget.get_toplevel()
         x, y = win.get_position()
