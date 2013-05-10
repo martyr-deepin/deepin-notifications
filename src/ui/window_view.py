@@ -31,11 +31,13 @@ from dtk.ui.menu import Menu
 from dtk.ui.draw import draw_text, draw_pixbuf, draw_vlinear
 from dtk.ui.entry import InputEntry
 from dtk.ui.combo import ComboBox
-from dtk.ui.utils import color_hex_to_cairo, is_in_rect, container_remove_all, place_center
+from dtk.ui.utils import container_remove_all, place_center
 from dtk.ui.skin import SkinWindow
 from dtk.ui.cache_pixbuf import CachePixbuf
+
 from ui.skin import app_theme
-from ui.utils import render_hyperlink_support_text, draw_line
+from ui.listview_factory import ListviewFactory
+from ui.utils import draw_line, draw_single_mask
 from notification_db import db
 from blacklist import blacklist
 from events import event_manager
@@ -44,269 +46,12 @@ from events import event_manager
 import gtk
 import pango
 import gobject
-import webbrowser
 from datetime import datetime, timedelta
 
-
-def draw_single_mask(cr, x, y, width, height, color_name):
-    color = app_theme.get_color(color_name).get_color()
-    cairo_color = color_hex_to_cairo(color)
-    cr.set_source_rgb(*cairo_color)
-    cr.rectangle(x, y, width, height)
-    cr.fill()
 
 TIME = 0
 MESSAGE = 1
 
-COUNT_PER_PAGE = 20
-
-class ListviewFactory(object):
-    '''
-    class docs
-    '''
-	
-    def __init__(self, items, owner):
-        '''
-        init docs
-        '''
-        self.items = [ListViewItem(x) for x in items]
-        self.owner = owner
-        self.listview = None
-        
-        self.page_count = 0
-        self.page_index = 0
-        self.paged_items = self.get_paged_items()
-        
-        self.init_listview()
-        
-        
-    def on_listview_button_pressed(self, widget, event, listview):
-        x = event.x
-        y = event.y
-        
-        if event.button == 1:
-            for item in listview.get_items():
-                for index, rect in enumerate(item.pointer_hand_rectangles):
-                    if is_in_rect((x, y), rect):
-                        action = item.message["hints"]["x-deepin-hyperlinks"][index]
-                        
-                        if action.has_key("href"):
-                            webbrowser.open_new_tab(action.get("href"))
-                            
-                            return
-                        
-        
-            
-    
-    def on_listview_motion_notify(self, widget, event, listview):
-        x = event.x
-        y = event.y
-        flag = False
-        for item in listview.get_items():
-            if flag:
-                break
-            for rect in item.pointer_hand_rectangles:
-                if is_in_rect((x, y), rect):
-                    flag = True
-                    break
-        if flag:
-            widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
-        else:
-            widget.window.set_cursor(None)
-         
-        
-    def init_listview(self):
-        '''
-        docs
-        '''
-        items = self.paged_items[0]
-
-        self.listview = TreeView(items)
-        self.listview.draw_mask = self.on_listview_draw_mask
-        self.listview.set_expand_column(0)
-        self.listview.set_column_titles(["The content of the message", "Time"],
-                                   [self.sort_by_content, self.sort_by_time])
-        
-        self.listview.draw_area.connect_after("button-press-event", self.on_listview_button_pressed, self.listview)
-        self.listview.draw_area.connect_after("motion-notify-event", self.on_listview_motion_notify, self.listview)
-        self.listview.connect("right-press-items", self.on_listview_right_press_items)
-        self.listview.scrolled_window.connect("vscrollbar-state-changed", self.update_listview)
-        
-    def update_listview(self, widget, state):
-        if state == "bottom":
-            if self.page_index < self.page_count - 1:
-                self.page_index = self.page_index + 1
-                items = self.paged_items[self.page_index]
-                self.listview.add_items(items)
-        
-    def on_listview_draw_mask(self, cr, x, y, w, h):
-        cr.set_source_rgb(1, 1, 1)
-        cr.rectangle(x, y, w, h)
-        cr.fill()
-        
-    def on_listview_right_press_items(self, widget, root_x, root_y, current_item, select_items):
-        if self.owner == "detail":        
-            
-            def on_delete_selected_record():
-                
-                def on_ok_clicked():
-                    print "ok"
-                    for item in select_items:
-                        db.remove(item.time)
-                        widget.delete_items(select_items)                    
-                
-                dialog = ConfirmDialog(
-                    "Delete skin",
-                    "Are you sure delete selected items?",
-                    confirm_callback = on_ok_clicked)
-                dialog.show_all()
-                
-                
-            def on_delete_all_record():
-                def on_ok_clicked():
-                    db.clear()
-                    widget.clear()
-
-                dialog = ConfirmDialog(
-                    "Delete skin",
-                    "Are you sure delete all items?",
-                    confirm_callback = on_ok_clicked)
-                dialog.show_all()
-                
-                
-            Menu([(None, "Delete selected record", on_delete_selected_record),
-                  (None, "Delete all record", on_delete_all_record)], True).show((root_x, root_y))
-        
-        
-    def get_paged_items(self):
-        paged_items = {}
-        
-        index = 0
-        for item in self.items:
-            paged_items.setdefault(index / COUNT_PER_PAGE, []).append(item)
-            index += 1
-            
-        self.page_count = len(paged_items)
-        return paged_items
-        
-
-    def sort_by_content(self, items, reverse):
-        '''
-        docs
-        '''
-        return sorted(items, key=lambda item : item.content, reverse=reverse)
-        
-    def sort_by_time(self, items, reverse):
-        '''
-        docs
-        '''
-        return sorted(items, key=lambda item : item.time, reverse=reverse)
-        
-    
-class ListViewItem(TreeItem):
-    '''
-    class docs
-    '''
-	
-    def __init__(self, data):
-        '''
-        init docs
-        '''
-        TreeItem.__init__(self)
-        
-        self.message = data[MESSAGE]
-        self.content = self.message.body
-        self.time = data[TIME]
-            
-        self.item_height = 52
-        self.content_width = 100
-        self.time_width = 100
-        self.draw_padding_x = 10
-        self.draw_padding_y = 10
-        self.column_index = 0
-        self.is_select = False
-        self.is_hover = False
-        
-        self.pointer_hand_rectangles = []
-        
-        
-    def get_height(self):    
-        return self.item_height
-
-    def get_column_widths(self):
-        return [ self.content_width, self.time_width ]
-    
-    def get_column_renders(self):
-        return (self.render_content, self.render_time)
-    
-    def unselect(self):
-        self.is_select = False
-        self.emit_redraw_request()
-        
-    def emit_redraw_request(self):    
-        if self.redraw_request_callback:
-            self.redraw_request_callback(self)
-            
-    def select(self):        
-        self.is_select = True
-        self.emit_redraw_request()
-        
-        
-    def render_content(self, cr, rect):        
-        # Draw select background.
-        if self.is_select:    
-            draw_single_mask(cr, rect.x, rect.y, rect.width, rect.height, "globalItemSelect")
-        elif self.is_hover:
-            draw_single_mask(cr, rect.x, rect.y, rect.width, rect.height, "globalItemHover")
-        
-        if self.is_select:
-            text_color = "#FFFFFF"
-        else:    
-            text_color = "#000000"
-            
-        render_hyperlink_support_text(self, cr, self.content, 
-                                      rect.x + self.draw_padding_x, 
-                                      rect.y + self.draw_padding_y,
-                                      rect.width - self.draw_padding_x * 2, 
-                                      rect.height - self.draw_padding_y * 2, 
-                                      wrap_width = 25 * 10,
-                                      clip_line_count = 2,
-                                      text_color = text_color,
-                                      alignment=pango.ALIGN_LEFT)    
-        
-    def render_time(self, cr, rect):    
-        if self.is_select:    
-            draw_single_mask(cr, rect.x, rect.y, rect.width, rect.height, "globalItemSelect")
-        elif self.is_hover:
-            draw_single_mask(cr, rect.x, rect.y, rect.width, rect.height, "globalItemHover")
-        
-        if self.is_select:
-            text_color = "#FFFFFF"
-        else:    
-            text_color = "#000000"
-            
-
-        text = self.time.replace('-', ' ')
-        draw_text(cr, text, rect.x + 20,
-                  rect.y + 10, rect.width,
-                  rect.height / 2, 
-                  text_color = text_color,
-                  wrap_width = 50,
-                  alignment=pango.ALIGN_CENTER)    
-    
-    
-    def unhover(self, column, offset_x, offset_y):
-        self.is_hover = False
-        self.emit_redraw_request()
-    
-    def hover(self, column, offset_x, offset_y):
-        self.is_hover = True
-        self.emit_redraw_request()
-        
-    def __str__(self):
-        return self.content + ": " + self.time
-
-    
 WINDOW_WIDTH = 1000
 WINDOW_HEIGHT = 700
 TITLEBAR_HEIGHT = 25
@@ -342,7 +87,6 @@ class ToolbarSep(gtk.HBox):
         draw_vlinear(cr, x, y, width, height, [(0, ("#ffffff", 0)),
                                                (0.5, ("#2b2b2b", 0.5)), 
                                                (1, ("#ffffff", 0))])
-        
         
         
 TOOLBAR_ITEM_HEIGHT = 30
@@ -418,6 +162,8 @@ class SearchEntry(InputEntry):
         self.set_size(150, TOOLBAR_ENTRY_HEIGHT)
         
 gobject.type_register(SearchEntry)        
+
+
 
 pixbuf_blacklist_white = app_theme.get_pixbuf("blacklist_white.png").get_pixbuf()
 pixbuf_blacklist_grey = app_theme.get_pixbuf("blacklist_grey.png").get_pixbuf()
@@ -518,7 +264,10 @@ class TreeViewItem(TreeItem):
                 text_color = "#FFFFFF"
             else:    
                 text_color = "#000000"
+        else:
+            text_color = "#000000"
             
+        # draw arrow and blacklist icon
         left_pixbuf_width = 18            
         if not self.is_parent:    
             rect.x += self.child_offset
@@ -546,8 +295,6 @@ class TreeViewItem(TreeItem):
 
             
         temp_text = self.title if self.is_parent else " - " + self.title
-        text_color = "#0000ff" if self.is_parent else "#000000"
-        
         draw_text(cr, temp_text,
                   rect.x + self.draw_padding_x + left_pixbuf_width, 
                   rect.y,
@@ -585,7 +332,7 @@ timedelta_dict = {
     }
     
 
-class DetailViewWindow(Window):
+class DetailWindow(Window):
     '''
     class docs
     '''

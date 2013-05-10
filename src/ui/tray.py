@@ -23,7 +23,7 @@
 
 import gtk
 from ui.skin import app_theme
-from window_view import DetailViewWindow
+from traypop import TrayPop
 
 class TrayIcon(gtk.StatusIcon):    
     
@@ -55,7 +55,7 @@ class TrayIcon(gtk.StatusIcon):
         '''                     
         x, y = self.generate_traypop_position()
         
-        DetailViewWindow().show_all()
+        TrayPop(x, y, self.unread_items).show_up()
         
         if self.pixbuf_file_name == "msg_white2.png":
             self.set_pixbuf_from_file("msg_white1.png")

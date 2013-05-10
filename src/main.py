@@ -31,8 +31,6 @@ from collections import deque
 from datetime import datetime
 
 
-from ui.traypop import TrayPop
-
 class DeepinNotification(object):
     def __init__(self):
         
@@ -51,7 +49,9 @@ class DeepinNotification(object):
         '''
         docs
         '''
-        message = handle_message(data) # replace hyper<a> with underline <u> AND place hyper actions in hints["x-deepin-hyperlinks"]
+         # replace hyper<a> with underline <u> AND place hyper actions in hints["x-deepin-hyperlinks"]
+        message = handle_message(data)
+        
         height = 87 if len(message["actions"]) == 0 else 110
         create_time = datetime.now().strftime("%Y/%m/%d-%H:%M:%S")
         
@@ -60,7 +60,7 @@ class DeepinNotification(object):
 
         if message.app_name not in blacklist.bl:
             self.notification_queue.append(Bubble(message, height, create_time))
-            trayicon.unread_items.append((message, create_time))
+            trayicon.unread_items.append((create_time, message))
             
         db.add(create_time, message)
         trayicon.set_pixbuf_from_file("msg_white2.png")

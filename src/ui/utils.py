@@ -24,9 +24,10 @@ from math import pi
 import gtk
 import re
 import pango
+import cairo
 import pangocairo
 
-from dtk.ui.draw import draw_pixbuf, draw_text, TEXT_ALIGN_TOP, TEXT_ALIGN_MIDDLE, TEXT_ALIGN_BOTTOM
+from dtk.ui.draw import TEXT_ALIGN_TOP, TEXT_ALIGN_MIDDLE
 from dtk.ui.utils import cairo_state, color_hex_to_cairo, cairo_disable_antialias
 from dtk.ui.constant import DEFAULT_FONT, DEFAULT_FONT_SIZE
 
@@ -176,6 +177,17 @@ def draw_line(cr, start, end, color_name):
         cr.stroke()
         
         
+def draw_single_mask(cr, x, y, width, height, color_name):
+    if color_name.startswith("#"):
+        color = color_name
+    else:
+        color = app_theme.get_color(color_name).get_color()
+    cairo_color = color_hex_to_cairo(color)
+    cr.set_source_rgb(*cairo_color)
+    cr.rectangle(x, y, width, height)
+    cr.fill()
+        
+        
 def draw_round_rectangle_with_triangle(cr, x, y, width, height, r, arrow_width, arrow_height):
     height = height - arrow_height
     
@@ -209,6 +221,18 @@ def draw_round_rectangle_with_triangle(cr, x, y, width, height, r, arrow_width, 
     # Close path.
     cr.close_path()
     
+def get_text_size(text, text_size=DEFAULT_FONT_SIZE, text_font=DEFAULT_FONT):
+    try:
+        surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, 0, 0)
+        cr = cairo.Context(surface)
+        context = pangocairo.CairoContext(cr)
+        layout = context.create_layout()
+        temp_font = pango.FontDescription("%s %s" % (text_font, text_size))
+        layout.set_font_description(temp_font)
+        layout.set_text(text)
+        return layout.get_pixel_size()
+    except:
+        return (0, 0)
 
         
 if __name__ == "__main__":
