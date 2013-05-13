@@ -122,6 +122,7 @@ class ListviewFactory(object):
                 items = self.paged_items[self.page_index]
                 self.listview.add_items(items)
                 
+                # Nobody care :(
                 self.listview.scroll_page_down()
                 self.listview.scroll_page_down() 
                 

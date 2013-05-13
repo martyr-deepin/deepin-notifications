@@ -41,7 +41,6 @@ from ui.utils import draw_line, draw_single_mask
 from notification_db import db
 from blacklist import blacklist
 
-
 import gtk
 import pango
 import gobject
@@ -158,7 +157,7 @@ class SearchEntry(InputEntry):
         super(SearchEntry, self).__init__(action_button=entry_button, *args, **kwargs)        
         
         self.action_button = entry_button
-        self.set_size(150, TOOLBAR_ENTRY_HEIGHT)
+        self.set_size(150, TOOLBAR_ENTRY_HEIGHT + 2)
         
 gobject.type_register(SearchEntry)        
 
@@ -386,6 +385,7 @@ class DetailWindow(Window):
         self.window_frame.pack_start(self.titlebar_box, False, False)
         self.window_frame.pack_start(main_box_align)
         
+        
 
     def __init_pixbuf(self):
         self.import_btn_pixbuf = gtk.gdk.pixbuf_new_from_file(app_theme.get_theme_file_path("image/toolbar_import.png"))
@@ -496,6 +496,7 @@ class DetailWindow(Window):
         
         # add child items , CAN'T add_child_items before treeview constructed
         software_children = []
+        system_children = []
         for item in items:
             treeview_item = TreeViewItem(item)
             if item in blacklist.bl:
@@ -611,7 +612,8 @@ class DetailWindow(Window):
                               ("The recent year", 4),
                               ("All", 5)
                               ])
-        
+        self.category_comb.set_size_request(-1, TOOLBAR_ENTRY_HEIGHT)
+        self.time_comb.set_size_request(-1, TOOLBAR_ENTRY_HEIGHT)
         combos_box = gtk.HBox()
         combos_box.pack_start(self.category_comb, False, False, 5)
         combos_box.pack_start(self.time_comb, False, False)
@@ -627,8 +629,8 @@ class DetailWindow(Window):
 
         search_entry = SearchEntry("Search")
         search_entry.connect("action-active", self.on_search_entry_action_active)
-        search_entry_align = gtk.Alignment()
-        search_entry_align.set(0.5, 0.5, 0, 0)
+        search_entry_align = gtk.Alignment(0.5, 0.5, 1, 1)
+        search_entry_align.set_padding(padding_height, padding_height, 5, 5)
         search_entry_align.add(search_entry)
         
         #Align left
@@ -671,25 +673,34 @@ class DetailWindow(Window):
         self.add_listview(list(search_result_iter))
         
     def on_toolbar_import_clicked(self, widget):
-        
+        filename_to_import = ""
         def ok_clicked(filename):
-            db.import_db(filename)
-            self.update_status_bar("Import finished, congratulations!")
+            filename_to_import = filename
             
         def cancel_clicked():
             self.update_status_bar("Import cancelled.")
             
         OpenFileDialog("File To Import:", self, ok_clicked, None)
         
+        if not len(filename_to_import):
+            print "filename_to_import"
+            try:
+                db.import_db(filename_to_import)
+            except Exception, e:
+                print "exception"
+                self.update_status_bar("Import failed, wrong file type!")
+            else:
+                print "else"
+                self.update_status_bar("Import finished, congratulations!")        
         
     def on_toolbar_export_clicked(self, widget):
         
         def ok_clicked(filename):
             db.export_db(filename)
-            event_manager.emit("export-finished", "Export Finished")
+            self.update_status_bar("Export Succeed!!!")
             
         def cancel_clicked():
-            self.update_status_bar("Export cancelled.")
+            self.update_status_bar("Export cancelled!")
             
         SaveFileDialog("File To Export:", self, ok_clicked, None)
         
@@ -700,7 +711,7 @@ class DetailWindow(Window):
                 db.remove(self.listview.visible_items[row].time)
                 
             self.listview.delete_items([self.listview.visible_items[row] for row in self.listview.select_rows])            
-            event_manager.emit("deleted", "Deleted")
+            self.update_status_bar("Deteted!")
                 
         dialog = ConfirmDialog(
                 "Delete skin",
@@ -712,15 +723,16 @@ class DetailWindow(Window):
     def on_toolbar_refresh_clicked(self, widget):
         self.refresh_view()
         
-        event_manager.emit("refresh", "Refresh")
+        self.update_status_bar("View has been refreshed!")
         
         
     def update_status_bar(self, message):
         def pop_message():
-            self.status_bar.text = ""
-        self.status_bar.text = message
+            print "pop_message"
+            self.status_bar.set_text("")
+        self.status_bar.set_text(message)
         
-        gobject.timeout_add(pop_message, 3000)
+        gobject.timeout_add(3000, pop_message)
             
     
     def close_callback(self, widget):
