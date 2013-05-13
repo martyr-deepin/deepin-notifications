@@ -35,6 +35,7 @@ from dtk.ui.utils import container_remove_all, place_center
 from dtk.ui.skin import SkinWindow
 from dtk.ui.cache_pixbuf import CachePixbuf
 
+import xdg
 from ui.skin import app_theme
 from ui.listview_factory import ListviewFactory
 from ui.utils import draw_line, draw_single_mask
@@ -488,7 +489,7 @@ class DetailWindow(Window):
                 
     def add_treeview(self):
         
-        items = self.classified_items.keys()
+        categories = self.classified_items.keys()
         # root eles
         root_ele_software = TreeViewItem("Software Messages", True)
         root_ele_system = TreeViewItem("System Message", True)
@@ -497,11 +498,18 @@ class DetailWindow(Window):
         # add child items , CAN'T add_child_items before treeview constructed
         software_children = []
         system_children = []
-        for item in items:
-            treeview_item = TreeViewItem(item)
-            if item in blacklist.bl:
+        for category in categories:
+            treeview_item = TreeViewItem(category)
+            if category in blacklist.bl:
                 treeview_item.is_in_blacklist = True
-            software_children.append(treeview_item)
+                
+            category_first_message_hints = self.classified_items[category][0][MESSAGE]["hints"]
+            if category_first_message_hints.has_key("desktop-entry"):
+                desktop_file = category_first_message_hints["desktop-entry"] 
+                if "System" in xdg.DesktopEntry(desktop_file).get("Categories"):
+                    system_children.append(treeview_item)
+            else:
+                software_children.append(treeview_item)
         
         root_ele_software.add_child_items(software_children)        
         self.treeview.draw_mask = self.on_treeview_draw_mask
@@ -728,10 +736,9 @@ class DetailWindow(Window):
         
     def update_status_bar(self, message):
         def pop_message():
-            print "pop_message"
             self.status_bar.set_text("")
+            
         self.status_bar.set_text(message)
-        
         gobject.timeout_add(3000, pop_message)
             
     

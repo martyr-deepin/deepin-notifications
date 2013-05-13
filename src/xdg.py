@@ -23,6 +23,8 @@
 import os
 import glib
 
+from ConfigParser import ConfigParser
+
 PROGRAM_NAME = "deepin-notifications"
 
 homedir = os.path.expanduser("~")
@@ -138,3 +140,30 @@ def _make_missing_dirs():
     if not os.path.exists(cache_home):
         os.makedirs(cache_home)
         
+class DesktopEntry(object):
+    '''
+    class docs
+    '''
+	
+    def __init__(self, desktop_file_name):
+        '''
+        init docs
+        '''
+        self.desktop_file_name = desktop_file_name
+        self.parser = ConfigParser()
+        self.parse_result = self.parser.read("/usr/share/applications/" + desktop_file_name)
+        
+    def get(self, option):
+        if self.parse_result:
+            try:
+                result = self.parser.get("Desktop Entry", option)
+                return result
+            except Exception, e:
+                return None
+        else:
+            return None
+        
+if __name__ == "__main__":
+    entry = DesktopEntry("deepin-music-player.desktop")
+    print entry.get("Categories")
+    print entry.get("Wang")
