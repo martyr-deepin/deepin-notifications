@@ -159,7 +159,7 @@ class TrayPop(gtk.Window):
         title_switch.set_tooltip_text("No more notifications")
         title_switch.connect("toggled", self.on_title_switch_toggled)
         header_box.pack_end(title_switch, False, False, 5)
-        header_box.pack_start(title_image, False, False, 2)
+        header_box.pack_start(title_image, False, False, 5)
         header_box.pack_start(title_label, False, False)
         
         self.body_box = gtk.VBox()
