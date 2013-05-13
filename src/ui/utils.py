@@ -62,6 +62,8 @@ def handle_message(message):
     hyperlink_support_str = get_hyperlink_support_str(message["body"])
     message["body"] = hyperlink_support_str["result"]
     message["hints"]["x-deepin-hyperlinks"] = hyperlink_support_str["actions"]
+    if not message["hints"].has_key("urgency"):
+        message["hints"]["urgency"] = 1
     return message
 
 def render_hyperlink_support_text(obj, cr, markup, 

@@ -1,11 +1,11 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2011 ~ 2013 Deepin, Inc.
-#               2011 ~ 2013 Wang Yaohua
+# Copyright (C) 2011 ~ 2012 Deepin, Inc.
+#               2011 ~ 2012 Wang YaoHua
 # 
-# Author:     Wang Yaohua <mr.asianwang@gmail.com>
-# Maintainer: Wang Yaohua <mr.asianwang@gmail.com>
+# Author:     Wang YaoHua <mr.asianwang@gmail.com>
+# Maintainer: Wang YaoHua <mr.asianwang@gmail.com>
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,13 +20,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+
 import os
 import xdg
 import cPickle
-import shutil
 import sqlite3
 
-class NotificationDB:
+class UnreadDB:
     '''
     class docs
     '''
@@ -39,27 +39,26 @@ class NotificationDB:
         self.conn = sqlite3.connect(db_path)
         self.cursor = self.conn.cursor()
         if create:
-            self.cursor.execute('''create table notifications (time text unique, message text) ''')
+            self.cursor.execute('''create table unread_notifications (time text unique, message text) ''')
                 
     def add(self, time, message):
-        # if message.hints["urgency"] > 1:
         message = cPickle.dumps(message)
         try:
-            self.cursor.execute('''insert into notifications values (?, ?)''', (time, message))
+            self.cursor.execute('''insert into unread_notifications values (?, ?)''', (time, message))
             self.conn.commit()
         except Exception, e:
             print "Already in database."
         
     def remove(self, time_id):
         print "remove", time_id
-        self.cursor.execute('''delete from notifications where time=?''', (time_id,))
+        self.cursor.execute('''delete from unread_notifications where time=?''', (time_id,))
         self.conn.commit()
         
     def get_all(self):
         '''
         docs
         '''
-        self.cursor.execute('''select * from notifications order by time desc''')
+        self.cursor.execute('''select * from unread_notifications order by time desc''')
         result = self.cursor.fetchall()
         
         return [(x[0], cPickle.loads(str(x[1]))) for x in result]
@@ -71,27 +70,15 @@ class NotificationDB:
     def clear(self):
         self.cursor.execute('''delete from notifications''')
         
-    def export_db(self, export_path):
-        shutil.copy(self.db_path, export_path)
-        
-        
-    def import_db(self, import_path):
-        tmp_conn = sqlite3.connect(import_path)
-        tmp_cursor = tmp_conn.cursor()
-        
-        result = tmp_cursor.execute("select * from notifications")
-        for x in result.fetchall():
-            self.add(x[0], cPickle.loads(str(x[1])))
-        
     
 app_data_path = os.path.join(xdg.get_config_dir(), "data")
-app_db_path = os.path.join(app_data_path, "notifications.db")
+app_unread_db_path = os.path.join(app_data_path, "unread_notifications.db")
 
-db = None
+unread_db = None
 
 if not os.path.exists(app_data_path):
     os.makedirs(app_data_path)
-if not os.path.exists(app_db_path):
-    db = NotificationDB(app_db_path, True)
+if not os.path.exists(app_unread_db_path):
+    db = UnreadDB(app_unread_db_path, True)
 else:
-    db = NotificationDB(app_db_path, False)
+    db = UnreadDB(app_unread_db_path, False)

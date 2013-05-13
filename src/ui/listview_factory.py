@@ -31,6 +31,7 @@ from dtk.ui.dialog import ConfirmDialog
 from dtk.ui.draw import draw_text
 from dtk.ui.utils import is_in_rect, color_hex_to_cairo
 
+from events import event_manager
 from notification_db import db
 from ui.utils import render_hyperlink_support_text, draw_single_mask
 
@@ -49,7 +50,7 @@ class ListviewFactory(object):
         '''
         self.items = [ListViewItem(x, owner) for x in items]
         self.owner = owner
-        self.count_per_page = 5 if self.owner == "brief" else 20
+        self.count_per_page = 10 if self.owner == "brief" else 20
         self.listview = None
         
         self.page_count = 0
@@ -98,7 +99,7 @@ class ListviewFactory(object):
         '''
         docs
         '''
-        items = self.paged_items[0]
+        items = self.paged_items[self.page_index]
 
         self.listview = TreeView(items)
         self.listview.draw_mask = self.on_listview_draw_mask
@@ -117,9 +118,13 @@ class ListviewFactory(object):
         if state == "bottom":
             if self.page_index < self.page_count - 1:
                 self.page_index = self.page_index + 1
+                
                 items = self.paged_items[self.page_index]
                 self.listview.add_items(items)
-        
+                
+                self.listview.scroll_page_down()
+                self.listview.scroll_page_down() 
+                
     def on_listview_draw_mask(self, cr, x, y, w, h):
         cr.set_source_rgb(1, 1, 1)
         cr.rectangle(x, y, w, h)
@@ -181,6 +186,8 @@ class ListviewFactory(object):
         docs
         '''
         return sorted(items, key=lambda item : item.time, reverse=reverse)
+    
+    
         
 def draw_half_rectangle(cr, rect, color, left_half=True):
     x, y, w, h = list(x for x in rect)
@@ -217,7 +224,7 @@ class ListViewItem(TreeItem):
             
         self.item_height = 52
         self.content_width = 100
-        self.time_width = 100
+        self.time_width = 100 if self.owner == "detail" else 80
         self.draw_padding_x = 10
         self.draw_padding_y = 10
         self.column_index = 0

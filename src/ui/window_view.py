@@ -40,7 +40,6 @@ from ui.listview_factory import ListviewFactory
 from ui.utils import draw_line, draw_single_mask
 from notification_db import db
 from blacklist import blacklist
-from events import event_manager
 
 
 import gtk
@@ -344,6 +343,7 @@ class DetailWindow(Window):
         '''
         Window.__init__(self)
         self.set_size_request(WINDOW_WIDTH, WINDOW_HEIGHT)
+        self.set_position(gtk.WIN_POS_CENTER)
         self.resizable = True
 
         self.classified_items = None
@@ -529,6 +529,7 @@ class DetailWindow(Window):
             self.listview_box.pack_start(self.listview)
             
         self.listview_box.show_all()
+        
         
     def get_items_from_treeview_highlight(self):
         '''

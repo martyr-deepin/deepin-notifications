@@ -24,7 +24,7 @@ from dtk.ui.button import SwitchButton
 from dtk.ui.label import Label
 from dtk.ui.draw import draw_text, draw_hlinear
 from dtk_cairo_blur import gaussian_blur
-from dtk.ui.utils import (propagate_expose, color_hex_to_cairo, cairo_disable_antialias, is_in_rect)
+from dtk.ui.utils import (propagate_expose, color_hex_to_cairo, cairo_disable_antialias, is_in_rect, container_remove_all)
 
 
 import gtk
@@ -143,7 +143,6 @@ class TrayPop(gtk.Window):
         self.__init_view(items)
         
         self.connect("expose-event", self.on_expose_event)
-        
 
         
     def __init_view(self, items):
@@ -163,14 +162,17 @@ class TrayPop(gtk.Window):
         header_box.pack_start(title_image, False, False, 2)
         header_box.pack_start(title_label, False, False)
         
-        body_box = gtk.VBox()
-        listview = ListviewFactory(items, "brief").listview if len(items) else None
-        if listview:
-            body_box.pack_start(listview, True, True)
+        self.body_box = gtk.VBox()
+        self.listview_factory = ListviewFactory(items, "brief") if len(items) else None
+        if self.listview_factory:
+            self.body_align = gtk.Alignment(0.5, 0.5, 1, 1)
+            self.body_align.set_padding(2, 2, 5, 5)
+            self.body_align.add(self.listview_factory.listview)
         else:
-            align = gtk.Alignment(0.5, 0.5, 0, 0)
-            align.add(Label("(Empty)"))
-            body_box.pack_start(align, True, True)
+            self.body_align = gtk.Alignment(0.5, 0.5, 0, 0)
+            self.body_align.add(Label("(Empty)"))            
+            
+        self.body_box.pack_start(self.body_align, True, True)
         
         footer_box = gtk.HBox()
         button_more = SelectButton("More Advanced Options... ")
@@ -179,7 +181,7 @@ class TrayPop(gtk.Window):
         
         main_box.pack_start(header_box, False, False, 5)
         main_box.pack_start(HSeparator(), False, False, 5)
-        main_box.pack_start(body_box, True, True)
+        main_box.pack_start(self.body_box, True, True)
         main_box.pack_end(footer_box, False, False, 5)        
         main_box.pack_end(HSeparator(), False, False, 5)
 
@@ -219,7 +221,6 @@ class TrayPop(gtk.Window):
             self.dismiss()
             
     def on_title_switch_toggled(self, widget):
-        print "toggled"
         if widget.get_active():
             preference.disable_bubble = False
         else:
@@ -227,6 +228,7 @@ class TrayPop(gtk.Window):
 
     def on_more_button_clicked(self, widget):
         DetailWindow().show_all()
+        self.dismiss()
         
         
     def on_left_btn_clicked(self, widget):
