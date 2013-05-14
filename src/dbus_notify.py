@@ -83,21 +83,21 @@ class Notifications(DBusProperty, DBusIntrospectable, dbus.service.Object):
     </method>
     <method name="Notify">
       <arg direction="in"  name="app_name"  type="s"     />
-      <arg direction="in"  name="id"        type="i"     />
+      <arg direction="in"  name="id"        type="u"     />
       <arg direction="in"  name="icon"      type="s"     />
       <arg direction="in"  name="summary"   type="s"     />
       <arg direction="in"  name="body"      type="s"     />
       <arg direction="in"  name="actions"   type="as"    />
       <arg direction="in"  name="hints"     type="a{sv}" />
       <arg direction="in"  name="timeout"   type="i"     />
-      <arg direction="out" name="id" type="i"     />
+      <arg direction="out" name="id" type="u"     />
     </method>
     <signal name="NotificationClosed">
-      <arg name="id" type="i" />
-      <arg name="reason" type="i" />
+      <arg name="id" type="u" />
+      <arg name="reason" type="u" />
     </signal>    
     <signal name="ActionInvoked">
-      <arg name="id" type="i" />
+      <arg name="id" type="u" />
       <arg name="action_key" type="s" />
     </signal>    
     """ 
@@ -113,7 +113,7 @@ class Notifications(DBusProperty, DBusIntrospectable, dbus.service.Object):
         
         self.id_cursor = long(0)
         
-    @dbus.service.method(NOTIFY_IFACE, in_signature="i")    
+    @dbus.service.method(NOTIFY_IFACE, in_signature="u")    
     def CloseNotification(self, replaces_id):
         print replaces_id
         
@@ -125,7 +125,7 @@ class Notifications(DBusProperty, DBusIntrospectable, dbus.service.Object):
     def GetServerInformation(self):
         return "Notifications", "LinuxDeepin", "0.1", "1.2"
     
-    @dbus.service.method(NOTIFY_IFACE, in_signature="sisssasa{sv}i", out_signature="i")    
+    @dbus.service.method(NOTIFY_IFACE, in_signature="susssasa{sv}i", out_signature="u")    
     def Notify(self, app_name, replaces_id, icon, summary, body, actions, hints, timeout):
         
         notify_storage = Storage({"app_name" : type_convert.dbus2py(app_name), 
@@ -140,7 +140,8 @@ class Notifications(DBusProperty, DBusIntrospectable, dbus.service.Object):
 
         event_manager.emit("notify", notify_storage)
         
-        # print app_name, replaces_id, icon, summary, body, actions, hints, timeout
-        self.id_cursor += 1
-        
-        return dbus.Int32(self.id_cursor)
+        if replaces_id:
+            return replaces_id
+        else:
+            self.id_cursor += 1
+            return dbus.UInt32()

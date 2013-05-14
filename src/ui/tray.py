@@ -24,6 +24,8 @@
 import gtk
 from ui.skin import app_theme
 from traypop import TrayPop
+from events import event_manager
+
 
 class TrayIcon(gtk.StatusIcon):    
     
@@ -34,6 +36,7 @@ class TrayIcon(gtk.StatusIcon):
         self.unread_items = []
 
         self.connect("button-press-event", self.on_button_press_event)
+        event_manager.connect("unread-increased", self.on_unread_increased)
         
     def on_button_press_event(self, widget, event):
         if event.button == 1:
@@ -48,6 +51,9 @@ class TrayIcon(gtk.StatusIcon):
         x, y, not_important = gtk.status_icon_position_menu(gtk.Menu(), self)
         
         return x + 7, y - 25
+    
+    def on_unread_increased(self, data):
+        self.unread_items.append(data)
             
     def show_unread(self):
         '''

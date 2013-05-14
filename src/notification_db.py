@@ -42,7 +42,6 @@ class NotificationDB:
             self.cursor.execute('''create table notifications (time text unique, message text) ''')
                 
     def add(self, time, message):
-        # if message.hints["urgency"] > 1:
         message = cPickle.dumps(message)
         try:
             self.cursor.execute('''insert into notifications values (?, ?)''', (time, message))

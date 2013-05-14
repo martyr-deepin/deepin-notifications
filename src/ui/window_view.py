@@ -666,12 +666,12 @@ class DetailWindow(Window):
             items_should_search_in = list(self.classified_items.itervalues())
         
         for item in items_should_search_in:
-            item_datetime = datetime.strptime(item.time, "%Y/%m/%d-%H:%M:%S")
+            item_datetime = datetime.strptime(item[TIME], "%Y/%m/%d-%H:%M:%S")
             if datetime.today() - item_datetime < search_timedelta:
                 total_search_result.append(item)
                 
         for item in total_search_result:
-            item_message = item.message
+            item_message = item[MESSAGE]
             if item_message.body.find(search_str) != -1:
                 yield item
             
@@ -681,24 +681,22 @@ class DetailWindow(Window):
         self.add_listview(list(search_result_iter))
         
     def on_toolbar_import_clicked(self, widget):
-        filename_to_import = ""
         def ok_clicked(filename):
             filename_to_import = filename
+            self.filename_to_import = filename
             
         def cancel_clicked():
             self.update_status_bar("Import cancelled.")
+            self.filename_to_import = ""
             
         OpenFileDialog("File To Import:", self, ok_clicked, None)
         
-        if not len(filename_to_import):
-            print "filename_to_import"
+        if len(self.filename_to_import) != 0:
             try:
-                db.import_db(filename_to_import)
+                db.import_db(self.filename_to_import)
             except Exception, e:
-                print "exception"
                 self.update_status_bar("Import failed, wrong file type!")
             else:
-                print "else"
                 self.update_status_bar("Import finished, congratulations!")        
         
     def on_toolbar_export_clicked(self, widget):

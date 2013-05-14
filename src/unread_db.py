@@ -50,7 +50,6 @@ class UnreadDB:
             print "Already in database."
         
     def remove(self, time_id):
-        print "remove", time_id
         self.cursor.execute('''delete from unread_notifications where time=?''', (time_id,))
         self.conn.commit()
         
@@ -79,6 +78,6 @@ unread_db = None
 if not os.path.exists(app_data_path):
     os.makedirs(app_data_path)
 if not os.path.exists(app_unread_db_path):
-    db = UnreadDB(app_unread_db_path, True)
+    unread_db = UnreadDB(app_unread_db_path, True)
 else:
-    db = UnreadDB(app_unread_db_path, False)
+    unread_db = UnreadDB(app_unread_db_path, False)

@@ -125,6 +125,7 @@ class ListviewFactory(object):
                 # Nobody care :(
                 self.listview.scroll_page_down()
                 self.listview.scroll_page_down() 
+            event_manager.emit("listview-scroll-page-down", None)
                 
     def on_listview_draw_mask(self, cr, x, y, w, h):
         cr.set_source_rgb(1, 1, 1)
