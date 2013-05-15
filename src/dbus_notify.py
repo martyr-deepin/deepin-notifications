@@ -145,3 +145,11 @@ class Notifications(DBusProperty, DBusIntrospectable, dbus.service.Object):
         else:
             self.id_cursor += 1
             return dbus.UInt32(self.id_cursor)
+    
+    @dbus.service.signal(NOTIFY_IFACE, signature='uu')
+    def NotificationClosed(self, id, reason):
+        pass
+    
+    @dbus.service.signal(NOTIFY_IFACE, signature='us')
+    def ActionInvoked(self, id, action_key):
+        pass
