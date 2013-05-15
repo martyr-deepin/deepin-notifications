@@ -251,11 +251,14 @@ class Bubble(gtk.Window):
     def start_destroy_animation(self):
         timeline = Timeline(self.animation_time, CURVE_SINE)
         timeline.connect("update", lambda source, status : self.set_opacity(1 - status))
-        timeline.connect("completed", lambda source : event_manager.emit("expire-completed", self))
+        timeline.connect("completed", self.destroy_animation_complete)
         timeline.run()
         return False
     
-        
+    def destroy_animation_complete(self, source):
+        event_manager.emit("expire-completed", self)
+        del self
+
     
     def move_up(self, move_up_height):
         
@@ -289,6 +292,7 @@ class Bubble(gtk.Window):
         self.level += 1
         self.win_y -= self.move_up_height
         if self.level >= 3:
+            gobject.source_remove(self.timeout_id)
             if self.get_opacity() > 0.5:
                 self.start_destroy_animation()
 

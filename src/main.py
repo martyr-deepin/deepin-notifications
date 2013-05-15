@@ -23,7 +23,7 @@
 from events import event_manager
 from ui.tray import trayicon
 from ui.bubble import Bubble
-from ui.utils import handle_message
+from ui.utils import handle_notification
 from notification_db import db
 from blacklist import blacklist
 from preference import preference
@@ -47,12 +47,12 @@ class DeepinNotification(object):
         import gtk
         gtk.main()
         
-    def on_notify(self, data):
+    def on_notify(self, notification):
         '''
         docs
         '''
          # replace hyper<a> with underline <u> AND place hyper actions in hints["x-deepin-hyperlinks"]
-        message = handle_message(data)
+        message = handle_notification(notification)
         
         height = 87 if len(message["actions"]) == 0 else 110
         create_time = datetime.now().strftime("%Y/%m/%d-%H:%M:%S")
@@ -63,16 +63,12 @@ class DeepinNotification(object):
         if not preference.disable_bubble:
             if message.app_name not in blacklist.bl:
                 self.notification_queue.append(Bubble(message, height, create_time))
-                if len(self.notification_queue) > 4:
-                    tmp = self.notification_queue.pop()
-                    del tmp
+                if len(self.notification_queue) > 3:
+                    self.notification_queue.pop()
                     
-        if message.hints["urgency"] > 1:
-            unread_db.add(create_time, message)
-            trayicon.set_pixbuf_from_file("msg_white2.png")                
-            event_manager.emit("unread-increased", (create_time, message))
+        trayicon.set_pixbuf_from_file("msg_white2.png")                
         db.add(create_time, message)
-
+        
         
     def mainloop_init(self):    
         import gobject
@@ -91,4 +87,3 @@ class DeepinNotification(object):
 
 if __name__ == "__main__":
     DeepinNotification()
-   

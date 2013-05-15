@@ -126,16 +126,16 @@ class Notifications(DBusProperty, DBusIntrospectable, dbus.service.Object):
         return "Notifications", "LinuxDeepin", "0.1", "1.2"
     
     @dbus.service.method(NOTIFY_IFACE, in_signature="susssasa{sv}i", out_signature="u")    
-    def Notify(self, app_name, replaces_id, icon, summary, body, actions, hints, timeout):
+    def Notify(self, app_name, replaces_id, app_icon, summary, body, actions, hints, timeout):
         
         notify_storage = Storage({"app_name" : type_convert.dbus2py(app_name), 
                                   "replaces_id" : type_convert.dbus2py(replaces_id),
-                                  "icon" : type_convert.dbus2py(icon),
+                                  "app_icon" : type_convert.dbus2py(app_icon),
                                   "summary" : type_convert.dbus2py(summary), 
                                   "body" : type_convert.dbus2py(body),
                                   "actions" : type_convert.dbus2py(actions),
                                   "hints" : type_convert.dbus2py(hints), 
-                                  "timeout" : type_convert.dbus2py(timeout)})
+                                  "expire_timeout" : type_convert.dbus2py(timeout)})
         
 
         event_manager.emit("notify", notify_storage)
