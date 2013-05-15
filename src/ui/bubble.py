@@ -143,8 +143,7 @@ class Bubble(gtk.Window):
             if pixbuf:    
                 return pixbuf
             else:
-                print "doing"
-                pixbuf = icon_manager.pixbuf_from_path(image_path, ICON_SIZE[0], ICON_SIZE[1])
+                pixbuf = icon_manager.pixbuf_from_path(app_icon, ICON_SIZE[0], ICON_SIZE[1])
                 if pixbuf:
                     return pixbuf
         
