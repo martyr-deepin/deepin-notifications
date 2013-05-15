@@ -40,7 +40,6 @@ WINDOW_OFFSET_WIDTH = 10
 WINDOW_OFFSET_HEIGHT = 0
 DOCK_HEIGHT = 35
 
-TIMEOUT = 5000
 
 CLOSE_OFFSET_WIDTH = 10
 CLOSE_OFFSET_HEIGHT = 8
@@ -67,18 +66,20 @@ class Bubble(gtk.Window):
     class docs
     '''
 	
-    def __init__(self, message, height, create_time):
+    def __init__(self, notification, height, create_time):
         '''
         init docs
         '''
         gtk.Window.__init__(self, gtk.WINDOW_POPUP)
-        self.message = message
+        self.notification = notification
         self.create_time = create_time
         self.init_size(height)
         self.init_pixbuf()
+        
         self.set_colormap(gtk.gdk.Screen().get_rgba_colormap() or gtk.gdk.Screen().get_rgb_colormap())
         self.set_keep_above(True)
         self.add_events(gtk.gdk.BUTTON_PRESS_MASK | gtk.gdk.POINTER_MOTION_MASK | gtk.gdk.POINTER_MOTION_HINT_MASK)
+        
         self.connect("expose-event", self.on_expose_event)
         self.connect("button-press-event", self.on_button_press_event)
         self.connect("motion-notify-event", self.on_motion_notify_event)
@@ -97,7 +98,7 @@ class Bubble(gtk.Window):
         self.set_opacity(0)
         self.show_all()
         self.fade_in()
-        self.timeout_id = gobject.timeout_add(TIMEOUT, self.start_destroy_animation)
+        self.timeout_id = gobject.timeout_add(self.notification.expire_timeout, self.start_destroy_animation)
         event_manager.connect("ready-to-move-up", self.move_up)
         event_manager.connect("manual-cancelled", self.move_down)
         
@@ -118,7 +119,7 @@ class Bubble(gtk.Window):
         self.set_size_request(self.window_width, self.window_height)    
         
     def get_icon_pixbuf(self):    
-        hints = self.message.hints
+        hints = self.notification.hints
         pixbuf = None
         image_data = hints.get("image-data", None) or hints.get("image_data", None)
         if image_data:
@@ -135,11 +136,16 @@ class Bubble(gtk.Window):
                 
         if pixbuf: return pixbuf        
         
-        app_icon = self.message.icon
+        app_icon = self.notification.app_icon
         if app_icon:
             pixbuf = icon_manager.pixbuf_from_icon_name(app_icon, ICON_SIZE[0])
         if pixbuf:    
             return pixbuf
+        else:
+            pixbuf = icon_manager.pixbuf_from_path(image_path, ICON_SIZE[0], ICON_SIZE[1])
+        if pixbuf:
+            return pixbuf
+        
         return self.default_icon
 
         
@@ -148,7 +154,7 @@ class Bubble(gtk.Window):
         self.bg_pixbuf = app_theme.get_pixbuf(pixbuf_file_name).get_pixbuf()
         
         self.default_icon = app_theme.get_pixbuf("icon.png").get_pixbuf()
-        self.message_icon = self.get_icon_pixbuf()
+        self.notification_icon = self.get_icon_pixbuf()
         
     
     def on_expose_event(self, widget, event):    
@@ -168,13 +174,13 @@ class Bubble(gtk.Window):
             
 
         cr.set_operator(cairo.OPERATOR_OVER)            
-        self.draw_message(cr, rect)
+        self.draw_notification(cr, rect)
         
         propagate_expose(widget, event)        
         
         return True
     
-    def draw_message(self, cr, rect):
+    def draw_notification(self, cr, rect):
         draw_pixbuf(cr, self.bg_pixbuf, rect.x, rect.y)
         
         icon_x = rect.x + self.close_rect.x
@@ -182,23 +188,23 @@ class Bubble(gtk.Window):
         draw_pixbuf(cr, self.close_pixbuf, icon_x, icon_y)
         
         # Draw app icon.
-        icon_x = APP_ICON_X + (APP_ICON_WIDTH  - self.message_icon.get_width()) / 2
-        icon_y = rect.y + (rect.height - self.message_icon.get_height()) / 2
-        draw_pixbuf(cr, self.message_icon, icon_x, icon_y)
+        icon_x = APP_ICON_X + (APP_ICON_WIDTH  - self.notification_icon.get_width()) / 2
+        icon_y = rect.y + (rect.height - self.notification_icon.get_height()) / 2
+        draw_pixbuf(cr, self.notification_icon, icon_x, icon_y)
         
         # Draw summary.
         
         
-        width, _height =  get_content_size(self.message.summary)
+        width, _height =  get_content_size(self.notification.summary)
         draw_text(cr, 
-                  "<b>%s</b>" % self.message.summary, 
+                  "<b>%s</b>" % self.notification.summary, 
                   rect.x + TEXT_X, rect.y + SUMMARY_TEXT_Y, 
                   TEXT_WIDTH - self.close_pixbuf.get_width(), _height,
                   text_color="#FFFFFF", text_size=10)
         
         #Draw body 
         body_text_y = SUMMARY_TEXT_Y + _height + TEXT_PADDING_Y
-        render_hyperlink_support_text(self, cr, self.message.body, 
+        render_hyperlink_support_text(self, cr, self.notification.body, 
                                       rect.x + TEXT_X, rect.y + body_text_y, 
                                       TEXT_WIDTH - self.close_pixbuf.get_width(),
                                       BODY_TEXT_HEIGHT,
@@ -229,7 +235,7 @@ class Bubble(gtk.Window):
             
         for index, rect in enumerate(self.pointer_hand_rectangles):
             if is_in_rect((event.x, event.y), rect):
-                action = self.message["hints"]["x-deepin-hyperlinks"][index]
+                action = self.notification["hints"]["x-deepin-hyperlinks"][index]
                 if action.has_key("href"):
                     webbrowser.open_new_tab(action.get("href"))
                 return
@@ -245,10 +251,11 @@ class Bubble(gtk.Window):
     def start_destroy_animation(self):
         timeline = Timeline(self.animation_time, CURVE_SINE)
         timeline.connect("update", lambda source, status : self.set_opacity(1 - status))
-        timeline.connect("completed", lambda source : self.destroy)
+        timeline.connect("completed", lambda source : event_manager.emit("expire-completed", self))
         timeline.run()
         return False
     
+        
     
     def move_up(self, move_up_height):
         
@@ -282,7 +289,6 @@ class Bubble(gtk.Window):
         self.level += 1
         self.win_y -= self.move_up_height
         if self.level >= 3:
-            gobject.source_remove(self.timeout_id)
             if self.get_opacity() > 0.5:
                 self.start_destroy_animation()
 

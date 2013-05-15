@@ -58,13 +58,12 @@ def get_hyperlink_support_str(raw_str):
     result["result"] = regex.sub(replace_hyper_with_underline, raw_str)
     return result
 
-def handle_message(message):
-    hyperlink_support_str = get_hyperlink_support_str(message["body"])
-    message["body"] = hyperlink_support_str["result"]
-    message["hints"]["x-deepin-hyperlinks"] = hyperlink_support_str["actions"]
-    if not message["hints"].has_key("urgency"):
-        message["hints"]["urgency"] = 1
-    return message
+def handle_notification(notification):
+    hyperlink_support_str = get_hyperlink_support_str(notification.body)
+    notification.body = hyperlink_support_str["result"]
+    notification.hints["x-deepin-hyperlinks"] = hyperlink_support_str["actions"]
+    
+    return notification
 
 def render_hyperlink_support_text(obj, cr, markup, 
                                   x, y, w, h, 

@@ -141,7 +141,7 @@ class Notifications(DBusProperty, DBusIntrospectable, dbus.service.Object):
         event_manager.emit("notify", notify_storage)
         
         if replaces_id:
-            return replaces_id
+            return dbus.UInt32(replaces_id)
         else:
             self.id_cursor += 1
-            return dbus.UInt32()
+            return dbus.UInt32(self.id_cursor)

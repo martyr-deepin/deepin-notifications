@@ -20,6 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import dbus
 import gobject
 from collections import namedtuple
 from dbus.exceptions import DBusException
@@ -164,7 +165,6 @@ class Server(ipc.Object):
     __gsignals__ = {
         'get-capabilities': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_PYOBJECT, ()), # required to return an array of strings
         'show-notification': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
-        'hide-notification': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
     }
 
     __ipc_signals__ = {
@@ -184,14 +184,19 @@ class Server(ipc.Object):
         self.notifications[notification.id] = notification
         self.emit('show-notification', notification)
 
-    def hide(self, notification):
-        del self.notifications[notification.id]
-        self.emit('hide-notification', notification)
 
     def close(self, notification, reason):
-        self.hide(notification)
+        if notification.id in self.notifications:
+            del self.notifications[notification.id]
+            
         self.emit_signal('NotificationClosed', notification.id, reason)
-
+     
+    def dismiss(self, notification):
+        self.close(notification, Reason.dismissed)
+        
+    def expire(self, notification):
+        self.close(notification, Reason.expired)
+        
     def invoke_action(self, notification, action_key):
         self.emit_signal('ActionInvoked', notification.id, action_key)
 
@@ -209,6 +214,7 @@ class Server(ipc.Object):
 
     @ipc.method('susssasa{sv}i', 'u')
     def Notify(self, app_name, replaces_id, app_icon, summary, body, actions, hints, expire_timeout):
+        expire_timeout = DEFAULT_EXPIRE_TIMEOUT
         notification = Notification(self.id_generator.next(),
                                     app_name,
                                     replaces_id,
@@ -218,16 +224,19 @@ class Server(ipc.Object):
                                     actions,
                                     hints,
                                     expire_timeout)
+        
         # setup expire timeout
-        if expire_timeout == Expires.default:
-            expire_timeout = DEFAULT_EXPIRE_TIMEOUT
-        if expire_timeout != Expires.never:
-            def _expire():
-                self.close(notification, Reason.expired)
-                return False
-            gobject.timeout_add(expire_timeout, _expire)
+        # if expire_timeout == Expires.default:
+        #     expire_timeout = DEFAULT_EXPIRE_TIMEOUT
+        # if expire_timeout != Expires.never:
+        #     def _expire():
+        #         self.close(notification, Reason.expired)
+        #         return False
+        #     gobject.timeout_add(expire_timeout, _expire)
+            
         # showtime
         self.show(notification)
+        
         return notification.id
 
     @ipc.method('', 'sss')

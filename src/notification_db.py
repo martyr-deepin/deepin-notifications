@@ -26,6 +26,23 @@ import cPickle
 import shutil
 import sqlite3
 
+from common import Storage
+from dbus_utils import type_convert
+
+
+def notification2storage(notification):
+    notify_storage = Storage({"app_name" : type_convert.dbus2py(notification.app_name),
+                              "replaces_id" : type_convert.dbus2py(notification.replaces_id),
+                              "app_icon" : type_convert.dbus2py(notification.app_icon),
+                              "summary" : type_convert.dbus2py(notification.summary),
+                              "body" : type_convert.dbus2py(notification.body),
+                              "actions" : type_convert.dbus2py(notification.action_array),
+                              "hints" : type_convert.dbus2py(notification.hints),
+                              "timeout" : type_convert.dbus2py(notification.expire_timeout)})
+    
+    return notify_storage
+
+
 class NotificationDB:
     '''
     class docs
@@ -41,10 +58,10 @@ class NotificationDB:
         if create:
             self.cursor.execute('''create table notifications (time text unique, message text) ''')
                 
-    def add(self, time, message):
-        message = cPickle.dumps(message)
+    def add(self, time, notification):
+        notification = cPickle.dumps(notification2storage(notification))
         try:
-            self.cursor.execute('''insert into notifications values (?, ?)''', (time, message))
+            self.cursor.execute('''insert into notifications values (?, ?)''', (time, notification))
             self.conn.commit()
         except Exception, e:
             print "Already in database."

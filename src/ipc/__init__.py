@@ -58,8 +58,8 @@ def get_object(modname, path=None, interface=None, bus=SESSION_BUS):
             interface
             )
 
-#class IpcError(Exception):
- #   pass
+class IpcError(Exception):
+   pass
 
 class ObjectMeta(dbus.service.InterfaceType, gobject.GObjectMeta):
 
