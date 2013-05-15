@@ -40,6 +40,7 @@ WINDOW_OFFSET_WIDTH = 10
 WINDOW_OFFSET_HEIGHT = 0
 DOCK_HEIGHT = 35
 
+EXPIRE_TIMEOUT = 5000
 
 CLOSE_OFFSET_WIDTH = 10
 CLOSE_OFFSET_HEIGHT = 8
@@ -84,7 +85,7 @@ class Bubble(gtk.Window):
         self.connect("button-press-event", self.on_button_press_event)
         self.connect("motion-notify-event", self.on_motion_notify_event)
         
-        self.animation_time = 500
+        self.animation_time = 300
         self.level = 1
         self.win_x, self.win_y = self._get_position()
         self.win_y += self.window_height
@@ -98,7 +99,7 @@ class Bubble(gtk.Window):
         self.set_opacity(0)
         self.show_all()
         self.fade_in()
-        self.timeout_id = gobject.timeout_add(self.notification.expire_timeout, self.start_destroy_animation)
+        self.timeout_id = gobject.timeout_add(EXPIRE_TIMEOUT, self.start_destroy_animation)
         event_manager.connect("ready-to-move-up", self.move_up)
         event_manager.connect("manual-cancelled", self.move_down)
         
@@ -139,12 +140,13 @@ class Bubble(gtk.Window):
         app_icon = self.notification.app_icon
         if app_icon:
             pixbuf = icon_manager.pixbuf_from_icon_name(app_icon, ICON_SIZE[0])
-        if pixbuf:    
-            return pixbuf
-        else:
-            pixbuf = icon_manager.pixbuf_from_path(image_path, ICON_SIZE[0], ICON_SIZE[1])
-        if pixbuf:
-            return pixbuf
+            if pixbuf:    
+                return pixbuf
+            else:
+                print "doing"
+                pixbuf = icon_manager.pixbuf_from_path(image_path, ICON_SIZE[0], ICON_SIZE[1])
+                if pixbuf:
+                    return pixbuf
         
         return self.default_icon
 

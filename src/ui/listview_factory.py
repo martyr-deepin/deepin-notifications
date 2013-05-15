@@ -122,9 +122,6 @@ class ListviewFactory(object):
                 items = self.paged_items[self.page_index]
                 self.listview.add_items(items)
                 
-                # Nobody care :(
-                self.listview.scroll_page_down()
-                self.listview.scroll_page_down() 
             event_manager.emit("listview-scroll-page-down", None)
                 
     def on_listview_draw_mask(self, cr, x, y, w, h):

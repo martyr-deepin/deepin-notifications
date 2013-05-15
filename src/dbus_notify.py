@@ -115,7 +115,7 @@ class Notifications(DBusProperty, DBusIntrospectable, dbus.service.Object):
         
     @dbus.service.method(NOTIFY_IFACE, in_signature="u")    
     def CloseNotification(self, replaces_id):
-        print replaces_id
+        return replaces_id
         
     @dbus.service.method(NOTIFY_IFACE, out_signature="as")    
     def GetCapabilities(self):
@@ -141,10 +141,10 @@ class Notifications(DBusProperty, DBusIntrospectable, dbus.service.Object):
         event_manager.emit("notify", notify_storage)
         
         if replaces_id:
-            return dbus.UInt32(replaces_id)
+            return replaces_id
         else:
             self.id_cursor += 1
-            return dbus.UInt32(self.id_cursor)
+            return self.id_cursor
     
     @dbus.service.signal(NOTIFY_IFACE, signature='uu')
     def NotificationClosed(self, id, reason):

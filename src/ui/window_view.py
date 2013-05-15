@@ -20,9 +20,10 @@
 # 
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+import re
 
-from dtk.ui.dialog import DialogBox, DIALOG_MASK_GLASS_PAGE, OpenFileDialog, SaveFileDialog, ConfirmDialog
-from dtk.ui.button import ImageButton
+from dtk.ui.dialog import OpenFileDialog, SaveFileDialog, ConfirmDialog
+from dtk.ui.button import ImageButton, CheckButton
 from dtk.ui.treeview import TreeView, TreeItem
 from dtk.ui.window import Window
 from dtk.ui.titlebar import Titlebar
@@ -325,12 +326,15 @@ class TreeViewItem(TreeItem):
 timedelta_dict = {
     "All" : timedelta.max,
     "Today" : timedelta(days=1),
-    "Last Week" : timedelta(weeks=1),
+    "Last week" : timedelta(weeks=1),
     "Latest month" : timedelta(days=31),
     "The last three months" : timedelta(days=93),
     "The recent year" : timedelta(days=365)
     }
     
+def comb_item_value_to_index(value):
+    return value + 1           
+
 
 class DetailWindow(Window):
     '''
@@ -411,7 +415,8 @@ class DetailWindow(Window):
         self.__init_data()
         if len(self.classified_items):
             self.add_treeview()        
-            self.add_listview(self.get_items_from_treeview_highlight())        
+            self.current_showed_items = self.get_items_from_treeview_highlight()
+            self.add_listview(self.current_showed_items)        
         else:
             align = gtk.Alignment(0.5, 0.5, 0, 0)
             align.add(Label("(Empty)"))
@@ -454,7 +459,12 @@ class DetailWindow(Window):
         if not item.is_parent:
             widget.set_highlight_item(item)
             
-            self.add_listview(self.get_items_from_treeview_highlight())
+            self.current_showed_items = self.get_items_from_treeview_highlight()
+            self.add_listview(self.current_showed_items)
+            
+            for comb_item in self.category_comb.items:
+                if comb_item.title == item.title:
+                    self.category_comb.set_select_index(comb_item_value_to_index(comb_item.item_value))
             
     def on_treeview_double_click_item(self, widget, item, column, x, y):
         if item.is_parent:
@@ -503,13 +513,7 @@ class DetailWindow(Window):
             if category in blacklist.bl:
                 treeview_item.is_in_blacklist = True
                 
-            category_first_message_hints = self.classified_items[category][0][MESSAGE]["hints"]
-            if category_first_message_hints.has_key("desktop-entry"):
-                desktop_file = category_first_message_hints["desktop-entry"] 
-                if "System" in xdg.DesktopEntry(desktop_file).get("Categories"):
-                    system_children.append(treeview_item)
-            else:
-                software_children.append(treeview_item)
+            software_children.append(treeview_item)
         
         root_ele_software.add_child_items(software_children)        
         self.treeview.draw_mask = self.on_treeview_draw_mask
@@ -519,11 +523,11 @@ class DetailWindow(Window):
         self.treeview.connect("single-click-item", self.on_treeview_click_item)
         self.treeview.connect("right-press-items", self.on_treeview_right_press_items)
         self.treeview.connect("double-click-item", self.on_treeview_double_click_item)
-
         
         container_remove_all(self.treeview_box)
         self.treeview_box.pack_start(self.treeview, True, True)
         self.treeview_box.show_all()
+        
         
     def add_listview(self, items):
         '''
@@ -536,6 +540,10 @@ class DetailWindow(Window):
             self.listview = self.factory.listview
             
             self.listview_box.pack_start(self.listview)
+        else:
+            empty_box_align = gtk.Alignment(0.5, 0.5, 0, 0)
+            empty_box_align.add(Label("(Empty)"))
+            self.listview_box.pack_start(empty_box_align)
             
         self.listview_box.show_all()
         
@@ -580,7 +588,6 @@ class DetailWindow(Window):
         self.titlebar_box.add(self.titlebar)
         
     def theme_callback(self, widget):
-        print "theme_callback"
         skin_window = SkinWindow(self.skin_preview_pixbuf)
         skin_window.show_all()
         place_center(self, skin_window)
@@ -610,18 +617,20 @@ class DetailWindow(Window):
 
         look_in_Label = Label("Look in")
         
-        self.category_comb = ComboBox([(item, index) for index, item in enumerate(self.classified_items)])
- 
-
+        self.category_comb = ComboBox([("All", 0)])
+        self.category_comb.add_items([(item, index) for index, item in enumerate(self.classified_items)], clear_first=False)
         self.time_comb = ComboBox([("Today", 0), 
-                              ("Last week", 1), 
-                              ("Latest month", 2),
-                              ("The last three months", 3),
-                              ("The recent year", 4),
-                              ("All", 5)
-                              ])
+                                   ("Last week", 1), 
+                                   ("Latest month", 2),
+                                   ("The last three months", 3),
+                                   ("The recent year", 4),
+                                   ("All", 5)
+                                   ])
+        
         self.category_comb.set_size_request(-1, TOOLBAR_ENTRY_HEIGHT)
+        self.category_comb.connect("item-selected", self.on_category_comb_item_selected)
         self.time_comb.set_size_request(-1, TOOLBAR_ENTRY_HEIGHT)
+        self.time_comb.connect("item-selected", self.on_time_comb_item_selected)        
         combos_box = gtk.HBox()
         combos_box.pack_start(self.category_comb, False, False, 5)
         combos_box.pack_start(self.time_comb, False, False)
@@ -633,7 +642,11 @@ class DetailWindow(Window):
 
         
         find_content_Label = Label("Find Content")
-        
+        # is_show_critical_align = gtk.Alignment(0.5, 0.5, 1, 1)
+        # is_show_critical_align.set_padding(padding_height, padding_height, 0, 0)
+        # is_show_critical = CheckButton("Show Urgent")
+        # is_show_critical_align.add(is_show_critical)
+                
 
         search_entry = SearchEntry("Search")
         search_entry.connect("action-active", self.on_search_entry_action_active)
@@ -650,30 +663,42 @@ class DetailWindow(Window):
         self.toolbar_box.pack_end(combos_box_align, False, False, 0) 
         self.toolbar_box.pack_end(look_in_Label, False, False, 5)       
         self.toolbar_box.pack_end(ToolbarSep(), False, False, 5)        
+        # self.toolbar_box.pack_end(is_show_critical_align, False, False)
+        # self.toolbar_box.pack_end(ToolbarSep(), False, False, 5)        
         
         
-    def get_search_result_iter(self, search_str):
-        search_category = self.category_comb.get_current_item()[0]
-        search_timedelta = timedelta_dict[self.time_comb.get_current_item()[0]]
+    def on_category_comb_item_selected(self, widget, item_title, item_value, item_index):
+        if item_title != "All":
+            for item in self.treeview.get_items():
+                if item.title == item_title:
+                    self.treeview.set_highlight_item(item)
+                    self.current_showed_items = self.get_items_from_treeview_highlight()
+                    self.add_listview(self.current_showed_items)
+                    break
         
-        total_search_result = []
-        
-        # self.classified_items don't have the key "All", but i can't added it in __init_data,
-        # otherwise, it will have some bad effect on treeview left.
-        if search_category != "All":
-            items_should_search_in = self.classified_items[search_category]
-        else:
-            items_should_search_in = list(self.classified_items.itervalues())
-        
-        for item in items_should_search_in:
-            item_datetime = datetime.strptime(item[TIME], "%Y/%m/%d-%H:%M:%S")
-            if datetime.today() - item_datetime < search_timedelta:
-                total_search_result.append(item)
                 
-        for item in total_search_result:
+    def on_time_comb_item_selected(self, widget, item_title, item_value, item_index):
+        if item_title != "All":
+            filtrated_result = []
+            for item in self.current_showed_items:
+                item_datetime = datetime.strptime(item[TIME], "%Y/%m/%d-%H:%M:%S")
+                if datetime.today() - item_datetime < timedelta_dict[item_title]:
+                    filtrated_result.append(item)
+            self.current_showed_items = filtrated_result
+            self.add_listview(filtrated_result)
+        
+                
+    def get_search_result_iter(self, search_str):
+        compiled_filter = re.compile(r"\w+")
+        filter_keywords = compiled_filter.findall(search_str)
+        
+        for item in self.current_showed_items:
             item_message = item[MESSAGE]
-            if item_message.body.find(search_str) != -1:
-                yield item
+            for keyword in filter_keywords:
+                print "from %s search %s result %s:" % (item_message.body, keyword, item_message.body.find(keyword) != -1)
+                if item_message.body.find(keyword) != -1:
+                    yield item
+                    continue
             
     def on_search_entry_action_active(self, widget, text):
         search_result_iter = self.get_search_result_iter(text)
@@ -682,7 +707,6 @@ class DetailWindow(Window):
         
     def on_toolbar_import_clicked(self, widget):
         def ok_clicked(filename):
-            filename_to_import = filename
             self.filename_to_import = filename
             
         def cancel_clicked():

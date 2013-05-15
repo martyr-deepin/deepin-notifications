@@ -36,16 +36,18 @@ from datetime import datetime
 class DeepinNotification(object):
     def __init__(self):
         
-        self.notification_queue = deque()
-
         self.mainloop_init()
+        
         import dbus_notify
         self.dbus = dbus_notify.Notifications()
         
+        self.notification_queue = deque()
+        
         event_manager.connect("notify", self.on_notify)
-                
+        
         import gtk
         gtk.main()
+                
         
     def on_notify(self, notification):
         '''
