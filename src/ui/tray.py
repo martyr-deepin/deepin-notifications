@@ -21,10 +21,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from datetime import datetime, timedelta
+
 import gtk
 from ui.skin import app_theme
 from traypop import TrayPop
 from events import event_manager
+from unread_db import unread_db
 
 
 class TrayIcon(gtk.StatusIcon):    
@@ -33,10 +36,8 @@ class TrayIcon(gtk.StatusIcon):
         gtk.StatusIcon.__init__(self)
         self.set_pixbuf_from_file("msg_white1.png")
         
-        self.unread_items = []
-
         self.connect("button-press-event", self.on_button_press_event)
-        event_manager.connect("unread-increased", self.on_unread_increased)
+        event_manager.connect("listview-items-added", self.on_traypop_listview_items_added)
         
     def on_button_press_event(self, widget, event):
         if event.button == 1:
@@ -52,8 +53,12 @@ class TrayIcon(gtk.StatusIcon):
         
         return x + 7, y - 25
     
-    def on_unread_increased(self, data):
-        self.unread_items.append(data)
+    def increase_unread(self, data):
+        self.unread_items = data
+        
+    def on_traypop_listview_items_added(self, items):
+        for item in items:
+            unread_db.remove(item.time)
             
     def show_unread(self):
         '''
@@ -65,5 +70,32 @@ class TrayIcon(gtk.StatusIcon):
         
         if self.pixbuf_file_name == "msg_white2.png":
             self.set_pixbuf_from_file("msg_white1.png")
-
+            
+            
+    def unread_items():
+        doc = "easy way to manage unread_items, like a variable"
+        
+        def fget(self):
+            db_all =  unread_db.get_all()
+            results = []
+            for item in db_all:
+                item_datetime = datetime.strptime(item[0], "%Y/%m/%d-%H:%M:%S")                
+                if datetime.today() - item_datetime < timedelta(days=1):
+                    results.append(item)
+                    
+            return results
+        
+        def fset(self, new_item):
+            create_time = new_item[0]
+            notification = new_item[1]
+            
+            # if notification.hints["x-deepin-important"] == True:
+            unread_db.add(create_time, notification)
+            self.set_pixbuf_from_file("msg_white2.png")
+                
+        return locals()
+        
+    unread_items = property(**unread_items())
+        
+            
 trayicon = TrayIcon()

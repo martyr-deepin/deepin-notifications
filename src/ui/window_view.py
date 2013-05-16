@@ -20,10 +20,9 @@
 # 
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import re
 
 from dtk.ui.dialog import OpenFileDialog, SaveFileDialog, ConfirmDialog
-from dtk.ui.button import ImageButton, CheckButton
+from dtk.ui.button import ImageButton
 from dtk.ui.treeview import TreeView, TreeItem
 from dtk.ui.window import Window
 from dtk.ui.titlebar import Titlebar
@@ -32,16 +31,16 @@ from dtk.ui.menu import Menu
 from dtk.ui.draw import draw_text, draw_pixbuf, draw_vlinear
 from dtk.ui.entry import InputEntry
 from dtk.ui.combo import ComboBox
-from dtk.ui.utils import container_remove_all, place_center
+from dtk.ui.utils import container_remove_all, place_center, get_content_size
 from dtk.ui.skin import SkinWindow
 from dtk.ui.cache_pixbuf import CachePixbuf
 
-import xdg
 from ui.skin import app_theme
 from ui.listview_factory import ListviewFactory
 from ui.utils import draw_line, draw_single_mask
 from notification_db import db
 from blacklist import blacklist
+from nls import _
 
 import gtk
 import pango
@@ -88,9 +87,8 @@ class ToolbarSep(gtk.HBox):
                                                (0.5, ("#2b2b2b", 0.5)), 
                                                (1, ("#ffffff", 0))])
         
-        
+
 TOOLBAR_ITEM_HEIGHT = 30
-TOOLBAR_ITEM_WIDTH = 70
 
 class ToolbarItem(gtk.Button):
     '''
@@ -106,11 +104,13 @@ class ToolbarItem(gtk.Button):
         self.pixbuf = pixbuf
         self.content = content
         
-        self.set_size_request(TOOLBAR_ITEM_WIDTH, TOOLBAR_ITEM_HEIGHT)
+        self.pixbuf_width = self.pixbuf.get_width()
+        self.pixbuf_height = self.pixbuf.get_height()
+        self.content_width, self.content_height = get_content_size(content)
+        
+        self.set_size_request(self.pixbuf_width + self.content_width + 10, TOOLBAR_ITEM_HEIGHT)
         self.connect("expose-event", self.on_expose_event)
         
-    def get_pixbuf_size(self):
-        return (self.pixbuf.get_width(), self.pixbuf.get_height())        
 
     def on_expose_event(self, widget, event):
         '''
@@ -131,12 +131,11 @@ class ToolbarItem(gtk.Button):
         
         draw_pixbuf(cr, self.pixbuf, rect.x, rect.y + 5)
         
-        (pixbuf_width, pixbuf_height) = self.get_pixbuf_size()
         draw_text(cr, self.content,
-                  rect.x + pixbuf_width + 2,
+                  rect.x + self.pixbuf_width + 2,
                   rect.y + 8,
-                  rect.width - pixbuf_width,
-                  rect.height - pixbuf_height
+                  rect.width - self.pixbuf_width,
+                  rect.height - self.pixbuf_height
                   )
             
         return True
@@ -158,8 +157,13 @@ class SearchEntry(InputEntry):
         
         super(SearchEntry, self).__init__(action_button=entry_button, *args, **kwargs)        
         
+        self.entry.place_holder = _("Search")
+        self.entry.connect("press-return", self.on_entry_enter_press)
         self.action_button = entry_button
         self.set_size(150, TOOLBAR_ENTRY_HEIGHT + 2)
+        
+    def on_entry_enter_press(self, sender):    
+        self.emit("action-active", self.get_text())
         
 gobject.type_register(SearchEntry)        
 
@@ -292,7 +296,9 @@ class TreeViewItem(TreeItem):
             else:
                 pixbuf = pixbuf_arrow_right
                 
-            draw_pixbuf(cr, pixbuf, rect.x + rect.width - 80, rect.y + 10)
+            content_width, content_height = get_content_size(self.title)
+                
+            draw_pixbuf(cr, pixbuf, rect.x + content_width + 20,  rect.y + 10)
 
             
         temp_text = self.title if self.is_parent else " - " + self.title
@@ -324,12 +330,12 @@ class TreeViewItem(TreeItem):
         
                               
 timedelta_dict = {
-    "All" : timedelta.max,
-    "Today" : timedelta(days=1),
-    "Last week" : timedelta(weeks=1),
-    "Latest month" : timedelta(days=31),
-    "The last three months" : timedelta(days=93),
-    "The recent year" : timedelta(days=365)
+    5 : timedelta.max,
+    0 : timedelta(days=1),
+    1 : timedelta(weeks=1),
+    2 : timedelta(days=31),
+    3 : timedelta(days=93),
+    4 : timedelta(days=365)
     }
     
 def comb_item_value_to_index(value):
@@ -419,7 +425,7 @@ class DetailWindow(Window):
             self.add_listview(self.current_showed_items)        
         else:
             align = gtk.Alignment(0.5, 0.5, 0, 0)
-            align.add(Label("(Empty)"))
+            align.add(Label(_("(Empty)")))
             container_remove_all(self.treeview_box)
             container_remove_all(self.listview_box)
             self.listview_box.pack_start(align, True, True)
@@ -490,9 +496,9 @@ class DetailWindow(Window):
             
             menu_items = []
             if current_item.title in blacklist.bl:
-                menu_items.append((None, "Remove from Blacklist", on_remove_from_bl))
+                menu_items.append((None, _("Remove from Blacklist"), on_remove_from_bl))
             else:
-                menu_items.append((None, "Add to Blacklist", on_add_to_bl))
+                menu_items.append((None, _("Add to Blacklist"), on_add_to_bl))
     
             Menu(menu_items, True).show((int(root_x), int(root_y)))
         
@@ -501,8 +507,8 @@ class DetailWindow(Window):
         
         categories = self.classified_items.keys()
         # root eles
-        root_ele_software = TreeViewItem("Software Messages", True)
-        root_ele_system = TreeViewItem("System Message", True)
+        root_ele_software = TreeViewItem(_("Software Messages"), True)
+        root_ele_system = TreeViewItem(_("System Message"), True)
         self.treeview = TreeView([root_ele_software, root_ele_system], expand_column=0)
         
         # add child items , CAN'T add_child_items before treeview constructed
@@ -600,13 +606,13 @@ class DetailWindow(Window):
         toolbar_btn_box = gtk.HBox()
         toolbar_btn_box_align = gtk.Alignment(0.5, 0.5, 0, 0)
         
-        import_btn = ToolbarItem(self.import_btn_pixbuf, "Import")
+        import_btn = ToolbarItem(self.import_btn_pixbuf, _("Import"))
         import_btn.connect("clicked", self.on_toolbar_import_clicked)
-        export_btn = ToolbarItem(self.export_btn_pixbuf, "Export")
+        export_btn = ToolbarItem(self.export_btn_pixbuf, _("Export"))
         export_btn.connect("clicked", self.on_toolbar_export_clicked)
-        delete_btn = ToolbarItem(self.delete_btn_pixbuf, "Delete")
+        delete_btn = ToolbarItem(self.delete_btn_pixbuf, _("Delete"))
         delete_btn.connect("clicked", self.on_toolbar_delete_clicked)
-        refresh_btn = ToolbarItem(self.refresh_btn_pixbuf, "Refresh")
+        refresh_btn = ToolbarItem(self.refresh_btn_pixbuf, _("Refresh"))
         refresh_btn.connect("clicked", self.on_toolbar_refresh_clicked)
         
         toolbar_btn_box.pack_start(import_btn, False, False, 2)
@@ -615,16 +621,16 @@ class DetailWindow(Window):
         toolbar_btn_box.pack_start(refresh_btn, False, False, 2)
         toolbar_btn_box_align.add(toolbar_btn_box)
 
-        look_in_Label = Label("Look in")
+        look_in_Label = Label(_("Look in"))
         
-        self.category_comb = ComboBox([("All", 0)])
+        self.category_comb = ComboBox([(_("All"), 0)])
         self.category_comb.add_items([(item, index) for index, item in enumerate(self.classified_items)], clear_first=False)
-        self.time_comb = ComboBox([("Today", 0), 
-                                   ("Last week", 1), 
-                                   ("Latest month", 2),
-                                   ("The last three months", 3),
-                                   ("The recent year", 4),
-                                   ("All", 5)
+        self.time_comb = ComboBox([(_("Today"), 0), 
+                                   (_("Last week"), 1), 
+                                   (_("Latest month"), 2), 
+                                   (_("The last three months"), 3),
+                                   (_("The recent year"), 4),
+                                   (_("All"), 5)
                                    ])
         
         self.category_comb.set_size_request(-1, TOOLBAR_ENTRY_HEIGHT)
@@ -641,14 +647,14 @@ class DetailWindow(Window):
         combos_box_align.add(combos_box)
 
         
-        find_content_Label = Label("Find Content")
+        find_content_Label = Label(_("Find Content"))
         # is_show_critical_align = gtk.Alignment(0.5, 0.5, 1, 1)
         # is_show_critical_align.set_padding(padding_height, padding_height, 0, 0)
         # is_show_critical = CheckButton("Show Urgent")
         # is_show_critical_align.add(is_show_critical)
                 
 
-        search_entry = SearchEntry("Search")
+        search_entry = SearchEntry()
         search_entry.connect("action-active", self.on_search_entry_action_active)
         search_entry_align = gtk.Alignment(0.5, 0.5, 1, 1)
         search_entry_align.set_padding(padding_height, padding_height, 5, 5)
@@ -678,19 +684,20 @@ class DetailWindow(Window):
         
                 
     def on_time_comb_item_selected(self, widget, item_title, item_value, item_index):
-        if item_title != "All":
+        if item_value != 5:
             filtrated_result = []
             for item in self.current_showed_items:
                 item_datetime = datetime.strptime(item[TIME], "%Y/%m/%d-%H:%M:%S")
-                if datetime.today() - item_datetime < timedelta_dict[item_title]:
+                if datetime.today() - item_datetime < timedelta_dict[item_value]:
                     filtrated_result.append(item)
             self.current_showed_items = filtrated_result
             self.add_listview(filtrated_result)
         
                 
     def get_search_result_iter(self, search_str):
-        compiled_filter = re.compile(r"\w+")
-        filter_keywords = compiled_filter.findall(search_str)
+        # compiled_filter = re.compile(r"\w+")
+        # filter_keywords = compiled_filter.findall(search_str)
+        filter_keywords = search_str.split()
         
         for item in self.current_showed_items:
             item_message = item[MESSAGE]
@@ -710,29 +717,29 @@ class DetailWindow(Window):
             self.filename_to_import = filename
             
         def cancel_clicked():
-            self.update_status_bar("Import cancelled.")
+            self.update_status_bar(_("Import cancelled."))
             self.filename_to_import = ""
             
-        OpenFileDialog("File To Import:", self, ok_clicked, None)
+        OpenFileDialog(_("File To Import:"), self, ok_clicked, None)
         
         if len(self.filename_to_import) != 0:
             try:
                 db.import_db(self.filename_to_import)
             except Exception, e:
-                self.update_status_bar("Import failed, wrong file type!")
+                self.update_status_bar(_("Import failed, wrong file type!"))
             else:
-                self.update_status_bar("Import finished, congratulations!")        
+                self.update_status_bar(_("Import finished, congratulations!"))        
         
     def on_toolbar_export_clicked(self, widget):
         
         def ok_clicked(filename):
             db.export_db(filename)
-            self.update_status_bar("Export Succeed!!!")
+            self.update_status_bar(_("Export Succeed!!!"))
             
         def cancel_clicked():
-            self.update_status_bar("Export cancelled!")
+            self.update_status_bar(_("Export cancelled!"))
             
-        SaveFileDialog("File To Export:", self, ok_clicked, None)
+        SaveFileDialog(_("File To Export:"), self, ok_clicked, None)
         
         
     def on_toolbar_delete_clicked(self, widget):
@@ -741,11 +748,11 @@ class DetailWindow(Window):
                 db.remove(self.listview.visible_items[row].time)
                 
             self.listview.delete_items([self.listview.visible_items[row] for row in self.listview.select_rows])            
-            self.update_status_bar("Deteted!")
+            self.update_status_bar(_("Deleted!"))
                 
         dialog = ConfirmDialog(
-                "Delete skin",
-                "Are you sure delete selected items?",
+                _("Delete item"),
+                _("Are you sure delete selected items?"),
                 confirm_callback = on_ok_clicked)
         dialog.show_all()
         
@@ -753,7 +760,7 @@ class DetailWindow(Window):
     def on_toolbar_refresh_clicked(self, widget):
         self.refresh_view()
         
-        self.update_status_bar("View has been refreshed!")
+        self.update_status_bar(_("View has been refreshed!"))
         
         
     def update_status_bar(self, message):

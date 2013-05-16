@@ -1,0 +1,154 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-05-16 12:10+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../src/ui/window_view.py:160
+msgid "Search"
+msgstr ""
+
+#: ../src/ui/window_view.py:428 ../src/ui/traypop.py:174
+msgid "(Empty)"
+msgstr ""
+
+#: ../src/ui/window_view.py:499
+msgid "Remove from Blacklist"
+msgstr ""
+
+#: ../src/ui/window_view.py:501
+msgid "Add to Blacklist"
+msgstr ""
+
+#: ../src/ui/window_view.py:510
+msgid "Software Messages"
+msgstr ""
+
+#: ../src/ui/window_view.py:511
+msgid "System Message"
+msgstr ""
+
+#: ../src/ui/window_view.py:609
+msgid "Import"
+msgstr ""
+
+#: ../src/ui/window_view.py:611
+msgid "Export"
+msgstr ""
+
+#: ../src/ui/window_view.py:613
+msgid "Delete"
+msgstr ""
+
+#: ../src/ui/window_view.py:615
+msgid "Refresh"
+msgstr ""
+
+#: ../src/ui/window_view.py:624
+msgid "Look in"
+msgstr ""
+
+#: ../src/ui/window_view.py:626 ../src/ui/window_view.py:633
+msgid "All"
+msgstr ""
+
+#: ../src/ui/window_view.py:628
+msgid "Today"
+msgstr ""
+
+#: ../src/ui/window_view.py:629
+msgid "Last week"
+msgstr ""
+
+#: ../src/ui/window_view.py:630
+msgid "Latest month"
+msgstr ""
+
+#: ../src/ui/window_view.py:631
+msgid "The last three months"
+msgstr ""
+
+#: ../src/ui/window_view.py:632
+msgid "The recent year"
+msgstr ""
+
+#: ../src/ui/window_view.py:650
+msgid "Find Content"
+msgstr ""
+
+#: ../src/ui/window_view.py:720
+msgid "Import cancelled."
+msgstr ""
+
+#: ../src/ui/window_view.py:723
+msgid "File To Import:"
+msgstr ""
+
+#: ../src/ui/window_view.py:729
+msgid "Import failed, wrong file type!"
+msgstr ""
+
+#: ../src/ui/window_view.py:731
+msgid "Import finished, congratulations!"
+msgstr ""
+
+#: ../src/ui/window_view.py:737
+msgid "Export Succeed!!!"
+msgstr ""
+
+#: ../src/ui/window_view.py:740
+msgid "Export cancelled!"
+msgstr ""
+
+#: ../src/ui/window_view.py:742
+msgid "File To Export:"
+msgstr ""
+
+#: ../src/ui/window_view.py:751
+msgid "Deleted!"
+msgstr ""
+
+#: ../src/ui/window_view.py:754
+msgid "Delete item"
+msgstr ""
+
+#: ../src/ui/window_view.py:755
+msgid "Are you sure delete selected items?"
+msgstr ""
+
+#: ../src/ui/window_view.py:763
+msgid "View has been refreshed!"
+msgstr ""
+
+#: ../src/ui/traypop.py:158
+msgid "Message View"
+msgstr ""
+
+#: ../src/ui/traypop.py:160
+msgid "Close Notification"
+msgstr ""
+
+#: ../src/ui/traypop.py:179
+msgid "More Advanced Options... "
+msgstr ""
+
+#: ../src/ui/listview_factory.py:110
+msgid "The content of the message"
+msgstr ""
+
+#: ../src/ui/listview_factory.py:110
+msgid "Time"
+msgstr ""

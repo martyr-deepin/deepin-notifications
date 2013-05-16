@@ -37,6 +37,7 @@ from ui.window_view import DetailWindow
 from ui.skin import app_theme
 from ui.listview_factory import ListviewFactory
 from ui.utils import (root_coords_to_widget_coords, draw_round_rectangle_with_triangle)
+from nls import _
 
 
 ARROW_WIDHT = 10
@@ -154,9 +155,9 @@ class TrayPop(gtk.Window):
         header_box = gtk.HBox()
         title_image = gtk.Image()
         title_image.set_from_pixbuf(self.title_pixbuf)
-        title_label = Label("Message View", text_size=FONT_SIZE)
+        title_label = Label(_("Message View"), text_size=FONT_SIZE)
         title_switch = SwitchButton(not preference.disable_bubble)
-        title_switch.set_tooltip_text("No more notifications")
+        title_switch.set_tooltip_text(_("Close Notification"))
         title_switch.connect("toggled", self.on_title_switch_toggled)
         header_box.pack_end(title_switch, False, False, 5)
         header_box.pack_start(title_image, False, False, 5)
@@ -170,12 +171,12 @@ class TrayPop(gtk.Window):
             self.body_align.add(self.listview_factory.listview)
         else:
             self.body_align = gtk.Alignment(0.5, 0.5, 0, 0)
-            self.body_align.add(Label("(Empty)"))            
+            self.body_align.add(Label(_("(Empty)")))            
             
         self.body_box.pack_start(self.body_align, True, True)
         
         footer_box = gtk.HBox()
-        button_more = SelectButton("More Advanced Options... ")
+        button_more = SelectButton(_("More Advanced Options... "))
         button_more.connect("clicked", self.on_more_button_clicked)
         footer_box.pack_start(button_more, True, True)
         

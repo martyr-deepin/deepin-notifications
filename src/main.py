@@ -27,7 +27,6 @@ from ui.utils import handle_notification
 from notification_db import db
 from blacklist import blacklist
 from preference import preference
-from unread_db import unread_db
 
 from collections import deque
 from datetime import datetime
@@ -68,7 +67,7 @@ class DeepinNotification(object):
                 if len(self.notification_queue) > 3:
                     self.notification_queue.pop()
                     
-        trayicon.set_pixbuf_from_file("msg_white2.png")                
+        trayicon.increase_unread((create_time, message))
         db.add(create_time, message)
         
         

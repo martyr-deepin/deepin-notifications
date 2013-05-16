@@ -34,6 +34,7 @@ from dtk.ui.utils import is_in_rect, color_hex_to_cairo
 from events import event_manager
 from notification_db import db
 from ui.utils import render_hyperlink_support_text, draw_single_mask
+from nls import _
 
 
 TIME = 0
@@ -106,13 +107,15 @@ class ListviewFactory(object):
         self.listview.set_expand_column(0)
         
         if self.owner == "detail":
-            self.listview.set_column_titles(["The content of the message", "Time"],
+            self.listview.set_column_titles([_("The content of the message"), _("Time")],
                                             [self.sort_by_content, self.sort_by_time])
         
         self.listview.draw_area.connect_after("button-press-event", self.on_listview_button_pressed, self.listview)
         self.listview.draw_area.connect_after("motion-notify-event", self.on_listview_motion_notify, self.listview)
         self.listview.connect("right-press-items", self.on_listview_right_press_items)
         self.listview.scrolled_window.connect("vscrollbar-state-changed", self.update_listview)
+        
+        event_manager.emit("listview-items-added", items)
         
     def update_listview(self, widget, state):
         if state == "bottom":
@@ -122,7 +125,7 @@ class ListviewFactory(object):
                 items = self.paged_items[self.page_index]
                 self.listview.add_items(items)
                 
-            event_manager.emit("listview-scroll-page-down", None)
+            event_manager.emit("listview-items-added", items)
                 
     def on_listview_draw_mask(self, cr, x, y, w, h):
         cr.set_source_rgb(1, 1, 1)
@@ -311,7 +314,7 @@ class ListViewItem(TreeItem):
         if self.owner == "detail":
             text = self.time.replace('-', ' ')
         else:
-            text = self.time.split("-")[1]
+            text = self.time.split("-")[1][:-3]
             
         draw_text(cr, text, rect.x + 20,
                   rect.y + 10, rect.width,
