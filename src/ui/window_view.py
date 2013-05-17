@@ -299,7 +299,7 @@ class TreeViewItem(TreeItem):
             draw_pixbuf(cr, pixbuf, rect.x + content_width + 20,  rect.y + 10)
 
             
-        draw_text(cr, self.title,
+        draw_text(cr, " " + self.title,
                   rect.x + self.draw_padding_x + left_pixbuf_width, 
                   rect.y,
                   rect.width - self.draw_padding_x * 2, 

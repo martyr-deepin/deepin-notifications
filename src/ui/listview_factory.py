@@ -23,6 +23,7 @@
 import webbrowser
 
 import gtk
+import cairo
 import pango
 
 from dtk.ui.menu import Menu
@@ -76,7 +77,6 @@ class ListviewFactory(object):
                             
                             return
                         
-        
             
     
     def on_listview_motion_notify(self, widget, event, listview):
@@ -125,7 +125,7 @@ class ListviewFactory(object):
                 items = self.paged_items[self.page_index]
                 self.listview.add_items(items)
                 
-            event_manager.emit("listview-items-added", items)
+                event_manager.emit("listview-items-added", items)
                 
     def on_listview_draw_mask(self, cr, x, y, w, h):
         cr.set_source_rgb(1, 1, 1)
@@ -261,6 +261,11 @@ class ListViewItem(TreeItem):
         
         
     def render_content(self, cr, rect):        
+        if self.row_index % 2:
+            cr.rectangle(*rect)
+            cr.set_source_rgba(0, 0, 1, 0.05)
+            cr.fill()
+        
         # Draw select background.
         if self.owner == "detail":
             if self.is_select:    
@@ -293,6 +298,11 @@ class ListViewItem(TreeItem):
                                       alignment=pango.ALIGN_LEFT)    
         
     def render_time(self, cr, rect):    
+        if self.row_index % 2:
+            cr.rectangle(*rect)
+            cr.set_source_rgba(0, 0, 1, 0.05)
+            cr.fill()
+        
         if self.owner == "detail":
             if self.is_select:    
                 draw_single_mask(cr, rect.x, rect.y, rect.width, rect.height, "globalItemSelect")

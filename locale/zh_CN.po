@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-16 12:10+0800\n"
+"POT-Creation-Date: 2013-05-17 10:34+0800\n"
 "PO-Revision-Date: 2013-05-16 10:59+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,122 +17,95 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../src/ui/window_view.py:160
+#: ../src/ui/window_view.py:158
 msgid "Search"
 msgstr "搜索"
 
-#: ../src/ui/window_view.py:428 ../src/ui/traypop.py:174
+#: ../src/ui/window_view.py:416 ../src/ui/traypop.py:174
 msgid "(Empty)"
 msgstr "(空)"
 
-#: ../src/ui/window_view.py:499
+#: ../src/ui/window_view.py:489
 msgid "Remove from Blacklist"
 msgstr "从黑名单移除"
 
-#: ../src/ui/window_view.py:501
+#: ../src/ui/window_view.py:491
 msgid "Add to Blacklist"
 msgstr "加入黑名单"
 
-#: ../src/ui/window_view.py:510
+#: ../src/ui/window_view.py:500
 msgid "Software Messages"
 msgstr "软件信息"
 
-#: ../src/ui/window_view.py:511
+#: ../src/ui/window_view.py:501
 msgid "System Message"
 msgstr "系统信息"
 
-#: ../src/ui/window_view.py:609
+#: ../src/ui/window_view.py:591
 msgid "Import"
 msgstr "导入"
 
-#: ../src/ui/window_view.py:611
+#: ../src/ui/window_view.py:593
 msgid "Export"
 msgstr "导出"
 
-#: ../src/ui/window_view.py:613
+#: ../src/ui/window_view.py:595
 msgid "Delete"
 msgstr "删除"
 
-#: ../src/ui/window_view.py:615
+#: ../src/ui/window_view.py:597
 msgid "Refresh"
 msgstr "刷新"
 
-#: ../src/ui/window_view.py:624
+#: ../src/ui/window_view.py:606
 msgid "Look in"
 msgstr "查找"
 
-#: ../src/ui/window_view.py:626 ../src/ui/window_view.py:633
+#: ../src/ui/window_view.py:608 ../src/ui/window_view.py:615
 msgid "All"
 msgstr "所有"
 
-#: ../src/ui/window_view.py:628
+#: ../src/ui/window_view.py:610
 msgid "Today"
 msgstr "今天"
 
-#: ../src/ui/window_view.py:629
+#: ../src/ui/window_view.py:611
 msgid "Last week"
 msgstr "上一周"
 
-#: ../src/ui/window_view.py:630
+#: ../src/ui/window_view.py:612
 msgid "Latest month"
 msgstr "上一月"
 
-#: ../src/ui/window_view.py:631
+#: ../src/ui/window_view.py:613
 msgid "The last three months"
 msgstr "前三月"
 
-#: ../src/ui/window_view.py:632
+#: ../src/ui/window_view.py:614
 msgid "The recent year"
 msgstr "最近一年"
 
-#: ../src/ui/window_view.py:650
+#: ../src/ui/window_view.py:632
 msgid "Find Content"
 msgstr "查找内容"
 
-#: ../src/ui/window_view.py:720
-msgid "Import cancelled."
-msgstr "导入取消！"
-
-#: ../src/ui/window_view.py:723
+#: ../src/ui/window_view.py:696
 msgid "File To Import:"
 msgstr "选择要导入的文件："
 
-#: ../src/ui/window_view.py:729
-msgid "Import failed, wrong file type!"
-msgstr "导入失败，文件类型错误！"
-
-#: ../src/ui/window_view.py:731
-msgid "Import finished, congratulations!"
-msgstr "导入完成！"
-
-#: ../src/ui/window_view.py:737
-msgid "Export Succeed!!!"
-msgstr "导出完成！"
-
-#: ../src/ui/window_view.py:740
-msgid "Export cancelled!"
-msgstr "导出取消！"
-
-#: ../src/ui/window_view.py:742
+#: ../src/ui/window_view.py:709
 msgid "File To Export:"
 msgstr "导出到文件："
 
-#: ../src/ui/window_view.py:751
+#: ../src/ui/window_view.py:720 ../src/ui/listview_factory.py:146
+#: ../src/ui/listview_factory.py:158
 #, fuzzy
-msgid "Deleted!"
-msgstr "已删除！"
-
-#: ../src/ui/window_view.py:754
-msgid "Delete item"
+msgid "Delete items"
 msgstr "删除条目"
 
-#: ../src/ui/window_view.py:755
+#: ../src/ui/window_view.py:721 ../src/ui/listview_factory.py:147
 msgid "Are you sure delete selected items?"
 msgstr "确定删除选中项吗？"
-
-#: ../src/ui/window_view.py:763
-msgid "View has been refreshed!"
-msgstr "视图已刷新！"
 
 #: ../src/ui/traypop.py:158
 msgid "Message View"
@@ -153,3 +126,18 @@ msgstr "消息内容"
 #: ../src/ui/listview_factory.py:110
 msgid "Time"
 msgstr "时间"
+
+#: ../src/ui/listview_factory.py:159
+#, fuzzy
+msgid "Are you sure delete all items?"
+msgstr "确定删除选中项吗？"
+
+#: ../src/ui/listview_factory.py:164
+msgid "Delete selected record"
+msgstr "删除选中条目"
+
+#: ../src/ui/listview_factory.py:165
+msgid "Delete all record"
+msgstr "删除所有条目"
+
+
