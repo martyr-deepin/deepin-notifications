@@ -143,8 +143,8 @@ class ListviewFactory(object):
                         widget.delete_items(select_items)                    
                 
                 dialog = ConfirmDialog(
-                    "Delete skin",
-                    "Are you sure delete selected items?",
+                    _("Delete items"),
+                    _("Are you sure delete selected items?"),
                     confirm_callback = on_ok_clicked)
                 dialog.show_all()
                 
@@ -155,14 +155,14 @@ class ListviewFactory(object):
                     widget.clear()
 
                 dialog = ConfirmDialog(
-                    "Delete skin",
-                    "Are you sure delete all items?",
+                    _("Delete items"),
+                    _("Are you sure delete all items?"),
                     confirm_callback = on_ok_clicked)
                 dialog.show_all()
                 
                 
-            Menu([(None, "Delete selected record", on_delete_selected_record),
-                  (None, "Delete all record", on_delete_all_record)], True).show((root_x, root_y))
+            Menu([(None, _("Delete selected record"), on_delete_selected_record),
+                  (None, _("Delete all record"), on_delete_all_record)], True).show((root_x, root_y))
         
         
     def get_paged_items(self):

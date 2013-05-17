@@ -31,8 +31,7 @@ from dtk.ui.menu import Menu
 from dtk.ui.draw import draw_text, draw_pixbuf, draw_vlinear
 from dtk.ui.entry import InputEntry
 from dtk.ui.combo import ComboBox
-from dtk.ui.utils import container_remove_all, place_center, get_content_size
-from dtk.ui.skin import SkinWindow
+from dtk.ui.utils import container_remove_all, get_content_size
 from dtk.ui.cache_pixbuf import CachePixbuf
 
 from ui.skin import app_theme
@@ -55,7 +54,6 @@ WINDOW_WIDTH = 1000
 WINDOW_HEIGHT = 700
 TITLEBAR_HEIGHT = 25
 TOOLBAR_HEIGHT = 40
-INFO_AREA_HEIGHT = 40
 TOOLBAR_ENTRY_HEIGHT = 24
 
 STROKE_LINE_COLOR = (0.8, 0.8, 0.8)
@@ -206,7 +204,7 @@ class TreeViewItem(TreeItem):
             self.row_index = 1
             
             
-        self.child_offset = 15
+        self.child_offset = 10
     
     def get_title(self):
         return self.title
@@ -301,8 +299,7 @@ class TreeViewItem(TreeItem):
             draw_pixbuf(cr, pixbuf, rect.x + content_width + 20,  rect.y + 10)
 
             
-        temp_text = self.title if self.is_parent else " - " + self.title
-        draw_text(cr, temp_text,
+        draw_text(cr, self.title,
                   rect.x + self.draw_padding_x + left_pixbuf_width, 
                   rect.y,
                   rect.width - self.draw_padding_x * 2, 
@@ -367,8 +364,7 @@ class DetailWindow(Window):
         
         self.main_view_box = gtk.HBox()
         self.main_view_box.set_size_request(WINDOW_WIDTH, 
-                                            WINDOW_HEIGHT - TITLEBAR_HEIGHT - TOOLBAR_HEIGHT - INFO_AREA_HEIGHT)
-        self.main_view_box.connect("expose-event", self.on_main_view_box_expose_event)
+                                            WINDOW_HEIGHT - TITLEBAR_HEIGHT - TOOLBAR_HEIGHT - 23)
         
         self.add_titlebar()        
         self.treeview_box = gtk.VBox()
@@ -377,17 +373,9 @@ class DetailWindow(Window):
         self.main_view_box.pack_start(self.listview_box, True, True)
         self.refresh_view() #add treeview and listview 
 
-        self.info_area_box = gtk.HBox()
-        info_area_box_align = gtk.Alignment(0.5, 0.5, 1, 1)
-        info_area_box_align.set_padding(6, 0, 100, 0)
-        self.status_bar = Label()
-        self.status_bar.set_size_request(100, -1)
-        info_area_box_align.add(self.status_bar)
-        self.info_area_box.pack_start(info_area_box_align, False, False)
-        
         self.main_box.pack_start(self.toolbar_box, False, False)
         self.main_box.pack_start(self.main_view_box, False, False)
-        self.main_box.pack_start(self.info_area_box, False, False)
+        self.main_box.connect("expose-event", self.on_main_box_expose_event)
         
         main_box_align = gtk.Alignment(0.5, 0.5, 1, 1)        
         main_box_align.set_padding(7, 7, 7, 7)
@@ -433,7 +421,7 @@ class DetailWindow(Window):
         self.add_toolbar()
         
         
-    def on_main_view_box_expose_event(self, widget, event):
+    def on_main_box_expose_event(self, widget, event):
         cr = widget.window.cairo_create()
         rect = widget.allocation
         
@@ -443,13 +431,10 @@ class DetailWindow(Window):
         cr.set_source_rgb(1, 1, 1)
         cr.fill()
         
+        
     def on_toolbar_expose_event(self, widget, event):    
         cr = widget.window.cairo_create()
         rect = widget.allocation
-        
-        cr.set_source_rgb(*STROKE_LINE_COLOR)
-        cr.rectangle(*rect)
-        cr.stroke()
         
         self.cache_toolbar_bg_pixbuf.scale(self.toolbar_bg_pixbuf.get_pixbuf(), rect.width, rect.height)
         cr.set_source_pixbuf(self.cache_toolbar_bg_pixbuf.get_cache(), rect.x, rect.y)
@@ -459,6 +444,11 @@ class DetailWindow(Window):
         cr.set_source_rgb(1, 1, 1)
         cr.rectangle(x, y, w, h)
         cr.fill()        
+        
+        cr.move_to(x, y)
+        cr.line_to(x + w, y)
+        cr.set_source_rgb(*STROKE_LINE_COLOR)
+        cr.stroke()
         draw_line(cr, (x+w-1, y), (x+w-1, y+h), "#b2b2b2")
         
     def on_treeview_click_item(self, widget, item, column, x, y):    
@@ -563,7 +553,7 @@ class DetailWindow(Window):
     
     
     def add_titlebar(self, 
-                     button_mask=["theme", "min", "max", "close"],
+                     button_mask=["min", "max", "close"],
                      icon_path=app_theme.get_theme_file_path("image/icon_little.png"),
                      app_name="Message Manager", 
                      title=None, 
@@ -582,7 +572,6 @@ class DetailWindow(Window):
                                  enable_gaussian=enable_gaussian,
                                  )
 
-        self.titlebar.theme_button.connect("clicked", self.theme_callback)
         self.titlebar.max_button.connect("clicked", lambda w: self.toggle_max_window())
         self.titlebar.min_button.connect("clicked", lambda w: self.min_window())
         self.titlebar.close_button.connect("clicked", self.close_callback)
@@ -592,13 +581,6 @@ class DetailWindow(Window):
         self.add_move_event(self.titlebar)
 
         self.titlebar_box.add(self.titlebar)
-        
-    def theme_callback(self, widget):
-        skin_window = SkinWindow(self.skin_preview_pixbuf)
-        skin_window.show_all()
-        place_center(self, skin_window)
-
-        return False
         
         
     def add_toolbar(self):
@@ -648,10 +630,6 @@ class DetailWindow(Window):
 
         
         find_content_Label = Label(_("Find Content"))
-        # is_show_critical_align = gtk.Alignment(0.5, 0.5, 1, 1)
-        # is_show_critical_align.set_padding(padding_height, padding_height, 0, 0)
-        # is_show_critical = CheckButton("Show Urgent")
-        # is_show_critical_align.add(is_show_critical)
                 
 
         search_entry = SearchEntry()
@@ -669,8 +647,6 @@ class DetailWindow(Window):
         self.toolbar_box.pack_end(combos_box_align, False, False, 0) 
         self.toolbar_box.pack_end(look_in_Label, False, False, 5)       
         self.toolbar_box.pack_end(ToolbarSep(), False, False, 5)        
-        # self.toolbar_box.pack_end(is_show_critical_align, False, False)
-        # self.toolbar_box.pack_end(ToolbarSep(), False, False, 5)        
         
         
     def on_category_comb_item_selected(self, widget, item_title, item_value, item_index):
@@ -695,8 +671,6 @@ class DetailWindow(Window):
         
                 
     def get_search_result_iter(self, search_str):
-        # compiled_filter = re.compile(r"\w+")
-        # filter_keywords = compiled_filter.findall(search_str)
         filter_keywords = search_str.split()
         
         for item in self.current_showed_items:
@@ -717,7 +691,6 @@ class DetailWindow(Window):
             self.filename_to_import = filename
             
         def cancel_clicked():
-            self.update_status_bar(_("Import cancelled."))
             self.filename_to_import = ""
             
         OpenFileDialog(_("File To Import:"), self, ok_clicked, None)
@@ -726,18 +699,12 @@ class DetailWindow(Window):
             try:
                 db.import_db(self.filename_to_import)
             except Exception, e:
-                self.update_status_bar(_("Import failed, wrong file type!"))
-            else:
-                self.update_status_bar(_("Import finished, congratulations!"))        
+                pass
         
     def on_toolbar_export_clicked(self, widget):
         
         def ok_clicked(filename):
             db.export_db(filename)
-            self.update_status_bar(_("Export Succeed!!!"))
-            
-        def cancel_clicked():
-            self.update_status_bar(_("Export cancelled!"))
             
         SaveFileDialog(_("File To Export:"), self, ok_clicked, None)
         
@@ -748,10 +715,9 @@ class DetailWindow(Window):
                 db.remove(self.listview.visible_items[row].time)
                 
             self.listview.delete_items([self.listview.visible_items[row] for row in self.listview.select_rows])            
-            self.update_status_bar(_("Deleted!"))
                 
         dialog = ConfirmDialog(
-                _("Delete item"),
+                _("Delete items"),
                 _("Are you sure delete selected items?"),
                 confirm_callback = on_ok_clicked)
         dialog.show_all()
@@ -760,17 +726,6 @@ class DetailWindow(Window):
     def on_toolbar_refresh_clicked(self, widget):
         self.refresh_view()
         
-        self.update_status_bar(_("View has been refreshed!"))
-        
-        
-    def update_status_bar(self, message):
-        def pop_message():
-            self.status_bar.set_text("")
-            
-        self.status_bar.set_text(message)
-        gobject.timeout_add(3000, pop_message)
-            
-    
     def close_callback(self, widget):
         '''
         docs
