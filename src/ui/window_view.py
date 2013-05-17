@@ -698,6 +698,7 @@ class DetailWindow(Window):
         if len(self.filename_to_import) != 0:
             try:
                 db.import_db(self.filename_to_import)
+                self.refresh_view()
             except Exception, e:
                 pass
         
@@ -715,6 +716,7 @@ class DetailWindow(Window):
                 db.remove(self.listview.visible_items[row].time)
                 
             self.listview.delete_items([self.listview.visible_items[row] for row in self.listview.select_rows])            
+            self.refresh_view()
                 
         dialog = ConfirmDialog(
                 _("Delete items"),
