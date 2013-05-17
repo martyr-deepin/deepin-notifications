@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-17 10:34+0800\n"
+"POT-Creation-Date: 2013-05-17 16:16+0800\n"
 "PO-Revision-Date: 2013-05-16 10:59+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -37,7 +37,7 @@ msgid "Software Messages"
 msgstr ""
 
 #: ../src/ui/window_view.py:501
-msgid "System Message"
+msgid "System Messages"
 msgstr ""
 
 #: ../src/ui/window_view.py:591
@@ -57,7 +57,7 @@ msgid "Refresh"
 msgstr ""
 
 #: ../src/ui/window_view.py:606
-msgid "Look in"
+msgid "Look up in"
 msgstr ""
 
 #: ../src/ui/window_view.py:608 ../src/ui/window_view.py:615
@@ -73,44 +73,44 @@ msgid "Last week"
 msgstr ""
 
 #: ../src/ui/window_view.py:612
-msgid "Latest month"
+msgid "Last month"
 msgstr ""
 
 #: ../src/ui/window_view.py:613
-msgid "The last three months"
+msgid "Last three months"
 msgstr ""
 
 #: ../src/ui/window_view.py:614
-msgid "The recent year"
+msgid "Last year"
 msgstr ""
 
 #: ../src/ui/window_view.py:632
-msgid "Find Content"
+msgid "Find in content"
 msgstr ""
 
 #: ../src/ui/window_view.py:696
-msgid "File To Import:"
+msgid "Select File to Import"
 msgstr ""
 
-#: ../src/ui/window_view.py:709
-msgid "File To Export:"
+#: ../src/ui/window_view.py:710
+msgid "Export to File"
 msgstr ""
 
-#: ../src/ui/window_view.py:720 ../src/ui/listview_factory.py:146
+#: ../src/ui/window_view.py:722 ../src/ui/listview_factory.py:146
 #: ../src/ui/listview_factory.py:158
-msgid "Delete items"
+msgid "Delete Item(s)"
 msgstr ""
 
-#: ../src/ui/window_view.py:721 ../src/ui/listview_factory.py:147
-msgid "Are you sure delete selected items?"
+#: ../src/ui/window_view.py:723
+msgid "Are you sure you want to delete the selected items?"
 msgstr ""
 
 #: ../src/ui/traypop.py:158
-msgid "Message View"
+msgid "Unread Messages"
 msgstr ""
 
 #: ../src/ui/traypop.py:160
-msgid "Close Notification"
+msgid "Close Notifications"
 msgstr ""
 
 #: ../src/ui/traypop.py:179
@@ -118,11 +118,15 @@ msgid "More Advanced Options... "
 msgstr ""
 
 #: ../src/ui/listview_factory.py:110
-msgid "The content of the message"
+msgid "Content of messages"
 msgstr ""
 
 #: ../src/ui/listview_factory.py:110
 msgid "Time"
+msgstr ""
+
+#: ../src/ui/listview_factory.py:147
+msgid "Are you sure you want to delete the selected item(s)?"
 msgstr ""
 
 #: ../src/ui/listview_factory.py:159
@@ -130,9 +134,9 @@ msgid "Are you sure delete all items?"
 msgstr ""
 
 #: ../src/ui/listview_factory.py:164
-msgid "Delete selected record"
+msgid "Delete selected item(s)"
 msgstr ""
 
 #: ../src/ui/listview_factory.py:165
-msgid "Delete all record"
+msgid "Delete all items"
 msgstr ""

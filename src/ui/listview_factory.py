@@ -107,7 +107,7 @@ class ListviewFactory(object):
         self.listview.set_expand_column(0)
         
         if self.owner == "detail":
-            self.listview.set_column_titles([_("The content of the message"), _("Time")],
+            self.listview.set_column_titles([_("Content of messages"), _("Time")],
                                             [self.sort_by_content, self.sort_by_time])
         
         self.listview.draw_area.connect_after("button-press-event", self.on_listview_button_pressed, self.listview)
@@ -143,8 +143,8 @@ class ListviewFactory(object):
                         widget.delete_items(select_items)                    
                 
                 dialog = ConfirmDialog(
-                    _("Delete items"),
-                    _("Are you sure delete selected items?"),
+                    _("Delete Item(s)"),
+                    _("Are you sure you want to delete the selected item(s)?"),
                     confirm_callback = on_ok_clicked)
                 dialog.show_all()
                 
@@ -155,14 +155,14 @@ class ListviewFactory(object):
                     widget.clear()
 
                 dialog = ConfirmDialog(
-                    _("Delete items"),
+                    _("Delete Item(s)"),
                     _("Are you sure delete all items?"),
                     confirm_callback = on_ok_clicked)
                 dialog.show_all()
                 
                 
-            Menu([(None, _("Delete selected record"), on_delete_selected_record),
-                  (None, _("Delete all record"), on_delete_all_record)], True).show((root_x, root_y))
+            Menu([(None, _("Delete selected item(s)"), on_delete_selected_record),
+                  (None, _("Delete all items"), on_delete_all_record)], True).show((root_x, root_y))
         
         
     def get_paged_items(self):

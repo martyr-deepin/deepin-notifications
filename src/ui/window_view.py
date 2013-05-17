@@ -498,7 +498,7 @@ class DetailWindow(Window):
         categories = self.classified_items.keys()
         # root eles
         root_ele_software = TreeViewItem(_("Software Messages"), True)
-        root_ele_system = TreeViewItem(_("System Message"), True)
+        root_ele_system = TreeViewItem(_("System Messages"), True)
         self.treeview = TreeView([root_ele_software, root_ele_system], expand_column=0)
         
         # add child items , CAN'T add_child_items before treeview constructed
@@ -603,15 +603,15 @@ class DetailWindow(Window):
         toolbar_btn_box.pack_start(refresh_btn, False, False, 2)
         toolbar_btn_box_align.add(toolbar_btn_box)
 
-        look_in_Label = Label(_("Look in"))
+        look_in_Label = Label(_("Look up in"))
         
         self.category_comb = ComboBox([(_("All"), 0)])
         self.category_comb.add_items([(item, index) for index, item in enumerate(self.classified_items)], clear_first=False)
         self.time_comb = ComboBox([(_("Today"), 0), 
                                    (_("Last week"), 1), 
-                                   (_("Latest month"), 2), 
-                                   (_("The last three months"), 3),
-                                   (_("The recent year"), 4),
+                                   (_("Last month"), 2), 
+                                   (_("Last three months"), 3),
+                                   (_("Last year"), 4),
                                    (_("All"), 5)
                                    ])
         
@@ -629,7 +629,7 @@ class DetailWindow(Window):
         combos_box_align.add(combos_box)
 
         
-        find_content_Label = Label(_("Find Content"))
+        find_content_Label = Label(_("Find in content"))
                 
 
         search_entry = SearchEntry()
@@ -687,13 +687,12 @@ class DetailWindow(Window):
         self.add_listview(list(search_result_iter))
         
     def on_toolbar_import_clicked(self, widget):
+        self.filename_to_import = ""
+        
         def ok_clicked(filename):
             self.filename_to_import = filename
             
-        def cancel_clicked():
-            self.filename_to_import = ""
-            
-        OpenFileDialog(_("File To Import:"), self, ok_clicked, None)
+        OpenFileDialog(_("Select File to Import"), self, ok_clicked, None)
         
         if len(self.filename_to_import) != 0:
             try:
@@ -707,7 +706,7 @@ class DetailWindow(Window):
         def ok_clicked(filename):
             db.export_db(filename)
             
-        SaveFileDialog(_("File To Export:"), self, ok_clicked, None)
+        SaveFileDialog(_("Export to File"), self, ok_clicked, None)
         
         
     def on_toolbar_delete_clicked(self, widget):
@@ -719,8 +718,8 @@ class DetailWindow(Window):
             self.refresh_view()
                 
         dialog = ConfirmDialog(
-                _("Delete items"),
-                _("Are you sure delete selected items?"),
+                _("Delete Item(s)"),
+                _("Are you sure you want to delete the selected items?"),
                 confirm_callback = on_ok_clicked)
         dialog.show_all()
         
