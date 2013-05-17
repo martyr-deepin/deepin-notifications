@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-17 16:16+0800\n"
+"POT-Creation-Date: 2013-05-17 16:29+0800\n"
 "PO-Revision-Date: 2013-05-16 10:59+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -40,6 +40,10 @@ msgstr "软件信息"
 #: ../src/ui/window_view.py:501
 msgid "System Messages"
 msgstr "系统信息"
+
+#: ../src/ui/window_view.py:558
+msgid "Message Manager"
+msgstr "消息管理器"
 
 #: ../src/ui/window_view.py:591
 msgid "Import"
@@ -89,20 +93,20 @@ msgstr "最近一年"
 msgid "Find in content"
 msgstr "查找内容"
 
-#: ../src/ui/window_view.py:696
+#: ../src/ui/window_view.py:695
 msgid "Select File to Import"
 msgstr "选择要导入的文件"
 
-#: ../src/ui/window_view.py:710
+#: ../src/ui/window_view.py:709
 msgid "Export to File"
 msgstr "导出到文件"
 
-#: ../src/ui/window_view.py:722 ../src/ui/listview_factory.py:146
+#: ../src/ui/window_view.py:721 ../src/ui/listview_factory.py:146
 #: ../src/ui/listview_factory.py:158
 msgid "Delete Item(s)"
 msgstr "删除条目"
 
-#: ../src/ui/window_view.py:723
+#: ../src/ui/window_view.py:722
 msgid "Are you sure you want to delete the selected items?"
 msgstr "确定删除选中项吗？"
 
@@ -132,7 +136,7 @@ msgstr "确定删除选中项吗？"
 
 #: ../src/ui/listview_factory.py:159
 msgid "Are you sure delete all items?"
-msgstr "确定所有项吗？"
+msgstr "确定删除所有项吗？"
 
 #: ../src/ui/listview_factory.py:164
 msgid "Delete selected item(s)"

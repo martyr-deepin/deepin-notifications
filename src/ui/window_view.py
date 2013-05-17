@@ -555,7 +555,7 @@ class DetailWindow(Window):
     def add_titlebar(self, 
                      button_mask=["min", "max", "close"],
                      icon_path=app_theme.get_theme_file_path("image/icon_little.png"),
-                     app_name="Message Manager", 
+                     app_name=_("Message Manager"),
                      title=None, 
                      add_separator=False, 
                      show_title=True, 
