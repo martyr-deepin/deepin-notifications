@@ -50,7 +50,7 @@ TIME = 0
 MESSAGE = 1
 
 WINDOW_WIDTH = 1000
-WINDOW_HEIGHT = 700
+WINDOW_HEIGHT = 600
 TITLEBAR_HEIGHT = 25
 TOOLBAR_HEIGHT = 40
 TOOLBAR_ENTRY_HEIGHT = 24
@@ -678,7 +678,7 @@ class DetailWindow(Window):
         for item in self.current_showed_items:
             item_message = item[MESSAGE]
             for keyword in filter_keywords:
-                print "from %s search %s result %s:" % (item_message.body, keyword, item_message.body.find(keyword) != -1)
+                # print "from %s search %s result %s:" % (item_message.body, keyword, item_message.body.find(keyword) != -1)
                 if item_message.body.find(keyword) != -1:
                     yield item
                     continue
