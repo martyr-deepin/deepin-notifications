@@ -40,9 +40,11 @@ class DeepinNotification(object):
         import dbus_notify
         self.dbus = dbus_notify.Notifications()
         
-        self.notification_queue = deque()
+        self.notification_queue = deque() # queue to store bubbles
+        self.notify_queue = deque() # record the number of unnotified notifies.
         
         event_manager.connect("notify", self.on_notify)
+        event_manager.connect("bubble-animation-done", self.on_bubble_animation_done)
         
         import gtk
         gtk.main()
@@ -58,18 +60,54 @@ class DeepinNotification(object):
         height = 87 if len(message["actions"]) == 0 else 110
         create_time = datetime.now().strftime("%Y/%m/%d-%H:%M:%S")
         
-        if len(list(self.notification_queue)) > 0:
-            event_manager.emit("ready-to-move-up", height)
-
+        bubble = None
+        
         if not preference.disable_bubble:
             if message.app_name not in blacklist.bl:
-                self.notification_queue.append(Bubble(message, height, create_time))
-                if len(self.notification_queue) > 3:
-                    self.notification_queue.pop()
-                    
+                if len(self.notification_queue) != 0:
+                    for notification in self.notification_queue:
+                        if notification.fade_in_moving or notification.move_up_moving:
+                            self.notify_queue.appendleft((message, height, create_time))
+                        else:
+                            event_manager.emit("ready-to-move-up", height)                            
+                            bubble = Bubble(message, height, create_time)
+                else:
+                    bubble = Bubble(message, height, create_time)
+
+                if bubble:
+                        self.notification_queue.append(bubble)
+                        if len(self.notification_queue) > 3:
+                            self.notification_queue.pop()
+
         trayicon.increase_unread((create_time, message))
         db.add(create_time, message)
         
+    def on_bubble_animation_done(self, data):
+        # bubble = None
+        # if len(self.notify_queue):
+        #     (message, height, create_time) =  self.notify_queue.pop()
+        #     for notification in self.notification_queue:
+        #         if notification.fade_in_moving or notification.move_up_moving:
+        #             self.notify_queue.append((message, height, create_time))
+        #         else:
+        #             event_manager.emit("ready-to-move-up", height)                            
+        #             bubble = Bubble(message, height, create_time)
+
+        # if bubble:
+        #     self.notification_queue.append(bubble)
+        #     if len(self.notification_queue) > 3:
+        #         self.notification_queue.pop()
+        
+        print self.notify_queue
+        
+        if len(self.notify_queue):
+            (message, height, create_time) =  self.notify_queue.pop()
+
+            event_manager.emit("ready-to-move-up", height)                            
+            self.notification_queue.append(Bubble(message, height, create_time))
+            if len(self.notification_queue) > 3:
+                self.notification_queue.pop()
+
         
     def mainloop_init(self):    
         import gobject

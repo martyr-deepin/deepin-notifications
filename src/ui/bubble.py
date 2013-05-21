@@ -264,12 +264,12 @@ class Bubble(gtk.Window):
     
     def move_up(self, move_up_height):
         
-        if self.fade_in_moving:
-            self.fade_in_timeline.stop()
-            self.fade_in_complete(None)
-        if self.move_up_moving:
-            self.move_up_timeline.stop()
-            self.move_up_completed(None)
+        # if self.fade_in_moving:
+        #     self.fade_in_timeline.stop()
+        #     self.fade_in_complete(None)
+        # if self.move_up_moving:
+        #     self.move_up_timeline.stop()
+        #     self.move_up_completed(None)
             
         self.move_up_height = move_up_height
         self.move_up_moving = True
@@ -301,6 +301,9 @@ class Bubble(gtk.Window):
 
         self.move_up_moving = False
         self.win_y -= self.move_up_height
+        
+        if not self.fade_in_moving:
+            event_manager.emit("bubble-animation-done", None)
 
     def fade_in(self):
         self.fade_in_moving = True
@@ -321,3 +324,6 @@ class Bubble(gtk.Window):
         '''
         self.fade_in_moving = False
         self.win_y -= self.window_height
+        
+        if not self.move_up_moving:
+            event_manager.emit("bubble-animation-done", None)        
