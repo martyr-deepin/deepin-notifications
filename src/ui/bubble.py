@@ -257,6 +257,7 @@ class Bubble(gtk.Window):
         return False
     
     def destroy_animation_complete(self, source):
+        self.level = 10000
         event_manager.emit("expire-completed", self)
         del self
 
@@ -273,11 +274,14 @@ class Bubble(gtk.Window):
         self.move_up_height = move_up_height
         self.move_up_moving = True
         self.move_up_timeline = Timeline(self.animation_time, CURVE_SINE)
-        self.move_up_timeline.connect("update", 
-                                      lambda source, status : self.move(self.win_x , self.win_y - int(self.move_up_height * status)))
+        self.move_up_timeline.connect("update", self.move_up_animation)
         self.move_up_timeline.connect("completed", self.move_up_completed)
         self.move_up_timeline.run()
         
+    def move_up_animation(self, source, status):
+        self.move(self.win_x , self.win_y - int(self.move_up_height * status))
+        if self.level == 2:
+            self.set_opacity(1 - status)
         
     def move_down(self, send_obj):
         db.remove(send_obj.create_time)
@@ -291,13 +295,12 @@ class Bubble(gtk.Window):
         
     def move_up_completed(self, source):
         self.level += 1
-        self.win_y -= self.move_up_height
         if self.level >= 3:
             gobject.source_remove(self.timeout_id)
-            if self.get_opacity() > 0.5:
-                self.start_destroy_animation()
+            self.hide_all()
 
         self.move_up_moving = False
+        self.win_y -= self.move_up_height
 
     def fade_in(self):
         self.fade_in_moving = True
@@ -316,5 +319,5 @@ class Bubble(gtk.Window):
         '''
         docs
         '''
-        self.win_y -= self.window_height
         self.fade_in_moving = False
+        self.win_y -= self.window_height

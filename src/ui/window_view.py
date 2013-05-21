@@ -1,4 +1,3 @@
-
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
@@ -509,7 +508,10 @@ class DetailWindow(Window):
             if category in blacklist.bl:
                 treeview_item.is_in_blacklist = True
                 
-            software_children.append(treeview_item)
+            if category in ["deepin-software-center", "system-log"]:
+                system_children.append(treeview_item)
+            else:
+                software_children.append(treeview_item)
         
         root_ele_software.add_child_items(software_children)        
         self.treeview.draw_mask = self.on_treeview_draw_mask
