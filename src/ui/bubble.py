@@ -257,7 +257,7 @@ class Bubble(gtk.Window):
         return False
     
     def destroy_animation_complete(self, source):
-        self.level = 10000
+        self.hide_all()
         event_manager.emit("expire-completed", self)
         del self
 
@@ -302,8 +302,6 @@ class Bubble(gtk.Window):
         self.move_up_moving = False
         self.win_y -= self.move_up_height
         
-        if not self.fade_in_moving:
-            event_manager.emit("bubble-animation-done", None)
 
     def fade_in(self):
         self.fade_in_moving = True
@@ -324,6 +322,3 @@ class Bubble(gtk.Window):
         '''
         self.fade_in_moving = False
         self.win_y -= self.window_height
-        
-        if not self.move_up_moving:
-            event_manager.emit("bubble-animation-done", None)        
