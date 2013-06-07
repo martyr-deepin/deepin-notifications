@@ -27,7 +27,7 @@ import webbrowser
 
 from ui.utils import get_screen_size, render_hyperlink_support_text
 from dtk.ui.timeline import Timeline, CURVE_SINE
-from dtk.ui.draw import draw_pixbuf, draw_text, TEXT_ALIGN_TOP, TEXT_ALIGN_MIDDLE, TEXT_ALIGN_BOTTOM
+from dtk.ui.draw import draw_pixbuf, draw_text, TEXT_ALIGN_TOP
 
 from dtk.ui.utils import (propagate_expose, is_in_rect, get_content_size)
 from events import event_manager
@@ -251,14 +251,19 @@ class Bubble(gtk.Window):
     
     def start_destroy_animation(self):
         timeline = Timeline(self.animation_time, CURVE_SINE)
-        timeline.connect("update", lambda source, status : self.set_opacity(1 - status))
+        timeline.connect("update", self.update_destory_animation)
         timeline.connect("completed", self.destroy_animation_complete)
         timeline.run()
         return False
     
+    def update_destory_animation(self, source, status):
+        if status != 1:
+            self.set_opacity(1.0-status)
+    
     def destroy_animation_complete(self, source):
         self.hide_all()
         event_manager.emit("expire-completed", self)
+        self.destroy()
         del self
 
     
@@ -300,6 +305,7 @@ class Bubble(gtk.Window):
             self.hide_all()
 
         self.move_up_moving = False
+        event_manager.emit("bubble-move-up-completed", None)
         self.win_y -= self.move_up_height
         
 

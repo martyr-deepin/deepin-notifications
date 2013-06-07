@@ -20,18 +20,6 @@
 # 
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from events import event_manager
-from ui.tray import trayicon
-from ui.bubble import Bubble
-from ui.utils import handle_notification
-from notification_db import db
-from blacklist import blacklist
-from preference import preference
-
-from collections import deque
-from datetime import datetime
-import gobject
-
 
 class DeepinNotification(object):
     def __init__(self):
@@ -41,49 +29,12 @@ class DeepinNotification(object):
         import dbus_notify
         self.dbus = dbus_notify.Notifications()
         
-        self.notification_queue = deque() # queue to store bubbles
-        self.notify_queue = deque() # record the number of unnotified notifies.
-        
-        event_manager.connect("notify", self.on_notify)
-        # event_manager.connect("bubble-animation-done", self.on_bubble_animation_done)
+        from ui.bubble_manager import BubbleManager
+        self.bubble_manager = BubbleManager()
         
         import gtk
         gtk.main()
                 
-        
-    def on_notify(self, notification):
-        '''
-        docs
-        '''
-         # replace hyper<a> with underline <u> AND place hyper actions in hints["x-deepin-hyperlinks"]
-        message = handle_notification(notification)
-        
-        height = 87 if len(message["actions"]) == 0 else 110
-        create_time = datetime.now().strftime("%Y/%m/%d-%H:%M:%S")
-        
-        bubble = None
-        
-        if not preference.disable_bubble:
-            if message.app_name not in blacklist.bl:
-                self.notify_queue.appendleft((message, height, create_time))
-                self.try_to_add_bubble()
-
-        trayicon.increase_unread((create_time, message))
-        db.add(create_time, message)
-        
-    def try_to_add_bubble(self):
-        self.circle_id = gobject.timeout_add(200, self.try_to_add_bubble)
-        
-        if len(self.notify_queue):
-            (message, height, create_time) =  self.notify_queue.pop()
-
-            event_manager.emit("ready-to-move-up", height)                            
-            self.notification_queue.append(Bubble(message, height, create_time))
-            if len(self.notification_queue) > 3:
-                self.notification_queue.pop()
-        else:
-            gobject.source_remove(self.circle_id)
-        
         
     def mainloop_init(self):    
         import gobject
