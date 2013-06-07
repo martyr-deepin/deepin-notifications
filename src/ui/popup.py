@@ -93,7 +93,7 @@ class MessageFixed(gtk.Fixed):
         
     @property    
     def has_messages(self):
-        if len(self.get_children()) > 0:        
+        if len(self.get_children()) > 0 or len(self.message_queue) > 0:        
             return True
         return False
             
@@ -368,9 +368,10 @@ class PopupWindow(gtk.Window):
             
     def on_message_destroy(self, data):        
         if not self.control.has_messages:
-           if not self.is_through: 
-               self.hide_all()
-               self.is_through = True
+            self.force_quit()
+           # if not self.is_through: 
+           #     self.hide_all()
+           #     self.is_through = True
         
     def set_input_shape_mask(self, disable_input):    
         if disable_input:
@@ -388,6 +389,10 @@ class PopupWindow(gtk.Window):
     def on_notify_event(self, data):
         message_box = MinMessageBox(data)
         self.control.add_message_box(message_box)
+        
+    def force_quit(self):    
+        self.destroy()
+        gtk.main_quit()
         
     def on_expose_event(self, widget, event):    
         cr  = widget.window.cairo_create()
