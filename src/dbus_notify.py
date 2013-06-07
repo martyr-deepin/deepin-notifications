@@ -70,7 +70,7 @@ class Notifications(DBusProperty, DBusIntrospectable, dbus.service.Object):
     
     NOTIFY_ISPEC = """
     <method name="CloseNotification">
-      <arg direction="in"  name="id" type="i"/>
+      <arg direction="in"  name="id" type="u"/>
     </method>
     <method name="GetCapabilities">
       <arg direction="out"  name="caps" type="as"/>
@@ -83,21 +83,21 @@ class Notifications(DBusProperty, DBusIntrospectable, dbus.service.Object):
     </method>
     <method name="Notify">
       <arg direction="in"  name="app_name"  type="s"     />
-      <arg direction="in"  name="id"        type="i"     />
+      <arg direction="in"  name="id"        type="u"     />
       <arg direction="in"  name="icon"      type="s"     />
       <arg direction="in"  name="summary"   type="s"     />
       <arg direction="in"  name="body"      type="s"     />
       <arg direction="in"  name="actions"   type="as"    />
       <arg direction="in"  name="hints"     type="a{sv}" />
       <arg direction="in"  name="timeout"   type="i"     />
-      <arg direction="out" name="id" type="i"     />
+      <arg direction="out" name="id" type="u"     />
     </method>
     <signal name="NotificationClosed">
-      <arg name="id" type="i" />
-      <arg name="reason" type="i" />
+      <arg name="id" type="u" />
+      <arg name="reason" type="u" />
     </signal>    
     <signal name="ActionInvoked">
-      <arg name="id" type="i" />
+      <arg name="id" type="u" />
       <arg name="action_key" type="s" />
     </signal>    
     """ 
@@ -111,9 +111,11 @@ class Notifications(DBusProperty, DBusIntrospectable, dbus.service.Object):
         name = dbus.service.BusName(self.BUS_NAME, bus)
         dbus.service.Object.__init__(self, bus, self.PATH, name)
         
-    @dbus.service.method(NOTIFY_IFACE, in_signature="i")    
+        self.id_cursor = long(0)
+        
+    @dbus.service.method(NOTIFY_IFACE, in_signature="u")    
     def CloseNotification(self, replaces_id):
-        print replaces_id
+        return replaces_id
         
     @dbus.service.method(NOTIFY_IFACE, out_signature="as")    
     def GetCapabilities(self):
@@ -123,26 +125,31 @@ class Notifications(DBusProperty, DBusIntrospectable, dbus.service.Object):
     def GetServerInformation(self):
         return "Notifications", "LinuxDeepin", "0.1", "1.2"
     
-    @dbus.service.method(NOTIFY_IFACE, in_signature="sisssasa{sv}i", out_signature="i")    
-    def Notify(self, app_name, replaces_id, icon, summary, body, actions, hints, timeout):
+    @dbus.service.method(NOTIFY_IFACE, in_signature="susssasa{sv}i", out_signature="u")    
+    def Notify(self, app_name, replaces_id, app_icon, summary, body, actions, hints, timeout):
         
         notify_storage = Storage({"app_name" : type_convert.dbus2py(app_name), 
                                   "replaces_id" : type_convert.dbus2py(replaces_id),
-                                  "icon" : type_convert.dbus2py(icon),
+                                  "icon" : type_convert.dbus2py(app_icon),
                                   "summary" : type_convert.dbus2py(summary), 
                                   "body" : type_convert.dbus2py(body),
+                                  "actions" : type_convert.dbus2py(actions),
                                   "hints" : type_convert.dbus2py(hints), 
-                                  "timeout" : type_convert.dbus2py(timeout)})
+                                  "expire_timeout" : type_convert.dbus2py(timeout)})
         
+
         event_manager.emit("notify", notify_storage)
         
-        # print app_name, replaces_id, icon, summary, body, actions, hints, timeout
-        return replaces_id
-        
-if __name__ == "__main__":        
-    import dbus, dbus.mainloop.glib, gtk
-    dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
-    dbus.mainloop.glib.threads_init()
-    dbus.mainloop.glib.gthreads_init()
-    a = Notifications()
-    gtk.main()
+        if replaces_id:
+            return replaces_id
+        else:
+            self.id_cursor += 1
+            return dbus.UInt32(self.id_cursor)
+    
+    @dbus.service.signal(NOTIFY_IFACE, signature='uu')
+    def NotificationClosed(self, id, reason):
+        pass
+    
+    @dbus.service.signal(NOTIFY_IFACE, signature='us')
+    def ActionInvoked(self, id, action_key):
+        pass
