@@ -24,7 +24,6 @@ import os
 from ConfigParser import ConfigParser
 
 import xdg
-import sys
 
 class Preference(object):
     '''

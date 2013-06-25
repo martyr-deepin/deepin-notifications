@@ -85,22 +85,16 @@ class Bubble(gtk.Window):
         self.connect("button-press-event", self.on_button_press_event)
         self.connect("motion-notify-event", self.on_motion_notify_event)
         
-        self.animation_time = 300
+        self.animation_time = 200
         self.level = 1
         self.win_x, self.win_y = self._get_position()
-        self.win_y += self.window_height
-        self.active_alpha = 1.0
         self.pointer_hand_rectangles = []
-        
-        self.fade_in_moving = False
-        self.move_up_moving = False
         
         self.move(self.win_x, self.win_y)
         self.set_opacity(0)
         self.show_all()
-        self.fade_in()
         self.timeout_id = gobject.timeout_add(EXPIRE_TIMEOUT, self.start_destroy_animation)
-        event_manager.connect("ready-to-move-up", self.move_up)
+        
         event_manager.connect("manual-cancelled", self.move_down)
         
     def init_size(self, height):
@@ -246,7 +240,8 @@ class Bubble(gtk.Window):
         screen_w, screen_h = get_screen_size()
         win_x = screen_w - self.window_width - WINDOW_OFFSET_WIDTH
         win_y = screen_h - self.window_height - DOCK_HEIGHT - WINDOW_OFFSET_HEIGHT
-        self.last_y = win_y
+        self.last_y = win_y + self.window_height
+        
         return win_x, win_y
     
     def start_destroy_animation(self):
@@ -259,72 +254,31 @@ class Bubble(gtk.Window):
     def update_destory_animation(self, source, status):
         if status != 1:
             self.set_opacity(1.0-status)
+        else:
+            self.destroy()
     
     def destroy_animation_complete(self, source):
-        self.hide_all()
-        event_manager.emit("expire-completed", self)
-        self.destroy()
-        del self
-
-    
-    def move_up(self, move_up_height):
+        event_manager.emit("bubble-destroy", self)
         
-        # if self.fade_in_moving:
-        #     self.fade_in_timeline.stop()
-        #     self.fade_in_complete(None)
-        # if self.move_up_moving:
-        #     self.move_up_timeline.stop()
-        #     self.move_up_completed(None)
-            
-        self.move_up_height = move_up_height
-        self.move_up_moving = True
-        self.move_up_timeline = Timeline(self.animation_time, CURVE_SINE)
-        self.move_up_timeline.connect("update", self.move_up_animation)
-        self.move_up_timeline.connect("completed", self.move_up_completed)
-        self.move_up_timeline.run()
+    def move_up_by(self, move_up_height, update_height=False):
+        self.win_y = int(self.last_y - move_up_height)
+        self.move(self.win_x, self.win_y)
+        if update_height:
+            self.last_y = self.win_y
         
-    def move_up_animation(self, source, status):
-        self.move(self.win_x , self.win_y - int(self.move_up_height * status))
-        if self.level == 2:
-            self.set_opacity(1 - status)
+    def move_down_by(self, move_down_height, update_height=False):
+        self.win_y = int(self.last_y + move_down_height)
+        self.move(self.win_x, self.win_y)
+        if update_height:
+            self.last_y = self.win_y
         
     def move_down(self, send_obj):
         db.remove(send_obj.create_time)
         if self.level == 2:
             (move_down_height) = send_obj.window_height
             self.move_up_timeline = Timeline(self.animation_time, CURVE_SINE)
-            self.move_up_timeline.connect("update", 
-                                          lambda source, status :
-                                              self.move(self.win_x , self.win_y + int(move_down_height * status)))
+            self.move_up_timeline.connect("update", self.update_move_down_animation, move_down_height)
             self.move_up_timeline.run()
-        
-    def move_up_completed(self, source):
-        self.level += 1
-        if self.level >= 3:
-            gobject.source_remove(self.timeout_id)
-            self.hide_all()
-
-        self.move_up_moving = False
-        event_manager.emit("bubble-move-up-completed", None)
-        self.win_y -= self.move_up_height
-        
-
-    def fade_in(self):
-        self.fade_in_moving = True
-        
-        def fade_in_step(status):
-            self.move(self.win_x, self.win_y - int(self.window_height * status))
-            if(status > 0.5):
-                self.set_opacity(status)
             
-        self.fade_in_timeline = Timeline(self.animation_time, CURVE_SINE)
-        self.fade_in_timeline.connect("update", lambda source, status : fade_in_step(status))
-        self.fade_in_timeline.connect("completed", self.fade_in_complete)
-        self.fade_in_timeline.run()
-        
-    def fade_in_complete(self, source):
-        '''
-        docs
-        '''
-        self.fade_in_moving = False
-        self.win_y -= self.window_height
+    def update_move_down_animation(self, source, status, move_down_height):
+        self.move_down_by(move_down_height * status, not bool(status - 1))

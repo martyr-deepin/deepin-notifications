@@ -20,62 +20,108 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
+import threading
 from collections import deque
 from datetime import datetime
+
+import gobject
+from dtk.ui.timeline import Timeline, CURVE_SINE
 
 from notification_db import db
 from blacklist import blacklist
 from preference import preference
 from events import event_manager
-
 from ui.tray import trayicon
 from ui.bubble import Bubble
 from ui.utils import handle_notification
 
+ANIMATION_TIME = 500
 
 class BubbleManager(object):
     
     def __init__(self):
-        
         # Init values
         self.bubble_queue = deque()
-        self.last_bubble = None
+        self.incoming_queue = deque()
+        
+        self.is_in_animation = False
         
         # Connect events
         event_manager.connect("notify", self.on_notify)
-        event_manager.connect("bubble-move-up-completed", self.on_bubble_move_up_completed)
+        event_manager.connect("bubble-destroy", self.on_bubble_destroy)
+        event_manager.connect("manual-destroy", self.on_manual_destroy)
         
-    @property    
-    def is_in_animation(self):    
-        if self.last_bubble:
-            if self.last_bubble.move_up_moving or self.last_bubble.fade_in_moving:
-                return True
-        return False    
         
     def on_notify(self, notification):    
-        
-        # replace hyper<a> with underline <u> AND place hyper actions in hints["x-deepin-hyperlinks"]
+        # replace hyper<a> with underline <u> _AND_ place hyper actions in hints["x-deepin-hyperlinks"]
         message = handle_notification(notification)
         
         height = 87 if len(message["actions"]) == 0 else 110
-        create_time = datetime.now().strftime("%Y/%m/%d-%H:%M:%S")
+        incoming_time = datetime.now().strftime("%Y/%m/%d-%H:%M:%S")
         
-        if not preference.disable_bubble:
-            if message.app_name not in blacklist.bl:
-                self.bubble_queue.append((message, height, create_time))
-                if not self.is_in_animation:
-                    event_manager.emit("ready-to-move-up", height)                    
-                    message, height, create_time = self.bubble_queue.pop()
-                    self.last_bubble = Bubble(message, height, create_time)
+        self.incoming_queue.append((message, height, incoming_time))
+        
+        def data_process():
+            trayicon.increase_unread((incoming_time, message))
+            db.add(incoming_time, message)
 
-        trayicon.increase_unread((create_time, message))
-        db.add(create_time, message)
+        threading.Thread(target=data_process).start()
+        
+        self.show_bubble()
+        
+        
+    # if bubble died because manual close or expire, we need to remove the bubble from our bubble queue manually.
+    def on_bubble_destroy(self, bubble):
+        self.bubble_queue.remove(bubble)
+        
+    def on_manual_destroy(self, bubble):
+        self.bubble_queue.remove(bubble)
+        
+    def show_bubble(self):
+        if not len(self.incoming_queue) == 0:
+            message, height, incoming_time = self.incoming_queue.popleft()
+            if not preference.disable_bubble:
+                if message.app_name not in blacklist.bl:
+                    if not self.is_in_animation:
+                        self.is_in_animation = True
+                        self.bubble_queue.appendleft(Bubble(message, height, incoming_time))
+                        self.start_move_up_animation(height)
+                    else:
+                        # remember to put it back :)
+                        self.incoming_queue.appendleft((message, height, incoming_time))
+
                     
+                        
+    # bubble manager controls move-up-animation in case that bubble move-up asynclly.
+    def start_move_up_animation(self, height):
+        timeline = Timeline(ANIMATION_TIME, CURVE_SINE)
+        timeline.connect("update", self.update_move_up_animation, height)
+        timeline.connect("completed", self.on_move_up_completed)
+        timeline.run()
                     
-    def on_bubble_move_up_completed(self, data):                
-        if len(self.bubble_queue) > 0:
-            print "move_up_completed"
-            message, height, create_time = self.bubble_queue.pop()
-            self.last_bubble = Bubble(message, height, create_time)
-            event_manager.emit("ready-to-move-up", height)
+    def update_move_up_animation(self, source, status, move_up_height):
+        index = 0
+        bubble_queue_size = len(self.bubble_queue)
+        
+        while index < bubble_queue_size:
+            current_bubble = self.bubble_queue[index]
+            current_bubble.move_up_by(status * move_up_height, not bool(status - 1))
+            
+            if index == 0:
+                if status > 0.5:
+                    current_bubble.set_opacity(status) 
+                if status == 1:
+                    current_bubble.level += 1
+            elif index == 2:
+                if status == 1:
+                    self.bubble_queue.remove(current_bubble)
+                    current_bubble.destroy()
+                    gobject.source_remove(current_bubble.timeout_id)
+                else:
+                    current_bubble.set_opacity(1 - status) 
+            index += 1
+            
+        
+    def on_move_up_completed(self, source):                
+        self.is_in_animation = False
+        self.show_bubble()
