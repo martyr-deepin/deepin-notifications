@@ -49,7 +49,6 @@ class NotificationDB:
         notification = cPickle.dumps(notification)
         try:
             self.cursor.execute('''insert into notifications values (?, ?, ?)''', (None, time, notification))
-            self.conn.commit()
         except Exception, e:
             print e, "DB"
             print "Already in database."
@@ -57,7 +56,6 @@ class NotificationDB:
     def remove(self, id):
         print "remove", id
         self.cursor.execute('''delete from notifications where id=?''', (id,))
-        self.conn.commit()
         
     def get_all(self):
         '''
@@ -67,6 +65,9 @@ class NotificationDB:
         result = self.cursor.fetchall()
         
         return [(x[0], x[1], cPickle.loads(str(x[2]))) for x in result]
+    
+    def commit(self):
+        self.conn.commit()
     
     def close(self):
         self.cursor.close()

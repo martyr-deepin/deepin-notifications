@@ -715,6 +715,7 @@ class DetailWindow(Window):
         def on_ok_clicked():
             for row in self.listview.select_rows:
                 db.remove(self.listview.visible_items[row].time)
+            db.commit()
                 
             self.listview.delete_items([self.listview.visible_items[row] for row in self.listview.select_rows])            
             self.refresh_view()

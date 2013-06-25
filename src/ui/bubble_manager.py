@@ -20,7 +20,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import threading
 from collections import deque
 from datetime import datetime
 
@@ -28,6 +27,7 @@ import gobject
 from dtk.ui.timeline import Timeline, CURVE_SINE
 
 from notification_db import db
+from unread_db import unread_db
 from blacklist import blacklist
 from preference import preference
 from events import event_manager
@@ -86,6 +86,9 @@ class BubbleManager(object):
                     else:
                         # remember to put it back :)
                         self.incoming_queue.appendleft((message, height, incoming_time))
+        else:
+            db.commit()
+            unread_db.commit()
 
                     
                         

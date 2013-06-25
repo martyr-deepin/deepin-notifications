@@ -63,6 +63,7 @@ class TrayIcon(gtk.StatusIcon):
     def on_traypop_listview_items_added(self, items):
         for item in items:
             unread_db.remove(item.id)
+        unread_db.commit()
             
     def show_unread(self):
         '''

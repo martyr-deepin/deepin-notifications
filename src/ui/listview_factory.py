@@ -141,6 +141,7 @@ class ListviewFactory(object):
                     for item in select_items:
                         db.remove(item.id)
                         widget.delete_items(select_items)                    
+                    db.commit()
                 
                 dialog = ConfirmDialog(
                     _("Delete Item(s)"),
@@ -153,6 +154,7 @@ class ListviewFactory(object):
                 def on_ok_clicked():
                     db.clear()
                     widget.clear()
+                    db.commit()
 
                 dialog = ConfirmDialog(
                     _("Delete Item(s)"),

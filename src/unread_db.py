@@ -46,14 +46,12 @@ class UnreadDB:
         message = cPickle.dumps(message)
         try:
             self.cursor.execute('''insert into unread_notifications values (?, ?, ?)''', (None, time, message))
-            self.conn.commit()
         except Exception, e:
             print e, "UNREAD"
             print "Already in database."
         
     def remove(self, id):
         self.cursor.execute('''delete from unread_notifications where id=?''', (id,))
-        self.conn.commit()
         
     def get_all(self):
         '''
@@ -63,6 +61,9 @@ class UnreadDB:
         result = self.cursor.fetchall()
         
         return [(x[0], x[1], cPickle.loads(str(x[2]))) for x in result]
+    
+    def commit(self):
+        self.conn.commit()
     
     def close(self):
         self.cursor.close()
