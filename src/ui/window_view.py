@@ -45,9 +45,9 @@ import pango
 import gobject
 from datetime import datetime, timedelta
 
-
-TIME = 0
-MESSAGE = 1
+TIME = 1
+MESSAGE = 2
+ID = 0
 
 WINDOW_WIDTH = 1000
 WINDOW_HEIGHT = 600

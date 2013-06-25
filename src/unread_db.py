@@ -39,18 +39,20 @@ class UnreadDB:
         self.conn = sqlite3.connect(db_path)
         self.cursor = self.conn.cursor()
         if create:
-            self.cursor.execute('''create table unread_notifications (time text unique, message text) ''')
+            self.cursor.execute('''create table unread_notifications 
+(id integer primary key autoincrement, time text, message text) ''')
                 
     def add(self, time, message):
         message = cPickle.dumps(message)
         try:
-            self.cursor.execute('''insert into unread_notifications values (?, ?)''', (time, message))
+            self.cursor.execute('''insert into unread_notifications values (?, ?, ?)''', (None, time, message))
             self.conn.commit()
         except Exception, e:
+            print e, "UNREAD"
             print "Already in database."
         
-    def remove(self, time_id):
-        self.cursor.execute('''delete from unread_notifications where time=?''', (time_id,))
+    def remove(self, id):
+        self.cursor.execute('''delete from unread_notifications where id=?''', (id,))
         self.conn.commit()
         
     def get_all(self):
@@ -60,7 +62,7 @@ class UnreadDB:
         self.cursor.execute('''select * from unread_notifications order by time desc''')
         result = self.cursor.fetchall()
         
-        return [(x[0], cPickle.loads(str(x[1]))) for x in result]
+        return [(x[0], x[1], cPickle.loads(str(x[2]))) for x in result]
     
     def close(self):
         self.cursor.close()

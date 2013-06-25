@@ -43,19 +43,20 @@ class NotificationDB:
         self.conn = sqlite3.connect(db_path)
         self.cursor = self.conn.cursor()
         if create:
-            self.cursor.execute('''create table notifications (time text unique, message text) ''')
+            self.cursor.execute('''create table notifications (id integer primary key autoincrement, time text, message text) ''')
                 
     def add(self, time, notification):
         notification = cPickle.dumps(notification)
         try:
-            self.cursor.execute('''insert into notifications values (?, ?)''', (time, notification))
+            self.cursor.execute('''insert into notifications values (?, ?, ?)''', (None, time, notification))
             self.conn.commit()
         except Exception, e:
+            print e, "DB"
             print "Already in database."
         
-    def remove(self, time_id):
-        print "remove", time_id
-        self.cursor.execute('''delete from notifications where time=?''', (time_id,))
+    def remove(self, id):
+        print "remove", id
+        self.cursor.execute('''delete from notifications where id=?''', (id,))
         self.conn.commit()
         
     def get_all(self):
@@ -65,7 +66,7 @@ class NotificationDB:
         self.cursor.execute('''select * from notifications order by time desc''')
         result = self.cursor.fetchall()
         
-        return [(x[0], cPickle.loads(str(x[1]))) for x in result]
+        return [(x[0], x[1], cPickle.loads(str(x[2]))) for x in result]
     
     def close(self):
         self.cursor.close()

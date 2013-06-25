@@ -61,12 +61,9 @@ class BubbleManager(object):
         
         self.incoming_queue.append((message, height, incoming_time))
         
-        def data_process():
-            trayicon.increase_unread((incoming_time, message))
-            db.add(incoming_time, message)
+        trayicon.increase_unread((incoming_time, message))
+        db.add(incoming_time, message)
 
-        threading.Thread(target=data_process).start()
-        
         self.show_bubble()
         
         

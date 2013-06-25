@@ -23,7 +23,6 @@
 import webbrowser
 
 import gtk
-import cairo
 import pango
 
 from dtk.ui.menu import Menu
@@ -38,8 +37,9 @@ from ui.utils import render_hyperlink_support_text, draw_single_mask
 from nls import _
 
 
-TIME = 0
-MESSAGE = 1
+ID = 0
+TIME = 1
+MESSAGE = 2
 
 class ListviewFactory(object):
     '''
@@ -139,7 +139,7 @@ class ListviewFactory(object):
                 
                 def on_ok_clicked():
                     for item in select_items:
-                        db.remove(item.time)
+                        db.remove(item.id)
                         widget.delete_items(select_items)                    
                 
                 dialog = ConfirmDialog(
@@ -219,6 +219,7 @@ class ListViewItem(TreeItem):
         '''
         TreeItem.__init__(self)
         
+        self.id = data[ID]
         self.message = data[MESSAGE]
         self.content = self.message.body
         self.time = data[TIME]

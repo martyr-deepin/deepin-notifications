@@ -29,6 +29,10 @@ from traypop import TrayPop
 from events import event_manager
 from unread_db import unread_db
 
+ID = 0
+TIME = 1
+MESSAGE = 2
+
 
 class TrayIcon(gtk.StatusIcon):    
     
@@ -58,7 +62,7 @@ class TrayIcon(gtk.StatusIcon):
         
     def on_traypop_listview_items_added(self, items):
         for item in items:
-            unread_db.remove(item.time)
+            unread_db.remove(item.id)
             
     def show_unread(self):
         '''
@@ -79,7 +83,7 @@ class TrayIcon(gtk.StatusIcon):
             db_all =  unread_db.get_all()
             results = []
             for item in db_all:
-                item_datetime = datetime.strptime(item[0], "%Y/%m/%d-%H:%M:%S")                
+                item_datetime = datetime.strptime(item[TIME], "%Y/%m/%d-%H:%M:%S")                
                 if datetime.today() - item_datetime < timedelta(days=1):
                     results.append(item)
                     
