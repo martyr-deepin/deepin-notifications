@@ -45,6 +45,8 @@ import pango
 import gobject
 from datetime import datetime, timedelta
 
+import threading
+
 TIME = 1
 MESSAGE = 2
 ID = 0
@@ -350,6 +352,8 @@ class DetailWindow(Window):
         Window.__init__(self)
         self.set_size_request(WINDOW_WIDTH, WINDOW_HEIGHT)
         self.set_position(gtk.WIN_POS_CENTER)
+        self.set_skip_taskbar_hint(True)
+        self.set_skip_pager_hint(True)
         self.resizable = True
 
         self.classified_items = None
@@ -698,15 +702,17 @@ class DetailWindow(Window):
         
         if len(self.filename_to_import) != 0:
             try:
-                db.import_db(self.filename_to_import)
-                self.refresh_view()
+                def import_db_func():
+                    db.import_db(self.filename_to_import)
+                    self.refresh_view()
+                threading.Thread(target=import_db_func).start()
             except Exception, e:
                 pass
         
     def on_toolbar_export_clicked(self, widget):
         
         def ok_clicked(filename):
-            db.export_db(filename)
+            threading.Thread(target=lambda : db.export_db(filename)).start()
             
         SaveFileDialog(_("Export to File"), self, ok_clicked, None)
         
@@ -714,7 +720,7 @@ class DetailWindow(Window):
     def on_toolbar_delete_clicked(self, widget):
         def on_ok_clicked():
             for row in self.listview.select_rows:
-                db.remove(self.listview.visible_items[row].time)
+                db.remove(self.listview.visible_items[row].id)
             db.commit()
                 
             self.listview.delete_items([self.listview.visible_items[row] for row in self.listview.select_rows])            

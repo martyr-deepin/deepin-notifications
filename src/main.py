@@ -20,11 +20,11 @@
 # 
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+import sys
+import dbus
 
 class DeepinNotification(object):
     def __init__(self):
-        
-        self.mainloop_init()
         
         import dbus_notify
         self.dbus = dbus_notify.Notifications()
@@ -36,20 +36,37 @@ class DeepinNotification(object):
         gtk.main()
                 
         
-    def mainloop_init(self):    
-        import gobject
-        gobject.threads_init()
-        
-        # dbus_init.
-        import dbus, dbus.mainloop.glib
-        dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
-        dbus.mainloop.glib.threads_init()
-        dbus.mainloop.glib.gthreads_init()
-        
-        # gtk_init.
-        import gtk
-        gtk.gdk.threads_init()
+def mainloop_init():    
+    import gobject
+    gobject.threads_init()
     
+    # dbus_init.
+    import dbus.mainloop.glib
+    dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
+    dbus.mainloop.glib.threads_init()
+    dbus.mainloop.glib.gthreads_init()
+    
+    # gtk_init.
+    import gtk
+    gtk.gdk.threads_init()
+    
+def is_service_exists(app_dbus_name, app_object_name):
+    bus = dbus.SessionBus()
+    if bus.request_name(app_dbus_name) != dbus.bus.REQUEST_NAME_REPLY_PRIMARY_OWNER:
+        return True
+    else:
+        return False
+
 
 if __name__ == "__main__":
+    mainloop_init()
+    
+    # Build DBus name.
+    app_dbus_name = "com.deepin.notification"
+    app_object_name = "/com/deepin/notification"
+    
+    # Check unique.
+    if is_service_exists(app_dbus_name, app_object_name):
+        sys.exit()
+    
     DeepinNotification()

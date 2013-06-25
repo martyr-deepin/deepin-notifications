@@ -273,7 +273,6 @@ class Bubble(gtk.Window):
             self.last_y = self.win_y
         
     def move_down(self, send_obj):
-        db.remove(send_obj.create_time)
         if self.level == 2:
             (move_down_height) = send_obj.window_height
             self.move_up_timeline = Timeline(self.animation_time, CURVE_SINE)
