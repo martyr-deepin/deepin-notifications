@@ -6,6 +6,7 @@
 # 
 # Author:     Hou ShaoHui <houshao55@gmail.com>
 # Maintainer: Hou ShaoHui <houshao55@gmail.com>
+#             Wang Yaohua <mr.asianwang@gmail.com>
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -65,7 +66,6 @@ class BubbleManager(object):
         db.add(incoming_time, message)
 
         self.show_bubble()
-        
         
     # if bubble died because manual close or expire, we need to remove the bubble from our bubble queue manually.
     def on_bubble_destroy(self, bubble):

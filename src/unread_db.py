@@ -41,6 +41,8 @@ class UnreadDB:
         if create:
             self.cursor.execute('''create table unread_notifications 
 (id integer primary key autoincrement, time text, message text) ''')
+        
+        self.cleaned_up = False
                 
     def add(self, time, message):
         message = cPickle.dumps(message)
@@ -68,6 +70,13 @@ class UnreadDB:
     def close(self):
         self.cursor.close()
         self.conn.close()
+        
+    def clear_date(self, date):
+        all_data = self.get_all()
+        for data in all_data:
+            if date.strptime(data[1], "%Y/%m/%d-%H:%M:%S") < date:
+                self.remove(data[0])
+        self.commit()
         
     def clear(self):
         self.cursor.execute('''delete from notifications''')

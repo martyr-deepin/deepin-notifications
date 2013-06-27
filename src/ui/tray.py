@@ -21,7 +21,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time, date
 
 import gtk
 from ui.skin import app_theme
@@ -58,7 +58,19 @@ class TrayIcon(gtk.StatusIcon):
         return x + 7, y - 25
     
     def increase_unread(self, data):
+        self.check_date_for_db_clean_up()
         self.unread_items = data
+        
+    def check_date_for_db_clean_up(self):
+        now = datetime.now()
+        today = now.date()
+        yesterday = today - timedelta(days=1)
+        today_0 = datetime.combine(today, time(0, 0, 0))
+        today_4 = datetime.combine(today, time(4, 0, 0))
+        
+        if not today_0 > now > today_4:
+            if not unread_db.cleaned_up:
+                unread_db.clear_date(yesterday)
         
     def on_traypop_listview_items_added(self, items):
         for item in items:
@@ -94,7 +106,6 @@ class TrayIcon(gtk.StatusIcon):
             create_time = new_item[0]
             notification = new_item[1]
             
-            # if notification.hints["x-deepin-important"] == True:
             unread_db.add(create_time, notification)
             self.set_pixbuf_from_file("msg_white2.png")
                 
