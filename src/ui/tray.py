@@ -64,7 +64,7 @@ class TrayIcon(gtk.StatusIcon):
     def check_date_for_db_clean_up(self):
         now = datetime.now()
         today = now.date()
-        yesterday = datetime.combine(today - timedelta(days=1), time(0, 0, 0))
+        yesterday = datetime.combine(today - timedelta(days=1), time(24, 0, 0))
         today_0 = datetime.combine(today, time(0, 0, 0))
         today_4 = datetime.combine(today, time(4, 0, 0))
         
