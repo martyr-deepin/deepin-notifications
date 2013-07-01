@@ -6,6 +6,7 @@
 # 
 # Author:     Hou Shaohui <houshao55@gmail.com>
 # Maintainer: Hou Shaohui <houshao55@gmail.com>
+#             Wang Yaohua <mr.asianwang@gmail.com>
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,6 +23,8 @@
 
 import os
 import glib
+
+from ConfigParser import ConfigParser
 
 PROGRAM_NAME = "deepin-notifications"
 
@@ -106,30 +109,6 @@ def get_user_theme_dir():
         os.makedirs(user_theme_dir)
     return user_theme_dir    
 
-def get_system_theme_dir():
-    return os.path.join(program_dir, "theme")
-
-def get_image_path(name):
-    return os.path.join(program_dir, "data", "images", name)
-
-def get_system_wallpaper_dirs():
-    return ["/usr/share/backgrounds", os.path.join(program_dir, "backgrounds")]
-
-def get_download_wallpaper_dir():
-    wallpaper_dir = os.path.join(get_images_dir(), "deepin-wallpapers")
-    if not os.path.exists(wallpaper_dir):
-        os.makedirs(wallpaper_dir)
-    return wallpaper_dir    
-
-def get_images_dir():
-    return glib.get_user_special_dir(glib.USER_DIRECTORY_PICTURES)
-
-def get_specify_cache_dir(*subpath):
-    path = os.path.join(get_cache_dir(), *subpath)
-    if not os.path.exists(path):
-        os.makedirs(path)
-    return path    
-
 def _make_missing_dirs():
     if not os.path.exists(data_home):
         os.makedirs(data_home)
@@ -138,3 +117,30 @@ def _make_missing_dirs():
     if not os.path.exists(cache_home):
         os.makedirs(cache_home)
         
+class DesktopEntry(object):
+    '''
+    class docs
+    '''
+	
+    def __init__(self, desktop_file_name):
+        '''
+        init docs
+        '''
+        self.desktop_file_name = desktop_file_name
+        self.parser = ConfigParser()
+        self.parse_result = self.parser.read("/usr/share/applications/" + desktop_file_name)
+        
+    def get(self, option):
+        if self.parse_result:
+            try:
+                result = self.parser.get("Desktop Entry", option)
+                return result
+            except Exception, e:
+                return None
+        else:
+            return None
+        
+if __name__ == "__main__":
+    entry = DesktopEntry("deepin-music-player.desktop")
+    print entry.get("Categories")
+    print entry.get("Wang")

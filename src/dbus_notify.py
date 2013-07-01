@@ -130,7 +130,7 @@ class Notifications(DBusProperty, DBusIntrospectable, dbus.service.Object):
         
         notify_storage = Storage({"app_name" : type_convert.dbus2py(app_name), 
                                   "replaces_id" : type_convert.dbus2py(replaces_id),
-                                  "icon" : type_convert.dbus2py(app_icon),
+                                  "app_icon" : type_convert.dbus2py(app_icon),
                                   "summary" : type_convert.dbus2py(summary), 
                                   "body" : type_convert.dbus2py(body),
                                   "actions" : type_convert.dbus2py(actions),
@@ -144,7 +144,7 @@ class Notifications(DBusProperty, DBusIntrospectable, dbus.service.Object):
             return replaces_id
         else:
             self.id_cursor += 1
-            return dbus.UInt32(self.id_cursor)
+            return self.id_cursor
     
     @dbus.service.signal(NOTIFY_IFACE, signature='uu')
     def NotificationClosed(self, id, reason):

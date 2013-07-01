@@ -173,7 +173,7 @@ class IconManager(object):
     def pixbuf_from_path(self, file_path, x, y):    
         try:
             pixbuf = gtk.gdk.pixbuf_new_from_file(file_path)
-        except:    
+        except:
             return None
         else:
             return get_optimum_pixbuf(pixbuf, x, y)

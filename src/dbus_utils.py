@@ -352,6 +352,7 @@ class TypeConvert(object):
 
     def dbus2py(self, prop):
         # return getattr(self, self.dbus_2py_dict[type(prop).__name__])(prop)
+        
         if type(prop).__name__ in self.dbus_2py_dict.iterkeys():
             return getattr(self, self.dbus_2py_dict[type(prop).__name__])(prop)
         else:
