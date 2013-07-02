@@ -64,13 +64,12 @@ class TrayIcon(gtk.StatusIcon):
     def check_date_for_db_clean_up(self):
         now = datetime.now()
         today = now.date()
-        yesterday = datetime.combine(today - timedelta(days=1), time(24, 0, 0))
         today_0 = datetime.combine(today, time(0, 0, 0))
         today_4 = datetime.combine(today, time(4, 0, 0))
         
         if not today_0 > now > today_4:
             if not unread_db.cleaned_up:
-                unread_db.clear_date(yesterday)
+                unread_db.clear_date(today_0)
         
     def on_traypop_listview_items_added(self, items):
         for item in items:
