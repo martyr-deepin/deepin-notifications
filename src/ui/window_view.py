@@ -349,7 +349,7 @@ class DetailWindow(Window):
         '''
         init docs
         '''
-        Window.__init__(self)
+        Window.__init__(self, enable_resize=True)
         self.set_size_request(WINDOW_WIDTH, WINDOW_HEIGHT)
         self.set_position(gtk.WIN_POS_CENTER)
         self.set_skip_taskbar_hint(True)
@@ -579,7 +579,7 @@ class DetailWindow(Window):
                                  )
 
         self.titlebar.max_button.connect("clicked", lambda w: self.toggle_max_window())
-        self.titlebar.min_button.connect("clicked", lambda w: self.min_window())
+        self.titlebar.min_button.connect("clicked", self.close_callback)
         self.titlebar.close_button.connect("clicked", self.close_callback)
         
         if self.resizable:
@@ -740,4 +740,4 @@ class DetailWindow(Window):
         '''
         docs
         '''
-        self.destroy()
+        self.hide()

@@ -82,7 +82,7 @@ class TrayIcon(gtk.StatusIcon):
         '''                     
         x, y = self.generate_traypop_position()
         
-        TrayPop(x, y, self.unread_items).show_up()
+        TrayPop(self).show_up()
         
         if self.pixbuf_file_name == "msg_white2.png":
             self.set_pixbuf_from_file("msg_white1.png")

@@ -128,13 +128,17 @@ class TrayPop(gtk.Window):
     class docs
     '''
 	
-    def __init__(self, x, y, items):
+    def __init__(self, trayicon):
         '''
         init docs
         '''
         gtk.Window.__init__(self, gtk.WINDOW_POPUP)
         
+        (x, y) = trayicon.generate_traypop_position()
+        items = trayicon.unread_items
+        
         self.x, self.y = x - WINDOW_WIDHT / 2, y - WINDOW_HEIGHT
+        self.trayicon = trayicon
         self.set_colormap(gtk.gdk.Screen().get_rgba_colormap() or gtk.gdk.Screen().get_rgb_colormap())
         self.title_pixbuf = app_theme.get_pixbuf("icon_little.png").get_pixbuf()
         self.set_keep_above(True)
@@ -228,7 +232,9 @@ class TrayPop(gtk.Window):
             preference.disable_bubble = True
 
     def on_more_button_clicked(self, widget):
-        DetailWindow().show_all()
+        if not hasattr(self.trayicon, "detail_window"):
+            self.trayicon.detail_window = DetailWindow()
+	self.trayicon.detail_window.show_all()
         self.dismiss()
         
         
