@@ -51,7 +51,8 @@ def get_hyperlink_support_str(raw_str):
         if action_key == "href":
             action_value = action_value if action_value.startswith("http://") else "http://" + action_value
         result["actions"].append({action_key : action_value})
-        return "<u>" + match_obj.group(3) + "</u>"
+
+        return "<span foreground=\"blue\" underline=\"single\">%s</span>" % match_obj.group(3)
     
     regex = re.compile(r'<a\s+([^\s]+)\s*=\s*([^\s<>]+)\s*>([^<>\/].*?)</a>')
     
