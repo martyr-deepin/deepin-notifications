@@ -518,6 +518,7 @@ class DetailWindow(Window):
                 software_children.append(treeview_item)
         
         root_ele_software.add_child_items(software_children)        
+        root_ele_system.add_child_items(system_children)
         self.treeview.draw_mask = self.on_treeview_draw_mask
         
         self.treeview.set_highlight_item(software_children[0])
