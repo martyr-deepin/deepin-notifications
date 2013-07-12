@@ -18,129 +18,129 @@ msgstr ""
 
 #: ../src/ui/window_view.py:158
 msgid "Search"
-msgstr ""
+msgstr "搜尋"
 
 #: ../src/ui/window_view.py:416 ../src/ui/traypop.py:174
 msgid "(Empty)"
-msgstr ""
+msgstr "(空)"
 
 #: ../src/ui/window_view.py:489
 msgid "Remove from Blacklist"
-msgstr ""
+msgstr "從黑名單移除"
 
 #: ../src/ui/window_view.py:491
 msgid "Add to Blacklist"
-msgstr ""
+msgstr "加入到黑名單"
 
 #: ../src/ui/window_view.py:500
 msgid "Software Messages"
-msgstr ""
+msgstr "軟體訊息"
 
 #: ../src/ui/window_view.py:501
 msgid "System Messages"
-msgstr ""
+msgstr "系統訊息"
 
 #: ../src/ui/window_view.py:558
 msgid "Message Manager"
-msgstr ""
+msgstr "訊息管理員"
 
 #: ../src/ui/window_view.py:591
 msgid "Import"
-msgstr ""
+msgstr "匯入"
 
 #: ../src/ui/window_view.py:593
 msgid "Export"
-msgstr ""
+msgstr "匯出"
 
 #: ../src/ui/window_view.py:595
 msgid "Delete"
-msgstr ""
+msgstr "刪除"
 
 #: ../src/ui/window_view.py:597
 msgid "Refresh"
-msgstr ""
+msgstr "重新整理"
 
 #: ../src/ui/window_view.py:606
 msgid "Look up in"
-msgstr ""
+msgstr "查詢"
 
 #: ../src/ui/window_view.py:608 ../src/ui/window_view.py:615
 msgid "All"
-msgstr ""
+msgstr "全部"
 
 #: ../src/ui/window_view.py:610
 msgid "Today"
-msgstr ""
+msgstr "今天"
 
 #: ../src/ui/window_view.py:611
 msgid "Last week"
-msgstr ""
+msgstr "上一週"
 
 #: ../src/ui/window_view.py:612
 msgid "Last month"
-msgstr ""
+msgstr "上個月"
 
 #: ../src/ui/window_view.py:613
 msgid "Last three months"
-msgstr ""
+msgstr "過去三個月"
 
 #: ../src/ui/window_view.py:614
 msgid "Last year"
-msgstr ""
+msgstr "過去一年"
 
 #: ../src/ui/window_view.py:632
 msgid "Find in content"
-msgstr ""
+msgstr "搜尋內容"
 
 #: ../src/ui/window_view.py:695
 msgid "Select File to Import"
-msgstr ""
+msgstr "選擇要匯入的檔案"
 
 #: ../src/ui/window_view.py:709
 msgid "Export to File"
-msgstr ""
+msgstr "匯出到檔案"
 
 #: ../src/ui/window_view.py:721 ../src/ui/listview_factory.py:146
 #: ../src/ui/listview_factory.py:158
 msgid "Delete Item(s)"
-msgstr ""
+msgstr "刪除條目"
 
 #: ../src/ui/window_view.py:722
 msgid "Are you sure you want to delete the selected items?"
-msgstr ""
+msgstr "確定要刪除選中的條目嗎？"
 
 #: ../src/ui/traypop.py:158
 msgid "Unread Messages"
-msgstr ""
+msgstr "未讀訊息"
 
 #: ../src/ui/traypop.py:160
 msgid "Close Notifications"
-msgstr ""
+msgstr "關閉通知"
 
 #: ../src/ui/traypop.py:179
 msgid "More Advanced Options... "
-msgstr ""
+msgstr "進階設定..."
 
 #: ../src/ui/listview_factory.py:110
 msgid "Content of messages"
-msgstr ""
+msgstr "訊息內容"
 
 #: ../src/ui/listview_factory.py:110
 msgid "Time"
-msgstr ""
+msgstr "時間"
 
 #: ../src/ui/listview_factory.py:147
 msgid "Are you sure you want to delete the selected item(s)?"
-msgstr ""
+msgstr "確定要刪除選中的條目嗎？"
 
 #: ../src/ui/listview_factory.py:159
 msgid "Are you sure delete all items?"
-msgstr ""
+msgstr "確定要刪除全部條目嗎？"
 
 #: ../src/ui/listview_factory.py:164
 msgid "Delete selected item(s)"
-msgstr ""
+msgstr "刪除選中條目"
 
 #: ../src/ui/listview_factory.py:165
 msgid "Delete all items"
-msgstr ""
+msgstr "刪除全部條目"
