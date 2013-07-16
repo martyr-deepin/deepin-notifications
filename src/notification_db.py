@@ -68,7 +68,7 @@ class NotificationDB:
     
     def commit(self):
         self.conn.commit()
-    
+        
     def close(self):
         self.cursor.close()
         self.conn.close()

@@ -402,7 +402,7 @@ class DetailWindow(Window):
     def __init_data(self):
         self.classified_items = {}
         rows = db.get_all()
-
+        
         for row in rows:
             app_name = row[MESSAGE].app_name
             self.classified_items.setdefault(app_name, []).append(row)
@@ -421,7 +421,10 @@ class DetailWindow(Window):
             container_remove_all(self.listview_box)
             self.listview_box.pack_start(align, True, True)
         self.main_view_box.show_all()
+        
+        container_remove_all(self.toolbar_box)
         self.add_toolbar()
+        self.toolbar_box.show_all()
         
         
     def on_main_box_expose_event(self, widget, event):
@@ -521,7 +524,8 @@ class DetailWindow(Window):
         root_ele_system.add_child_items(system_children)
         self.treeview.draw_mask = self.on_treeview_draw_mask
         
-        self.treeview.set_highlight_item(software_children[0])
+        if len(software_children):
+            self.treeview.set_highlight_item(software_children[0])
         self.treeview.set_size_request(220, -1)
         self.treeview.connect("single-click-item", self.on_treeview_click_item)
         self.treeview.connect("right-press-items", self.on_treeview_right_press_items)
