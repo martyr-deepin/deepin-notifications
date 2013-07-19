@@ -81,6 +81,8 @@ class UnreadDB:
     def clear(self):
         self.cursor.execute('''delete from notifications''')
         
+    def __del__(self):
+        self.close()
     
 app_data_path = os.path.join(xdg.get_config_dir(), "data")
 app_unread_db_path = os.path.join(app_data_path, "unread_notifications.db")

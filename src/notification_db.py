@@ -87,7 +87,9 @@ class NotificationDB:
         result = tmp_cursor.execute("select * from notifications")
         for x in result.fetchall():
             self.add(x[0], cPickle.loads(str(x[1])))
-        
+            
+    def __del__(self):
+        self.close()
     
 app_data_path = os.path.join(xdg.get_config_dir(), "data")
 app_db_path = os.path.join(app_data_path, "notifications.db")

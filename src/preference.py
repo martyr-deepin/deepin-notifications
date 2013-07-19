@@ -76,7 +76,6 @@ class Preference(object):
     disable_bubble = property(lambda obj : obj.get("general", "disable-bubble", "False") == "True", # getter
                               lambda obj, value : obj.set("general", "disable-bubble", str(value)) # setter
                               )
-    
         
 app_data_path = os.path.join(xdg.get_config_dir(), "data")
 app_config_path = os.path.join(app_data_path, "notifications.ini")
