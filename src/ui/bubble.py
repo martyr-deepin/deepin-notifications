@@ -20,6 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
 import gtk
 import cairo
 import gobject
@@ -28,13 +29,12 @@ import webbrowser
 from ui.utils import get_screen_size, render_hyperlink_support_text
 from dtk.ui.timeline import Timeline, CURVE_SINE
 from dtk.ui.draw import draw_pixbuf, draw_text, TEXT_ALIGN_TOP
-
+from dmenu import DesktopEntry
 from dtk.ui.utils import (propagate_expose, is_in_rect, get_content_size)
 from events import event_manager
 from ui.skin import app_theme
 from ui.icons import icon_manager
-from notification_db import db
-
+from deepin_utils.process import run_command
 
 WINDOW_OFFSET_WIDTH = 10
 WINDOW_OFFSET_HEIGHT = 0
@@ -59,8 +59,6 @@ BODY_OFFSET_HEIGHT = 20
 BODY_TEXT_HEIGHT = 40
 
 ICON_SIZE = (48, 48)
-
-
 
 class Bubble(gtk.Window):
     '''
@@ -112,6 +110,22 @@ class Bubble(gtk.Window):
 
 
         self.set_size_request(self.window_width, self.window_height)    
+        
+    @property
+    def desktop_entry(self):
+        desktop_files_dir = "/usr/share/applications/"
+        
+        # try to fetch desktop file from hints
+        desktop_entry = self.notification.hints.get("desktop-entry")
+        if desktop_entry and not desktop_entry.endswith(".desktop"):
+            desktop_entry += ".desktop"
+        if desktop_entry and os.path.exists(desktop_files_dir + desktop_entry):
+            return DesktopEntry(desktop_entry)
+        
+        # try to composite desktop file using app_name field
+        desktop_entry = desktop_files_dir + self.notification.app_name + ".desktop"
+        if os.path.exists(desktop_entry):
+            return DesktopEntry(desktop_entry)
         
     def get_icon_pixbuf(self):    
         hints = self.notification.hints
@@ -234,7 +248,15 @@ class Bubble(gtk.Window):
                 if action.has_key("href"):
                     webbrowser.open_new_tab(action.get("href"))
                 return
+        
+        rect = widget.allocation
+        if is_in_rect((event.x, event.y),
+                      (rect.x, rect.y, APP_ICON_WIDTH, self.window_height)):
+            self.open_source_software()
     
+    def open_source_software(self):
+        if self.desktop_entry:
+            run_command(self.desktop_entry.exec_)
 
     def _get_position(self):
         screen_w, screen_h = get_screen_size()

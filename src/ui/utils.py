@@ -33,6 +33,8 @@ from dtk.ui.constant import DEFAULT_FONT, DEFAULT_FONT_SIZE
 
 from ui.skin import app_theme
 
+HYPER_LINK_COLOR = "#5088dc"
+
 def root_coords_to_widget_coords(root_x, root_y, widget):
     (widget_x, widget_y) = widget.get_position()
     
@@ -52,7 +54,7 @@ def get_hyperlink_support_str(raw_str):
             action_value = action_value if action_value.startswith("http://") else "http://" + action_value
         result["actions"].append({action_key : action_value})
 
-        return "<span foreground=\"blue\" underline=\"single\">%s</span>" % match_obj.group(3)
+        return "<span foreground=\"%s\" underline=\"single\">%s</span>" % (HYPER_LINK_COLOR ,match_obj.group(3))
     
     regex = re.compile(r'<a\s+([^\s]+)\s*=\s*([^\s<>]+)\s*>([^<>\/].*?)</a>')
     
@@ -140,9 +142,9 @@ def get_pointer_hand_rectangles(obj, text, pango_layout, render_x, render_y):
     end_index = 0
     
     record = 0
-    while text.find("<u>", start_index) != -1 and text.find("</u>", end_index) != -1:
-        start_index = text.find("<u>", start_index) + 1
-        end_index = text.find("</u>", end_index) + 1
+    while text.find("<span foreground=\"%s\" underline=\"single\">" % HYPER_LINK_COLOR, start_index) != -1 and text.find("</span>", end_index) != -1:
+        start_index = text.find("<span foreground=\"%s\" underline=\"single\">" % HYPER_LINK_COLOR, start_index) + 1
+        end_index = text.find("</span>", end_index) + 1
         
         start = start_index - record * (4 + 3) - 1
         end = end_index - (record + 1) * 3 - record * 4 - 1

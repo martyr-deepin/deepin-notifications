@@ -89,8 +89,6 @@ class BubbleManager(object):
         else:
             db.commit()
             unread_db.commit()
-
-                    
                         
     # bubble manager controls move-up-animation in case that bubble move-up asynclly.
     def start_move_up_animation(self, height):

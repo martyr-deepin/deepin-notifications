@@ -136,6 +136,7 @@ class Notifications(DBusProperty, DBusIntrospectable, dbus.service.Object):
                                   "actions" : type_convert.dbus2py(actions),
                                   "hints" : type_convert.dbus2py(hints), 
                                   "expire_timeout" : type_convert.dbus2py(timeout)})
+        print notify_storage
         
 
         event_manager.emit("notify", notify_storage)
