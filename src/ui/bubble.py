@@ -20,7 +20,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
 import gtk
 import cairo
 import gobject
@@ -29,7 +28,6 @@ import webbrowser
 from ui.utils import get_screen_size, render_hyperlink_support_text
 from dtk.ui.timeline import Timeline, CURVE_SINE
 from dtk.ui.draw import draw_pixbuf, draw_text, TEXT_ALIGN_TOP
-from dmenu import DesktopEntry
 from dtk.ui.utils import (propagate_expose, is_in_rect, get_content_size)
 from events import event_manager
 from ui.skin import app_theme
@@ -112,20 +110,12 @@ class Bubble(gtk.Window):
         self.set_size_request(self.window_width, self.window_height)    
         
     @property
-    def desktop_entry(self):
-        desktop_files_dir = "/usr/share/applications/"
+    def source_cmd(self):
+        cmd = self.notification.hints.get("invoke")
+        if cmd:
+            return cmd
         
-        # try to fetch desktop file from hints
-        desktop_entry = self.notification.hints.get("desktop-entry")
-        if desktop_entry and not desktop_entry.endswith(".desktop"):
-            desktop_entry += ".desktop"
-        if desktop_entry and os.path.exists(desktop_files_dir + desktop_entry):
-            return DesktopEntry(desktop_entry)
-        
-        # try to composite desktop file using app_name field
-        desktop_entry = desktop_files_dir + self.notification.app_name + ".desktop"
-        if os.path.exists(desktop_entry):
-            return DesktopEntry(desktop_entry)
+        return self.notification.app_name
         
     def get_icon_pixbuf(self):    
         hints = self.notification.hints
@@ -255,8 +245,7 @@ class Bubble(gtk.Window):
             self.open_source_software()
     
     def open_source_software(self):
-        if self.desktop_entry:
-            run_command(self.desktop_entry.exec_)
+        run_command(self.source_cmd)
 
     def _get_position(self):
         screen_w, screen_h = get_screen_size()
