@@ -21,6 +21,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import webbrowser
+from threading import Thread
 
 import gtk
 import pango
@@ -140,7 +141,7 @@ class ListviewFactory(object):
                 def on_ok_clicked():
                     for item in select_items:
                         db.remove(item.id)
-                        widget.delete_items(select_items)                    
+                    widget.delete_items(select_items)                    
                     db.commit()
                 
                 dialog = ConfirmDialog(
@@ -152,9 +153,12 @@ class ListviewFactory(object):
                 
             def on_delete_all_record():
                 def on_ok_clicked():
-                    db.clear()
-                    widget.clear()
-                    db.commit()
+                    def _remove_all():
+                        for item in self.items:
+                            db.remove(item.id)
+                        widget.delete_items(self.items)                    
+                        db.commit()
+                    Thread(target=_remove_all).run()
 
                 dialog = ConfirmDialog(
                     _("Delete Item(s)"),
