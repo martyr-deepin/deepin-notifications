@@ -134,7 +134,7 @@ def render_hyperlink_support_text(obj, cr, markup,
         context.show_layout(layout)
         
         get_pointer_hand_rectangles(obj, markup, layout, x, render_y)
-                    
+        
 def get_pointer_hand_rectangles(obj, text, pango_layout, render_x, render_y):
     u_start_index = []
     u_end_index = []

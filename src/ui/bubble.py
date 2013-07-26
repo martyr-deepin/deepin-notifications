@@ -28,7 +28,7 @@ import webbrowser
 from ui.utils import get_screen_size, render_hyperlink_support_text
 from dtk.ui.timeline import Timeline, CURVE_SINE
 from dtk.ui.draw import draw_pixbuf, draw_text, TEXT_ALIGN_TOP
-from dtk.ui.utils import (propagate_expose, is_in_rect, get_content_size)
+from dtk.ui.utils import (propagate_expose, is_in_rect, get_content_size, cairo_disable_antialias, color_hex_to_cairo)
 from events import event_manager
 from ui.skin import app_theme
 from ui.icons import icon_manager
@@ -38,7 +38,7 @@ WINDOW_OFFSET_WIDTH = 10
 WINDOW_OFFSET_HEIGHT = 0
 DOCK_HEIGHT = 35
 
-EXPIRE_TIMEOUT = 5000
+EXPIRE_TIMEOUT = 8000
 
 CLOSE_OFFSET_WIDTH = 10
 CLOSE_OFFSET_HEIGHT = 8
@@ -58,6 +58,11 @@ BODY_TEXT_HEIGHT = 40
 
 ICON_SIZE = (48, 48)
 
+ACTION_BUTTON_PADDING_Y = 5
+ACTION_BUTTON_SPACING = 10
+ACTION_BUTTON_HEIGHT = 15
+ACTION_BUTTON_WIDTH = 70
+
 class Bubble(gtk.Window):
     '''
     class docs
@@ -72,6 +77,7 @@ class Bubble(gtk.Window):
         self.create_time = create_time
         self.init_size(height)
         self.init_pixbuf()
+        self.init_action_dict()
         
         self.set_colormap(gtk.gdk.Screen().get_rgba_colormap() or gtk.gdk.Screen().get_rgb_colormap())
         self.set_keep_above(True)
@@ -109,11 +115,17 @@ class Bubble(gtk.Window):
 
         self.set_size_request(self.window_width, self.window_height)    
         
+        self.action_button_areas = []
+        
     @property
     def source_cmd(self):
-        cmd = self.notification.hints.get("invoke")
-        if cmd:
-            return cmd
+        actions = self.notification.actions
+        if "default" in actions:
+            try:
+                cmd = actions[actions.index("default") + 1]
+                return cmd
+            except Exception:
+                pass
         
         return self.notification.app_name
         
@@ -178,7 +190,28 @@ class Bubble(gtk.Window):
         propagate_expose(widget, event)        
         
         return True
-    
+
+    def _render_action(self, cr, rect, text):
+        with cairo_disable_antialias(cr):
+            cr.rectangle(*rect)
+            cr.set_source_rgb(1, 1, 1)
+            cr.stroke_preserve()
+            cr.set_source_rgb(*color_hex_to_cairo("#c18100"))
+            cr.fill()
+            
+            draw_text(cr, text, rect.x, rect.y, rect.width, rect.height, text_color="#ffffff")
+            
+    def init_action_dict(self):
+        self.action_dict = {}
+        
+        actions = self.notification.actions
+        if len(actions) % 2 == 0:
+            for index, action in enumerate(actions):
+                if index % 2 == 0:
+                    self.action_dict[action] = actions[index + 1]
+        if "default" in self.action_dict:
+            self.action_dict.pop("default")
+        
     def draw_notification(self, cr, rect):
         draw_pixbuf(cr, self.bg_pixbuf, rect.x, rect.y)
         
@@ -192,8 +225,6 @@ class Bubble(gtk.Window):
         draw_pixbuf(cr, self.notification_icon, icon_x, icon_y)
         
         # Draw summary.
-        
-        
         width, _height =  get_content_size(self.notification.summary)
         draw_text(cr, 
                   "<b>%s</b>" % self.notification.summary, 
@@ -212,12 +243,30 @@ class Bubble(gtk.Window):
                                       vertical_alignment=TEXT_ALIGN_TOP,
                                       clip_line_count=2)
         
+        # Draw action
+        for index, key in enumerate(self.action_dict):
+            if key != "default" and index < 2:
+                temp_rect = gtk.gdk.Rectangle(
+                    rect.x + TEXT_X + index * (ACTION_BUTTON_SPACING + ACTION_BUTTON_WIDTH),
+                    rect.y + body_text_y + BODY_TEXT_HEIGHT + ACTION_BUTTON_PADDING_Y, 
+                    ACTION_BUTTON_WIDTH, 
+                    ACTION_BUTTON_HEIGHT)
+                self.action_button_areas.append(temp_rect)
+                self._render_action(cr, temp_rect, self.action_dict[key])
+
 
     def on_motion_notify_event(self, widget, event):
         for rect in self.pointer_hand_rectangles:
             if is_in_rect((event.x, event.y), rect):
                 widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
-                break
+                return
+            else:
+                widget.window.set_cursor(None)
+
+        for rect in self.action_button_areas:
+            if is_in_rect((event.x, event.y), rect):
+                widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
+                return
             else:
                 widget.window.set_cursor(None)
 
@@ -238,6 +287,16 @@ class Bubble(gtk.Window):
                 if action.has_key("href"):
                     webbrowser.open_new_tab(action.get("href"))
                 return
+            
+        for index, rect in enumerate(self.action_button_areas):
+            if is_in_rect((event.x, event.y), rect):
+                for i, action_key in enumerate(self.action_dict):
+                    if i == index:
+                        event_manager.emit("action-invoked", action_key)
+                        gobject.source_remove(self.timeout_id)
+                        self.destroy()
+                        event_manager.emit("manual-cancelled", self)
+                        return 
         
         rect = widget.allocation
         if is_in_rect((event.x, event.y),

@@ -22,12 +22,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import sys
 import dbus
+from events import event_manager
 
 class DeepinNotification(object):
     def __init__(self):
         
         import dbus_notify
         self.dbus = dbus_notify.Notifications()
+        event_manager.connect("action-invoked", lambda key : self.dbus.action_invoked(key))
         
         from ui.bubble_manager import BubbleManager
         self.bubble_manager = BubbleManager()

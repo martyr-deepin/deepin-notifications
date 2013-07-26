@@ -136,16 +136,15 @@ class Notifications(DBusProperty, DBusIntrospectable, dbus.service.Object):
                                   "actions" : type_convert.dbus2py(actions),
                                   "hints" : type_convert.dbus2py(hints), 
                                   "expire_timeout" : type_convert.dbus2py(timeout)})
-        print notify_storage
-        
 
         event_manager.emit("notify", notify_storage)
         
         if replaces_id:
-            return replaces_id
+            self.id = replaces_id
         else:
             self.id_cursor += 1
-            return self.id_cursor
+            self.id = self.id_cursor
+        return self.id
     
     @dbus.service.signal(NOTIFY_IFACE, signature='uu')
     def NotificationClosed(self, id, reason):
@@ -154,3 +153,6 @@ class Notifications(DBusProperty, DBusIntrospectable, dbus.service.Object):
     @dbus.service.signal(NOTIFY_IFACE, signature='us')
     def ActionInvoked(self, id, action_key):
         pass
+    
+    def action_invoked(self, action_key):
+        self.ActionInvoked(self.id, self.action_key)
