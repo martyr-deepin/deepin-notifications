@@ -29,7 +29,7 @@ class DeepinNotification(object):
         
         import dbus_notify
         self.dbus = dbus_notify.Notifications()
-        event_manager.connect("action-invoked", lambda key : self.dbus.action_invoked(key))
+        event_manager.connect("action-invoked", lambda (id, key): self.dbus.ActionInvoked(id, key))
         
         from ui.bubble_manager import BubbleManager
         self.bubble_manager = BubbleManager()

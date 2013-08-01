@@ -153,6 +153,3 @@ class Notifications(DBusProperty, DBusIntrospectable, dbus.service.Object):
     @dbus.service.signal(NOTIFY_IFACE, signature='us')
     def ActionInvoked(self, id, action_key):
         pass
-    
-    def action_invoked(self, action_key):
-        self.ActionInvoked(self.id, self.action_key)

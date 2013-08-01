@@ -58,6 +58,7 @@ BODY_TEXT_HEIGHT = 40
 
 ICON_SIZE = (48, 48)
 
+ACTION_BUTTON_COLOR_BG = "#cc6600"
 ACTION_BUTTON_PADDING_Y = 5
 ACTION_BUTTON_SPACING = 10
 ACTION_BUTTON_HEIGHT = 15
@@ -196,7 +197,7 @@ class Bubble(gtk.Window):
             cr.rectangle(*rect)
             cr.set_source_rgb(1, 1, 1)
             cr.stroke_preserve()
-            cr.set_source_rgb(*color_hex_to_cairo("#c18100"))
+            cr.set_source_rgb(*color_hex_to_cairo(ACTION_BUTTON_COLOR_BG))
             cr.fill()
             
             draw_text(cr, text, rect.x, rect.y, rect.width, rect.height, text_color="#ffffff")
@@ -292,7 +293,7 @@ class Bubble(gtk.Window):
             if is_in_rect((event.x, event.y), rect):
                 for i, action_key in enumerate(self.action_dict):
                     if i == index:
-                        event_manager.emit("action-invoked", action_key)
+                        event_manager.emit("action-invoked", (self.notification.replaces_id, action_key))
                         gobject.source_remove(self.timeout_id)
                         self.destroy()
                         event_manager.emit("manual-cancelled", self)
