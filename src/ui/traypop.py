@@ -237,7 +237,6 @@ class TrayPop(gtk.Window):
 	self.trayicon.detail_window.show_all()
         self.dismiss()
         
-        
     def on_left_btn_clicked(self, widget):
         self.view_flipper.flip_backward()
     

@@ -64,6 +64,7 @@ class BubbleManager(object):
         
         trayicon.increase_unread((incoming_time, message))
         db.add(incoming_time, message)
+        trayicon.detail_window.refresh_view()
 
         self.show_bubble()
         

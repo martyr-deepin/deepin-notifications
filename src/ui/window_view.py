@@ -407,7 +407,6 @@ class DetailWindow(Window):
         
             
     def refresh_view(self):
-        print "refresh_view"
         self.__init_data()
         if len(self.classified_items):
             self.add_treeview()        
