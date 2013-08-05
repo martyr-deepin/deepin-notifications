@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-17 16:29+0800\n"
+"POT-Creation-Date: 2013-08-05 10:42+0800\n"
 "PO-Revision-Date: 2013-05-16 10:59+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,131 +17,131 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../src/ui/window_view.py:158
+#: ../src/ui/window_view.py:159
 msgid "Search"
 msgstr "搜索"
 
-#: ../src/ui/window_view.py:416 ../src/ui/traypop.py:174
+#: ../src/ui/window_view.py:419 ../src/ui/traypop.py:178
 msgid "(Empty)"
 msgstr "(空)"
 
-#: ../src/ui/window_view.py:489
+#: ../src/ui/window_view.py:495
 msgid "Remove from Blacklist"
 msgstr "从黑名单移除"
 
-#: ../src/ui/window_view.py:491
+#: ../src/ui/window_view.py:497
 msgid "Add to Blacklist"
 msgstr "加入黑名单"
 
-#: ../src/ui/window_view.py:500
+#: ../src/ui/window_view.py:506
 msgid "Software Messages"
 msgstr "软件信息"
 
-#: ../src/ui/window_view.py:501
+#: ../src/ui/window_view.py:507
 msgid "System Messages"
 msgstr "系统信息"
 
-#: ../src/ui/window_view.py:558
+#: ../src/ui/window_view.py:569
 msgid "Message Manager"
 msgstr "消息管理器"
 
-#: ../src/ui/window_view.py:591
+#: ../src/ui/window_view.py:602
 msgid "Import"
 msgstr "导入"
 
-#: ../src/ui/window_view.py:593
+#: ../src/ui/window_view.py:604
 msgid "Export"
 msgstr "导出"
 
-#: ../src/ui/window_view.py:595
+#: ../src/ui/window_view.py:606
 msgid "Delete"
 msgstr "删除"
 
-#: ../src/ui/window_view.py:597
+#: ../src/ui/window_view.py:608
 msgid "Refresh"
 msgstr "刷新"
 
-#: ../src/ui/window_view.py:606
+#: ../src/ui/window_view.py:617
 msgid "Look up in"
 msgstr "查找"
 
-#: ../src/ui/window_view.py:608 ../src/ui/window_view.py:615
+#: ../src/ui/window_view.py:619 ../src/ui/window_view.py:626
 msgid "All"
 msgstr "所有"
 
-#: ../src/ui/window_view.py:610
+#: ../src/ui/window_view.py:621
 msgid "Today"
 msgstr "今天"
 
-#: ../src/ui/window_view.py:611
+#: ../src/ui/window_view.py:622
 msgid "Last week"
 msgstr "上一周"
 
-#: ../src/ui/window_view.py:612
+#: ../src/ui/window_view.py:623
 msgid "Last month"
 msgstr "上一月"
 
-#: ../src/ui/window_view.py:613
+#: ../src/ui/window_view.py:624
 msgid "Last three months"
 msgstr "前三月"
 
-#: ../src/ui/window_view.py:614
+#: ../src/ui/window_view.py:625
 msgid "Last year"
 msgstr "最近一年"
 
-#: ../src/ui/window_view.py:632
+#: ../src/ui/window_view.py:643
 msgid "Find in content"
 msgstr "查找内容"
 
-#: ../src/ui/window_view.py:695
+#: ../src/ui/window_view.py:706
 msgid "Select File to Import"
 msgstr "选择要导入的文件"
 
-#: ../src/ui/window_view.py:709
+#: ../src/ui/window_view.py:722
 msgid "Export to File"
 msgstr "导出到文件"
 
-#: ../src/ui/window_view.py:721 ../src/ui/listview_factory.py:146
-#: ../src/ui/listview_factory.py:158
+#: ../src/ui/window_view.py:735 ../src/ui/listview_factory.py:148
+#: ../src/ui/listview_factory.py:164
 msgid "Delete Item(s)"
 msgstr "删除条目"
 
-#: ../src/ui/window_view.py:722
+#: ../src/ui/window_view.py:736
 msgid "Are you sure you want to delete the selected items?"
 msgstr "确定删除选中项吗？"
 
-#: ../src/ui/traypop.py:158
+#: ../src/ui/traypop.py:162
 msgid "Unread Messages"
 msgstr "未读消息"
 
-#: ../src/ui/traypop.py:160
+#: ../src/ui/traypop.py:164
 msgid "Close Notifications"
 msgstr "关闭提醒"
 
-#: ../src/ui/traypop.py:179
+#: ../src/ui/traypop.py:183
 msgid "More Advanced Options... "
 msgstr "更多高级选项...  "
 
-#: ../src/ui/listview_factory.py:110
+#: ../src/ui/listview_factory.py:111
 msgid "Content of messages"
 msgstr "消息内容"
 
-#: ../src/ui/listview_factory.py:110
+#: ../src/ui/listview_factory.py:111
 msgid "Time"
 msgstr "时间"
 
-#: ../src/ui/listview_factory.py:147
+#: ../src/ui/listview_factory.py:149
 msgid "Are you sure you want to delete the selected item(s)?"
 msgstr "确定删除选中项吗？"
 
-#: ../src/ui/listview_factory.py:159
+#: ../src/ui/listview_factory.py:165
 msgid "Are you sure delete all items?"
 msgstr "确定删除所有项吗？"
 
-#: ../src/ui/listview_factory.py:164
+#: ../src/ui/listview_factory.py:170
 msgid "Delete selected item(s)"
 msgstr "删除选中条目"
 
-#: ../src/ui/listview_factory.py:165
+#: ../src/ui/listview_factory.py:171
 msgid "Delete all items"
 msgstr "删除所有条目"

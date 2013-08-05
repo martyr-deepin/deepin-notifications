@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-17 16:29+0800\n"
+"POT-Creation-Date: 2013-08-05 10:42+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,131 +17,131 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../src/ui/window_view.py:158
+#: ../src/ui/window_view.py:159
 msgid "Search"
 msgstr ""
 
-#: ../src/ui/window_view.py:416 ../src/ui/traypop.py:174
+#: ../src/ui/window_view.py:419 ../src/ui/traypop.py:178
 msgid "(Empty)"
 msgstr ""
 
-#: ../src/ui/window_view.py:489
+#: ../src/ui/window_view.py:495
 msgid "Remove from Blacklist"
 msgstr ""
 
-#: ../src/ui/window_view.py:491
+#: ../src/ui/window_view.py:497
 msgid "Add to Blacklist"
 msgstr ""
 
-#: ../src/ui/window_view.py:500
+#: ../src/ui/window_view.py:506
 msgid "Software Messages"
 msgstr ""
 
-#: ../src/ui/window_view.py:501
+#: ../src/ui/window_view.py:507
 msgid "System Messages"
 msgstr ""
 
-#: ../src/ui/window_view.py:558
+#: ../src/ui/window_view.py:569
 msgid "Message Manager"
 msgstr ""
 
-#: ../src/ui/window_view.py:591
+#: ../src/ui/window_view.py:602
 msgid "Import"
 msgstr ""
 
-#: ../src/ui/window_view.py:593
+#: ../src/ui/window_view.py:604
 msgid "Export"
 msgstr ""
 
-#: ../src/ui/window_view.py:595
+#: ../src/ui/window_view.py:606
 msgid "Delete"
 msgstr ""
 
-#: ../src/ui/window_view.py:597
+#: ../src/ui/window_view.py:608
 msgid "Refresh"
 msgstr ""
 
-#: ../src/ui/window_view.py:606
+#: ../src/ui/window_view.py:617
 msgid "Look up in"
 msgstr ""
 
-#: ../src/ui/window_view.py:608 ../src/ui/window_view.py:615
+#: ../src/ui/window_view.py:619 ../src/ui/window_view.py:626
 msgid "All"
 msgstr ""
 
-#: ../src/ui/window_view.py:610
+#: ../src/ui/window_view.py:621
 msgid "Today"
 msgstr ""
 
-#: ../src/ui/window_view.py:611
+#: ../src/ui/window_view.py:622
 msgid "Last week"
 msgstr ""
 
-#: ../src/ui/window_view.py:612
+#: ../src/ui/window_view.py:623
 msgid "Last month"
 msgstr ""
 
-#: ../src/ui/window_view.py:613
+#: ../src/ui/window_view.py:624
 msgid "Last three months"
 msgstr ""
 
-#: ../src/ui/window_view.py:614
+#: ../src/ui/window_view.py:625
 msgid "Last year"
 msgstr ""
 
-#: ../src/ui/window_view.py:632
+#: ../src/ui/window_view.py:643
 msgid "Find in content"
 msgstr ""
 
-#: ../src/ui/window_view.py:695
+#: ../src/ui/window_view.py:706
 msgid "Select File to Import"
 msgstr ""
 
-#: ../src/ui/window_view.py:709
+#: ../src/ui/window_view.py:722
 msgid "Export to File"
 msgstr ""
 
-#: ../src/ui/window_view.py:721 ../src/ui/listview_factory.py:146
-#: ../src/ui/listview_factory.py:158
+#: ../src/ui/window_view.py:735 ../src/ui/listview_factory.py:148
+#: ../src/ui/listview_factory.py:164
 msgid "Delete Item(s)"
 msgstr ""
 
-#: ../src/ui/window_view.py:722
+#: ../src/ui/window_view.py:736
 msgid "Are you sure you want to delete the selected items?"
 msgstr ""
 
-#: ../src/ui/traypop.py:158
+#: ../src/ui/traypop.py:162
 msgid "Unread Messages"
 msgstr ""
 
-#: ../src/ui/traypop.py:160
+#: ../src/ui/traypop.py:164
 msgid "Close Notifications"
 msgstr ""
 
-#: ../src/ui/traypop.py:179
+#: ../src/ui/traypop.py:183
 msgid "More Advanced Options... "
 msgstr ""
 
-#: ../src/ui/listview_factory.py:110
+#: ../src/ui/listview_factory.py:111
 msgid "Content of messages"
 msgstr ""
 
-#: ../src/ui/listview_factory.py:110
+#: ../src/ui/listview_factory.py:111
 msgid "Time"
 msgstr ""
 
-#: ../src/ui/listview_factory.py:147
+#: ../src/ui/listview_factory.py:149
 msgid "Are you sure you want to delete the selected item(s)?"
 msgstr ""
 
-#: ../src/ui/listview_factory.py:159
+#: ../src/ui/listview_factory.py:165
 msgid "Are you sure delete all items?"
 msgstr ""
 
-#: ../src/ui/listview_factory.py:164
+#: ../src/ui/listview_factory.py:170
 msgid "Delete selected item(s)"
 msgstr ""
 
-#: ../src/ui/listview_factory.py:165
+#: ../src/ui/listview_factory.py:171
 msgid "Delete all items"
 msgstr ""
