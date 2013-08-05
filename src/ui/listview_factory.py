@@ -37,7 +37,6 @@ from notification_db import db
 from ui.utils import render_hyperlink_support_text, draw_single_mask
 from nls import _
 
-
 ID = 0
 TIME = 1
 MESSAGE = 2
@@ -135,21 +134,20 @@ class ListviewFactory(object):
         
     def on_listview_right_press_items(self, widget, root_x, root_y, current_item, select_items):
         if self.owner == "detail":        
-            
             def on_delete_selected_record():
-                
                 def on_ok_clicked():
-                    for item in select_items:
-                        db.remove(item.id)
-                    widget.delete_items(select_items)                    
-                    db.commit()
+                    def _remove_selected():
+                        for item in select_items:
+                            db.remove(item.id)
+                        db.commit()
+                        widget.get_toplevel().refresh_view()
+                    Thread(target=_remove_selected).run()
                 
                 dialog = ConfirmDialog(
                     _("Delete Item(s)"),
                     _("Are you sure you want to delete the selected item(s)?"),
                     confirm_callback = on_ok_clicked)
                 dialog.show_all()
-                
                 
             def on_delete_all_record():
                 def on_ok_clicked():
@@ -158,6 +156,7 @@ class ListviewFactory(object):
                             db.remove(item.id)
                         widget.delete_items(self.items)                    
                         db.commit()
+                        widget.get_toplevel().refresh_view()                        
                     Thread(target=_remove_all).run()
 
                 dialog = ConfirmDialog(
@@ -166,10 +165,8 @@ class ListviewFactory(object):
                     confirm_callback = on_ok_clicked)
                 dialog.show_all()
                 
-                
             Menu([(None, _("Delete selected item(s)"), on_delete_selected_record),
                   (None, _("Delete all items"), on_delete_all_record)], True).show((root_x, root_y))
-        
         
     def get_paged_items(self):
         paged_items = {}

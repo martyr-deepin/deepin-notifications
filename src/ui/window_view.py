@@ -387,8 +387,6 @@ class DetailWindow(Window):
         self.window_frame.pack_start(self.titlebar_box, False, False)
         self.window_frame.pack_start(main_box_align)
         
-        
-
     def __init_pixbuf(self):
         self.import_btn_pixbuf = gtk.gdk.pixbuf_new_from_file(app_theme.get_theme_file_path("image/toolbar_import.png"))
         self.export_btn_pixbuf = gtk.gdk.pixbuf_new_from_file(app_theme.get_theme_file_path("image/toolbar_export.png"))
@@ -409,6 +407,7 @@ class DetailWindow(Window):
         
             
     def refresh_view(self):
+        print "refresh_view"
         self.__init_data()
         if len(self.classified_items):
             self.add_treeview()        
