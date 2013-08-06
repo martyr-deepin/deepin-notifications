@@ -232,8 +232,6 @@ class TrayPop(gtk.Window):
             preference.disable_bubble = True
 
     def on_more_button_clicked(self, widget):
-        if not hasattr(self.trayicon, "detail_window"):
-            self.trayicon.detail_window = DetailWindow()
 	self.trayicon.detail_window.show_all()
         self.dismiss()
         

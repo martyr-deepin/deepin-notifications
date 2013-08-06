@@ -397,6 +397,9 @@ class DetailWindow(Window):
         self.toolbar_bg_pixbuf = app_theme.get_pixbuf("bar.png")
         self.cache_toolbar_bg_pixbuf = CachePixbuf()
         
+    def _init_data(self):
+        self.__init_data()
+        
     def __init_data(self):
         self.classified_items = {}
         rows = db.get_all()

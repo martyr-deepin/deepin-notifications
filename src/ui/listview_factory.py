@@ -140,7 +140,8 @@ class ListviewFactory(object):
                         for item in select_items:
                             db.remove(item.id)
                         db.commit()
-                        widget.get_toplevel().refresh_view()
+                        widget.delete_items(select_items)
+                        widget.get_toplevel()._init_data()
                     Thread(target=_remove_selected).run()
                 
                 dialog = ConfirmDialog(
@@ -154,7 +155,6 @@ class ListviewFactory(object):
                     def _remove_all():
                         for item in self.items:
                             db.remove(item.id)
-                        widget.delete_items(self.items)                    
                         db.commit()
                         widget.get_toplevel().refresh_view()                        
                     Thread(target=_remove_all).run()

@@ -64,8 +64,11 @@ class BubbleManager(object):
         
         trayicon.increase_unread((incoming_time, message))
         db.add(incoming_time, message)
-        trayicon.detail_window.refresh_view()
-
+        if trayicon.detail_window.get_visible():
+            trayicon.detail_window._init_data()
+        else:
+            trayicon.detail_window.refresh_view()
+            
         self.show_bubble()
         
     # if bubble died because manual close or expire, we need to remove the bubble from our bubble queue manually.
