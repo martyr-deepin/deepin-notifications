@@ -161,7 +161,7 @@ class TrayPop(gtk.Window):
         title_image.set_from_pixbuf(self.title_pixbuf)
         title_label = Label(_("Unread Messages"), text_size=FONT_SIZE)
         title_switch = SwitchButton(not preference.disable_bubble)
-        title_switch.set_tooltip_text(_("Close Notifications"))
+        title_switch.set_tooltip_text(_("Turn Off Global Notifications"))
         title_switch.connect("toggled", self.on_title_switch_toggled)
         header_box.pack_end(title_switch, False, False, 5)
         header_box.pack_start(title_image, False, False, 5)
@@ -228,8 +228,10 @@ class TrayPop(gtk.Window):
     def on_title_switch_toggled(self, widget):
         if widget.get_active():
             preference.disable_bubble = False
+            widget.set_tooltip_text(_("Turn Off Global Notifications"))
         else:
             preference.disable_bubble = True
+            widget.set_tooltip_text(_("Turn On Global Notifications"))
 
     def on_more_button_clicked(self, widget):
 	self.trayicon.detail_window.show_all()
