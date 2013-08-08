@@ -3,20 +3,20 @@
 
 # Copyright (C) 2011 ~ 2013 Deepin, Inc.
 #               2011 ~ 2013 Wang Yaohua
-# 
+#
 # Author:     Wang Yaohua <mr.asianwang@gmail.com>
 # Maintainer: Wang Yaohua <mr.asianwang@gmail.com>
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -68,7 +68,7 @@ class Bubble(gtk.Window):
     '''
     class docs
     '''
-	
+
     def __init__(self, notification, height, create_time):
         '''
         init docs
@@ -79,34 +79,34 @@ class Bubble(gtk.Window):
         self.init_size(height)
         self.init_pixbuf()
         self.init_action_dict()
-        
+
         self.set_colormap(gtk.gdk.Screen().get_rgba_colormap() or gtk.gdk.Screen().get_rgb_colormap())
         self.set_keep_above(True)
         self.add_events(gtk.gdk.BUTTON_PRESS_MASK | gtk.gdk.POINTER_MOTION_MASK | gtk.gdk.POINTER_MOTION_HINT_MASK)
-        
+
         self.connect("expose-event", self.on_expose_event)
         self.connect("button-press-event", self.on_button_press_event)
         self.connect("motion-notify-event", self.on_motion_notify_event)
-        
+
         self.animation_time = 200
         self.level = 1
         self.win_x, self.win_y = self._get_position()
         self.pointer_hand_rectangles = []
-        
+
         self.move(self.win_x, self.win_y)
         self.set_opacity(0)
         self.show_all()
         self.timeout_id = gobject.timeout_add(EXPIRE_TIMEOUT, self.start_destroy_animation)
-        
+
         event_manager.connect("manual-cancelled", self.move_down)
-        
+
     def init_size(self, height):
         '''
         docs
         '''
         self.window_width = 302
         self.window_height = height
-        
+
         self.close_pixbuf = app_theme.get_pixbuf("close.png").get_pixbuf()
         self.close_rect = gtk.gdk.Rectangle(self.window_width - self.close_pixbuf.get_width() - CLOSE_OFFSET_WIDTH,
                                             CLOSE_OFFSET_HEIGHT,
@@ -114,10 +114,10 @@ class Bubble(gtk.Window):
                                             self.close_pixbuf.get_height())
 
 
-        self.set_size_request(self.window_width, self.window_height)    
-        
+        self.set_size_request(self.window_width, self.window_height)
+
         self.action_button_areas = []
-        
+
     @property
     def source_cmd(self):
         actions = self.notification.actions
@@ -127,69 +127,69 @@ class Bubble(gtk.Window):
                 return cmd
             except Exception:
                 pass
-        
+
         return self.notification.app_name
-        
-    def get_icon_pixbuf(self):    
+
+    def get_icon_pixbuf(self):
         hints = self.notification.hints
         pixbuf = None
         image_data = hints.get("image-data", None) or hints.get("image_data", None)
         if image_data:
             pixbuf = icon_manager.pixbuf_from_dbus(image_data, ICON_SIZE)
-            
+
         if pixbuf: return pixbuf
-        
+
         image_path = hints.get("image-path", None) or hints.get("image_path", None)
         if image_path:
             try:
                 pixbuf = icon_manager.pixbuf_from_path(image_path, ICON_SIZE[0], ICON_SIZE[1])
             except:
                 pixbuf = None
-                
-        if pixbuf: return pixbuf        
-        
+
+        if pixbuf: return pixbuf
+
         app_icon = self.notification.app_icon
         if app_icon:
             pixbuf = icon_manager.pixbuf_from_icon_name(app_icon, ICON_SIZE[0])
-            if pixbuf:    
+            if pixbuf:
                 return pixbuf
             else:
                 pixbuf = icon_manager.pixbuf_from_path(app_icon, ICON_SIZE[0], ICON_SIZE[1])
                 if pixbuf:
                     return pixbuf
-        
+
         return self.default_icon
 
-        
+
     def init_pixbuf(self):
         pixbuf_file_name = "mini.png" if self.window_height == 87 else "max.png"
         self.bg_pixbuf = app_theme.get_pixbuf(pixbuf_file_name).get_pixbuf()
-        
+
         self.default_icon = app_theme.get_pixbuf("icon.png").get_pixbuf()
         self.notification_icon = self.get_icon_pixbuf()
-        
-    
-    def on_expose_event(self, widget, event):    
+
+
+    def on_expose_event(self, widget, event):
         cr = widget.window.cairo_create()
         rect = widget.allocation
-        
+
         if self.is_composited():
             cr.rectangle(*rect)
             cr.set_source_rgba(0, 0, 0, 0)
-            cr.set_operator(cairo.OPERATOR_SOURCE)                
-            cr.fill()            
-        else:    
-            cr.rectangle(rect.x, rect.y, rect.width, rect.height)            
+            cr.set_operator(cairo.OPERATOR_SOURCE)
+            cr.fill()
+        else:
+            cr.rectangle(rect.x, rect.y, rect.width, rect.height)
             cr.set_operator(cairo.OPERATOR_SOURCE)
             cr.set_source_rgb(0.9, 0.9, 0.9)
             cr.fill()
-            
 
-        cr.set_operator(cairo.OPERATOR_OVER)            
+
+        cr.set_operator(cairo.OPERATOR_OVER)
         self.draw_notification(cr, rect)
-        
-        propagate_expose(widget, event)        
-        
+
+        propagate_expose(widget, event)
+
         return True
 
     def _render_action(self, cr, rect, text):
@@ -199,12 +199,12 @@ class Bubble(gtk.Window):
             cr.stroke_preserve()
             cr.set_source_rgb(*color_hex_to_cairo(ACTION_BUTTON_COLOR_BG))
             cr.fill()
-            
+
             draw_text(cr, text, rect.x, rect.y, rect.width, rect.height, text_color="#ffffff")
-            
+
     def init_action_dict(self):
         self.action_dict = {}
-        
+
         actions = self.notification.actions
         if len(actions) % 2 == 0:
             for index, action in enumerate(actions):
@@ -212,45 +212,45 @@ class Bubble(gtk.Window):
                     self.action_dict[action] = actions[index + 1]
         if "default" in self.action_dict:
             self.action_dict.pop("default")
-        
+
     def draw_notification(self, cr, rect):
         draw_pixbuf(cr, self.bg_pixbuf, rect.x, rect.y)
-        
+
         icon_x = rect.x + self.close_rect.x
         icon_y = rect.y + self.close_rect.y
         draw_pixbuf(cr, self.close_pixbuf, icon_x, icon_y)
-        
+
         # Draw app icon.
         icon_x = APP_ICON_X + (APP_ICON_WIDTH  - self.notification_icon.get_width()) / 2
         icon_y = rect.y + (rect.height - self.notification_icon.get_height()) / 2
         draw_pixbuf(cr, self.notification_icon, icon_x, icon_y)
-        
+
         # Draw summary.
         width, _height =  get_content_size(self.notification.summary)
-        draw_text(cr, 
-                  "<b>%s</b>" % self.notification.summary, 
-                  rect.x + TEXT_X, rect.y + SUMMARY_TEXT_Y, 
+        draw_text(cr,
+                  "<b>%s</b>" % self.notification.summary,
+                  rect.x + TEXT_X, rect.y + SUMMARY_TEXT_Y,
                   TEXT_WIDTH - self.close_pixbuf.get_width(), _height,
                   text_color="#FFFFFF", text_size=10)
-        
-        #Draw body 
+
+        #Draw body
         body_text_y = SUMMARY_TEXT_Y + _height + TEXT_PADDING_Y
-        render_hyperlink_support_text(self, cr, self.notification.body, 
-                                      rect.x + TEXT_X, rect.y + body_text_y, 
+        render_hyperlink_support_text(self, cr, self.notification.body,
+                                      rect.x + TEXT_X, rect.y + body_text_y,
                                       TEXT_WIDTH - self.close_pixbuf.get_width(),
                                       BODY_TEXT_HEIGHT,
                                       wrap_width=TEXT_WIDTH - self.close_pixbuf.get_width() + 5,
-                                      text_color="#FFFFFF", text_size=10, 
+                                      text_color="#FFFFFF", text_size=10,
                                       vertical_alignment=TEXT_ALIGN_TOP,
                                       clip_line_count=2)
-        
+
         # Draw action
         for index, key in enumerate(self.action_dict):
             if key != "default" and index < 2:
                 temp_rect = gtk.gdk.Rectangle(
                     rect.x + TEXT_X + index * (ACTION_BUTTON_SPACING + ACTION_BUTTON_WIDTH),
-                    rect.y + body_text_y + BODY_TEXT_HEIGHT + ACTION_BUTTON_PADDING_Y, 
-                    ACTION_BUTTON_WIDTH, 
+                    rect.y + body_text_y + BODY_TEXT_HEIGHT + ACTION_BUTTON_PADDING_Y,
+                    ACTION_BUTTON_WIDTH,
                     ACTION_BUTTON_HEIGHT)
                 self.action_button_areas.append(temp_rect)
                 self._render_action(cr, temp_rect, self.action_dict[key])
@@ -272,23 +272,23 @@ class Bubble(gtk.Window):
                 widget.window.set_cursor(None)
 
 
-            
+
     def on_button_press_event(self, widget, event):
-        if is_in_rect((event.x, event.y), 
-                      (self.close_rect.x, self.close_rect.y, 
+        if is_in_rect((event.x, event.y),
+                      (self.close_rect.x, self.close_rect.y,
                        self.close_rect.width, self.close_rect.height)):
             gobject.source_remove(self.timeout_id)
             self.destroy()
             event_manager.emit("manual-cancelled", self)
-            return 
-            
+            return
+
         for index, rect in enumerate(self.pointer_hand_rectangles):
             if is_in_rect((event.x, event.y), rect):
                 action = self.notification["hints"]["x-deepin-hyperlinks"][index]
                 if action.has_key("href"):
                     webbrowser.open_new_tab(action.get("href"))
                 return
-            
+
         for index, rect in enumerate(self.action_button_areas):
             if is_in_rect((event.x, event.y), rect):
                 for i, action_key in enumerate(self.action_dict):
@@ -297,13 +297,13 @@ class Bubble(gtk.Window):
                         gobject.source_remove(self.timeout_id)
                         self.destroy()
                         event_manager.emit("manual-cancelled", self)
-                        return 
-        
+                        return
+
         rect = widget.allocation
         if is_in_rect((event.x, event.y),
                       (rect.x, rect.y, APP_ICON_WIDTH, self.window_height)):
             self.open_source_software()
-    
+
     def open_source_software(self):
         run_command(self.source_cmd)
 
@@ -312,43 +312,43 @@ class Bubble(gtk.Window):
         win_x = screen_w - self.window_width - WINDOW_OFFSET_WIDTH
         win_y = screen_h - self.window_height - DOCK_HEIGHT - WINDOW_OFFSET_HEIGHT
         self.last_y = win_y + self.window_height
-        
+
         return win_x, win_y
-    
+
     def start_destroy_animation(self):
         timeline = Timeline(self.animation_time, CURVE_SINE)
         timeline.connect("update", self.update_destory_animation)
         timeline.connect("completed", self.destroy_animation_complete)
         timeline.run()
         return False
-    
+
     def update_destory_animation(self, source, status):
         if status != 1:
             self.set_opacity(1.0-status)
         else:
             self.destroy()
-    
+
     def destroy_animation_complete(self, source):
         event_manager.emit("bubble-destroy", self)
-        
+
     def move_up_by(self, move_up_height, update_height=False):
         self.win_y = int(self.last_y - move_up_height)
         self.move(self.win_x, self.win_y)
         if update_height:
             self.last_y = self.win_y
-        
+
     def move_down_by(self, move_down_height, update_height=False):
         self.win_y = int(self.last_y + move_down_height)
         self.move(self.win_x, self.win_y)
         if update_height:
             self.last_y = self.win_y
-        
+
     def move_down(self, send_obj):
         if self.level == 2:
             (move_down_height) = send_obj.window_height
             self.move_up_timeline = Timeline(self.animation_time, CURVE_SINE)
             self.move_up_timeline.connect("update", self.update_move_down_animation, move_down_height)
             self.move_up_timeline.run()
-            
+
     def update_move_down_animation(self, source, status, move_down_height):
         self.move_down_by(move_down_height * status, not bool(status - 1))

@@ -3,20 +3,20 @@
 
 # Copyright (C) 2011 ~ 2012 Deepin, Inc.
 #               2011 ~ 2012 Hou Shaohui
-# 
+#
 # Author:     Hou Shaohui <houshao55@gmail.com>
 # Maintainer: Hou Shaohui <houshao55@gmail.com>
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -333,7 +333,7 @@ class DBusProperty(object):
     def PropertiesChanged(self, interface, changed, invalidated, rel=""):
         pass
 
-    
+
 class TypeConvert(object):
 
     def __init__(self):
@@ -352,7 +352,7 @@ class TypeConvert(object):
 
     def dbus2py(self, prop):
         # return getattr(self, self.dbus_2py_dict[type(prop).__name__])(prop)
-        
+
         if type(prop).__name__ in self.dbus_2py_dict.iterkeys():
             return getattr(self, self.dbus_2py_dict[type(prop).__name__])(prop)
         else:
@@ -495,5 +495,5 @@ class TypeConvert(object):
 
     def py2_dbus_utf8string(self, prop):
         return dbus.UTF8String(prop)
-    
-type_convert  = TypeConvert()    
+
+type_convert  = TypeConvert()
