@@ -22,6 +22,7 @@
 
 import gtk
 import cairo
+import pango
 import gobject
 import webbrowser
 
@@ -61,7 +62,7 @@ ICON_SIZE = (48, 48)
 ACTION_BUTTON_COLOR_BG = "#cc6600"
 ACTION_BUTTON_PADDING_Y = 5
 ACTION_BUTTON_SPACING = 10
-ACTION_BUTTON_HEIGHT = 15
+ACTION_BUTTON_HEIGHT = 17
 ACTION_BUTTON_WIDTH = 70
 
 class Bubble(gtk.Window):
@@ -196,11 +197,12 @@ class Bubble(gtk.Window):
         with cairo_disable_antialias(cr):
             cr.rectangle(*rect)
             cr.set_source_rgb(1, 1, 1)
+            cr.set_line_width(2)
             cr.stroke_preserve()
             cr.set_source_rgb(*color_hex_to_cairo(ACTION_BUTTON_COLOR_BG))
             cr.fill()
 
-            draw_text(cr, text, rect.x, rect.y, rect.width, rect.height, text_color="#ffffff")
+            draw_text(cr, text, rect.x, rect.y, rect.width, rect.height, text_color="#ffffff", alignment=pango.ALIGN_CENTER)
 
     def init_action_dict(self):
         self.action_dict = {}
