@@ -140,11 +140,11 @@ class Notifications(DBusProperty, DBusIntrospectable, dbus.service.Object):
         event_manager.emit("notify", notify_storage)
 
         if replaces_id:
-            self.id = replaces_id
+            notify_storage.id = replaces_id
         else:
             self.id_cursor += 1
-            self.id = self.id_cursor
-        return self.id
+            notify_storage.id = self.id_cursor
+        return notify_storage.id
 
     @dbus.service.signal(NOTIFY_IFACE, signature='uu')
     def NotificationClosed(self, id, reason):

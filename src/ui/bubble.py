@@ -295,7 +295,7 @@ class Bubble(gtk.Window):
             if is_in_rect((event.x, event.y), rect):
                 for i, action_key in enumerate(self.action_dict):
                     if i == index:
-                        event_manager.emit("action-invoked", (self.notification.replaces_id, action_key))
+                        event_manager.emit("action-invoked", (self.notification.id, action_key))
                         gobject.source_remove(self.timeout_id)
                         self.destroy()
                         event_manager.emit("manual-cancelled", self)
