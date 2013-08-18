@@ -64,10 +64,12 @@ class BubbleManager(object):
 
         trayicon.increase_unread((incoming_time, message))
         db.add(incoming_time, message)
-        if trayicon.detail_window.get_visible():
-            trayicon.detail_window._init_data()
-        else:
-            trayicon.detail_window.refresh_view()
+        
+        if hasattr(trayicon, "detail_window"):
+            if trayicon.detail_window.get_visible():
+                trayicon.detail_window._init_data()
+            else:
+                trayicon.detail_window.refresh_view()
 
         self.show_bubble()
 

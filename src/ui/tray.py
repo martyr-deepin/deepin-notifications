@@ -40,7 +40,6 @@ class TrayIcon(gtk.StatusIcon):
     def __init__(self):
         gtk.StatusIcon.__init__(self)
         self.set_pixbuf_from_file("msg_white1.png")
-        self.detail_window = DetailWindow()
         
         self.connect("button-press-event", self.on_button_press_event)
         event_manager.connect("listview-items-added", self.on_traypop_listview_items_added)

@@ -746,4 +746,4 @@ class DetailWindow(Window):
         '''
         docs
         '''
-        self.hide()
+        self.destroy()
