@@ -234,7 +234,6 @@ class TrayPop(gtk.Window):
             widget.set_tooltip_text(_("Turn On Global Notifications"))
 
     def on_more_button_clicked(self, widget):
-        self.trayicon.detail_window = DetailWindow()
         self.trayicon.detail_window.show_all()
         self.dismiss()
         

@@ -139,8 +139,6 @@ class ToolbarItem(gtk.Button):
 
         return True
 
-
-
 gobject.type_register(ToolbarItem)
 
 class SearchEntry(InputEntry):
@@ -165,8 +163,6 @@ class SearchEntry(InputEntry):
         self.emit("action-active", self.get_text())
 
 gobject.type_register(SearchEntry)
-
-
 
 pixbuf_blacklist_white = app_theme.get_pixbuf("blacklist_white.png").get_pixbuf()
 pixbuf_blacklist_grey = app_theme.get_pixbuf("blacklist_grey.png").get_pixbuf()
@@ -386,6 +382,10 @@ class DetailWindow(Window):
 
         self.window_frame.pack_start(self.titlebar_box, False, False)
         self.window_frame.pack_start(main_box_align)
+        
+    @property
+    def is_empty(self):
+        return not bool(len(self.classified_items))
 
     def __init_pixbuf(self):
         self.import_btn_pixbuf = gtk.gdk.pixbuf_new_from_file(app_theme.get_theme_file_path("image/toolbar_import.png"))
@@ -399,7 +399,7 @@ class DetailWindow(Window):
 
     def _init_data(self):
         self.__init_data()
-
+        
     def __init_data(self):
         self.classified_items = {}
         rows = db.get_all()
@@ -407,8 +407,18 @@ class DetailWindow(Window):
         for row in rows:
             app_name = row[MESSAGE].app_name
             self.classified_items.setdefault(app_name, []).append(row)
+            
+    def add_to_view(self):
+        row = db.get_last()
+        
+        # add to data
+        app_name = row[MESSAGE].app_name
+        self.classified_items.setdefault(app_name, []).append(row)
 
-
+        # add to view
+        if app_name == self.treeview.get_highlight_item().get_title():
+            self.factory.add_items([row])
+            
     def refresh_view(self):
         self.__init_data()
         if len(self.classified_items):
@@ -426,7 +436,6 @@ class DetailWindow(Window):
         container_remove_all(self.toolbar_box)
         self.add_toolbar()
         self.toolbar_box.show_all()
-
 
     def on_main_box_expose_event(self, widget, event):
         cr = widget.window.cairo_create()
@@ -562,7 +571,6 @@ class DetailWindow(Window):
         '''
         app_name = self.treeview.get_highlight_item().get_title()
         return self.classified_items[app_name]
-
 
     def add_titlebar(self,
                      button_mask=["min", "max", "close"],
@@ -743,7 +751,4 @@ class DetailWindow(Window):
         self.refresh_view()
 
     def close_callback(self, widget):
-        '''
-        docs
-        '''
-        self.destroy()
+        self.hide_all()

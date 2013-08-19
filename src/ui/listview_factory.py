@@ -61,6 +61,9 @@ class ListviewFactory(object):
         
         self.init_listview()
         
+    def add_items(self, items):
+        if self.listview:
+            self.listview.add_items([ListViewItem(x, self.owner) for x in items])
         
     def on_listview_button_pressed(self, widget, event, listview):
         x = event.x

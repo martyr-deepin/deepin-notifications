@@ -66,6 +66,14 @@ class NotificationDB:
         
         return [(x[0], x[1], cPickle.loads(str(x[2]))) for x in result]
     
+    def get_last(self):
+        self.cursor.execute('''select max(id) from notifications''')
+        (max_id,) = self.cursor.fetchone()
+        self.cursor.execute('''select * from notifications where id=?''', (max_id,))
+        result = self.cursor.fetchone()
+        
+        return (result[0], result[1], cPickle.loads(str(result[2])))
+    
     def commit(self):
         self.conn.commit()
         

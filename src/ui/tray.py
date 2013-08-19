@@ -24,6 +24,7 @@
 from datetime import datetime, timedelta, time, date
 
 import gtk
+import gobject
 from ui.skin import app_theme
 from traypop import TrayPop
 from events import event_manager
@@ -40,6 +41,7 @@ class TrayIcon(gtk.StatusIcon):
     def __init__(self):
         gtk.StatusIcon.__init__(self)
         self.set_pixbuf_from_file("msg_white1.png")
+        self.detail_window = DetailWindow()
         
         self.connect("button-press-event", self.on_button_press_event)
         event_manager.connect("listview-items-added", self.on_traypop_listview_items_added)
@@ -57,6 +59,14 @@ class TrayIcon(gtk.StatusIcon):
         x, y, not_important = gtk.status_icon_position_menu(gtk.Menu(), self)
         
         return x + 7, y - 25
+    
+    def on_notify_receive(self, data):
+        self.increase_unread(data)
+        
+        if self.detail_window.is_empty:
+            self.detail_window.refresh_view()
+        else:
+            self.detail_window.add_to_view()
     
     def increase_unread(self, data):
         self.check_date_for_db_clean_up()
