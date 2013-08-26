@@ -417,7 +417,7 @@ class DetailWindow(Window):
 
         # add to view
         if app_name == self.treeview.get_highlight_item().get_title():
-            self.factory.add_items([row])
+            self.factory.prepend_item(row)
             
     def refresh_view(self):
         self.__init_data()
