@@ -31,7 +31,6 @@ def check_dbus(bus, interface):
     avail = dbus_iface.ListNames()
     return interface in avail
 
-
 class DbusNotify(object):
     
     def __init__(self, app_name, icon=None):
@@ -60,8 +59,6 @@ class DbusNotify(object):
         
     def notify(self):
         bus = dbus.SessionBus()
-        if not check_dbus(bus, NOTIFICATIONS_SERVICE_NAME):
-            return False
         
         proxy = bus.get_object(NOTIFICATIONS_SERVICE_NAME,
                                NOTIFICATIONS_PATH)
