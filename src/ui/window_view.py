@@ -413,7 +413,7 @@ class DetailWindow(Window):
         
         # add to data
         app_name = row[MESSAGE].app_name
-        self.classified_items.setdefault(app_name, []).append(row)
+        self.classified_items.setdefault(app_name, []).insert(0, row)
 
         # add to view
         if app_name == self.treeview.get_highlight_item().get_title():
