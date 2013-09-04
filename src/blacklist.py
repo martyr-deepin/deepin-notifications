@@ -38,8 +38,8 @@ class Blacklist(object):
         if not os.path.exists(self.path):
             open(self.path, "w").close()
             
-        self.bl_file = open(self.path, "r")
-        file_content = self.bl_file.read()
+        with open(self.path) as bl_file:
+            file_content = bl_file.read()
         if len(file_content) != 0:
             self.bl = cPickle.loads(file_content)
         else:
@@ -47,14 +47,14 @@ class Blacklist(object):
 
     def add(self, black):
         self.bl.append(black)
-        self.bl_file = open(self.path, "w")
-        self.bl_file.write(cPickle.dumps(self.bl))
+        with open(self.path, "w") as bl_file:
+            bl_file.write(cPickle.dumps(self.bl))
 
     def remove(self, black):
         if black in self.bl:
             self.bl.remove(black)
-            self.bl_file = open(self.path, "w")
-            self.bl_file.write(cPickle.dumps(self.bl))
+            with open(self.path, "w") as bl_file:
+                bl_file.write(cPickle.dumps(self.bl))
             
             
 app_data_path = os.path.join(xdg.get_config_dir(), "data")
