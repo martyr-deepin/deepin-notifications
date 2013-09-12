@@ -52,7 +52,6 @@ class BubbleManager(object):
         event_manager.connect("bubble-destroy", self.on_bubble_destroy)
         event_manager.connect("manual-destroy", self.on_manual_destroy)
 
-
     def on_notify(self, notification):
         # replace hyper<a> with underline <u> _AND_ place hyper actions in hints["x-deepin-hyperlinks"]
         message = handle_notification(notification)
@@ -110,6 +109,9 @@ class BubbleManager(object):
                     current_bubble.set_opacity(status)
                 if status == 1:
                     current_bubble.level += 1
+            elif index == 1:
+                if status == 1:
+                    current_bubble.level += 1
             elif index == 2:
                 if status == 1:
                     self.bubble_queue.remove(current_bubble)
@@ -118,7 +120,6 @@ class BubbleManager(object):
                 else:
                     current_bubble.set_opacity(1 - status)
             index += 1
-
 
     def on_move_up_completed(self, source):
         self.is_in_animation = False

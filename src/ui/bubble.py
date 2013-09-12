@@ -90,7 +90,7 @@ class Bubble(gtk.Window):
         self.connect("motion-notify-event", self.on_motion_notify_event)
 
         self.animation_time = 200
-        self.level = 1
+        self.level = 0
         self.win_x, self.win_y = self._get_position()
         self.pointer_hand_rectangles = []
 
@@ -346,11 +346,14 @@ class Bubble(gtk.Window):
             self.last_y = self.win_y
 
     def move_down(self, send_obj):
+        print "send_level", send_obj.level
+        print "self_level", self.level
         if self.level == 2:
             (move_down_height) = send_obj.window_height
             self.move_up_timeline = Timeline(self.animation_time, CURVE_SINE)
             self.move_up_timeline.connect("update", self.update_move_down_animation, move_down_height)
             self.move_up_timeline.run()
+            self.level = 1
 
     def update_move_down_animation(self, source, status, move_down_height):
         self.move_down_by(move_down_height * status, not bool(status - 1))
