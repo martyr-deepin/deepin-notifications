@@ -61,9 +61,6 @@ class BubbleManager(object):
 
         self.incoming_queue.append((message, height, incoming_time))
 
-        db.add(incoming_time, message)
-        trayicon.on_notify_receive((incoming_time, message))
-        
         self.show_bubble()
 
     # if bubble died because manual close or expire, we need to remove the bubble from our bubble queue manually.
@@ -85,6 +82,9 @@ class BubbleManager(object):
                     else:
                         # remember to put it back :)
                         self.incoming_queue.appendleft((message, height, incoming_time))
+                        
+                    db.add(incoming_time, message)
+                    trayicon.on_notify_receive((incoming_time, message))
         else:
             db.commit()
             unread_db.commit()
