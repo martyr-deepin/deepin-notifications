@@ -74,6 +74,16 @@ class NotificationDB:
         
         return (result[0], result[1], cPickle.loads(str(result[2])))
     
+    def get_by_start_end(self, start, end):
+        self.cursor.execute('''select * form notifications order by time desc limit %(start)s %(end)s''' 
+                            % {"start":start, "end":end})
+        result = self.cursor.fetchall()
+        
+        return [(x[0], x[1], cPickle.loads(str(x[2]))) for x in result]
+    
+    def get_by_offset_count(self, offset, count):
+        return self.get_by_start_end(offset, offset + count)
+    
     def commit(self):
         self.conn.commit()
         
