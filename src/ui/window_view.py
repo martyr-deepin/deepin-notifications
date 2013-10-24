@@ -537,7 +537,7 @@ class DetailWindow(Window):
         if len(software_children):
             self.treeview.set_highlight_item(software_children[0])
         elif len(system_children):
-            self.TreeView.set_highlight_item(system_children[0])
+            self.treeview.set_highlight_item(system_children[0])
             
         self.treeview.set_size_request(220, -1)
         self.treeview.connect("single-click-item", self.on_treeview_click_item)
