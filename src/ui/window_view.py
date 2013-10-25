@@ -380,7 +380,7 @@ class DetailWindow(Window):
         # self.main_box.connect("expose-event", self.on_main_box_expose_event)
 
         main_box_align = gtk.Alignment(0.5, 0.5, 1, 1)
-        main_box_align.set_padding(3, 3, 3, 3)
+        main_box_align.set_padding(2, 2, 2, 2)
         main_box_align.add(self.main_box)
 
         self.window_frame.pack_start(self.titlebar_box, False, False)
