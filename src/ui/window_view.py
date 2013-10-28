@@ -27,6 +27,7 @@ from dtk.ui.window import Window
 from dtk.ui.titlebar import Titlebar
 from dtk.ui.label import Label
 from dtk.ui.menu import Menu
+from dtk.ui.theme import ui_theme
 from dtk.ui.draw import draw_text, draw_pixbuf, draw_vlinear
 from dtk.ui.entry import InputEntry
 from dtk.ui.combo import ComboBox
@@ -134,7 +135,8 @@ class ToolbarItem(gtk.Button):
                   rect.x + self.pixbuf_width + 2,
                   rect.y + 8,
                   rect.width - self.pixbuf_width,
-                  rect.height - self.pixbuf_height
+                  rect.height - self.pixbuf_height,
+                  text_color=ui_theme.get_color("title_text").get_color(),
                   )
 
         return True
@@ -373,11 +375,12 @@ class DetailWindow(Window):
         self.refresh_view() #add treeview and listview
 
         self.main_box.pack_start(self.toolbar_box, False, False)
-        self.main_box.pack_start(self.main_view_box, False, False)
-        self.main_box.connect("expose-event", self.on_main_box_expose_event)
+        # self.main_box.pack_start(self.main_view_box, False, False)
+        self.main_box.pack_start(self.main_view_box, True, True)
+        # self.main_box.connect("expose-event", self.on_main_box_expose_event)
 
         main_box_align = gtk.Alignment(0.5, 0.5, 1, 1)
-        main_box_align.set_padding(7, 7, 7, 7)
+        main_box_align.set_padding(2, 2, 2, 2)
         main_box_align.add(self.main_box)
 
         self.window_frame.pack_start(self.titlebar_box, False, False)
@@ -626,7 +629,10 @@ class DetailWindow(Window):
         toolbar_btn_box.pack_start(refresh_btn, False, False, 2)
         toolbar_btn_box_align.add(toolbar_btn_box)
 
-        look_in_Label = Label(_("Look up in"))
+        look_in_Label = Label(
+            _("Look up in"),
+            text_color=ui_theme.get_color("title_text"),
+            )
 
         self.category_comb = ComboBox([(_("All"), 0)])
         self.category_comb.add_items([(item, index) for index, item in enumerate(self.classified_items)], clear_first=False)
@@ -652,7 +658,10 @@ class DetailWindow(Window):
         combos_box_align.add(combos_box)
 
 
-        find_content_Label = Label(_("Find in content"))
+        find_content_Label = Label(
+            _("Find in content"),
+            text_color=ui_theme.get_color("title_text"),
+            )
 
 
         search_entry = SearchEntry()
