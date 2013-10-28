@@ -361,7 +361,6 @@ class DetailWindow(Window):
         self.titlebar_box = gtk.HBox()
         self.toolbar_box = gtk.HBox()
         self.toolbar_box.set_size_request(-1, TOOLBAR_HEIGHT)
-        self.toolbar_box.connect("expose-event", self.on_toolbar_expose_event)
 
         self.main_view_box = gtk.HBox()
         self.main_view_box.set_size_request(WINDOW_WIDTH,
@@ -397,8 +396,6 @@ class DetailWindow(Window):
         self.refresh_btn_pixbuf = gtk.gdk.pixbuf_new_from_file(app_theme.get_theme_file_path("image/toolbar_refresh.png"))
 
         self.skin_preview_pixbuf = app_theme.get_pixbuf("frame.png")
-        self.toolbar_bg_pixbuf = app_theme.get_pixbuf("bar.png")
-        self.cache_toolbar_bg_pixbuf = CachePixbuf()
 
     def _init_data(self):
         self.__init_data()
@@ -450,14 +447,6 @@ class DetailWindow(Window):
         cr.set_source_rgb(1, 1, 1)
         cr.fill()
 
-
-    def on_toolbar_expose_event(self, widget, event):
-        cr = widget.window.cairo_create()
-        rect = widget.allocation
-
-        self.cache_toolbar_bg_pixbuf.scale(self.toolbar_bg_pixbuf.get_pixbuf(), rect.width, rect.height)
-        cr.set_source_pixbuf(self.cache_toolbar_bg_pixbuf.get_cache(), rect.x, rect.y)
-        cr.paint()
 
     def on_treeview_draw_mask(self, cr, x, y, w, h):
         cr.set_source_rgb(1, 1, 1)
