@@ -21,10 +21,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from datetime import datetime, timedelta, time, date
+from datetime import datetime, timedelta, time
 
 import gtk
-import gobject
 from ui.skin import app_theme
 from traypop import TrayPop
 from events import event_manager

@@ -24,7 +24,7 @@ from dtk.ui.button import SwitchButton
 from dtk.ui.label import Label
 from dtk.ui.draw import draw_text, draw_hlinear
 from dtk_cairo_blur import gaussian_blur
-from dtk.ui.utils import (propagate_expose, color_hex_to_cairo, cairo_disable_antialias, is_in_rect, container_remove_all)
+from dtk.ui.utils import (propagate_expose, color_hex_to_cairo, cairo_disable_antialias, is_in_rect)
 
 
 import gtk
@@ -245,6 +245,7 @@ class TrayPop(gtk.Window):
 
     def on_more_button_clicked(self, widget):
         self.trayicon.detail_window.show_all()
+        self.trayicon.detail_window.present()
         self.dismiss()
 
     def on_left_btn_clicked(self, widget):
