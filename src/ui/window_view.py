@@ -60,6 +60,8 @@ TOOLBAR_ENTRY_HEIGHT = 24
 
 STROKE_LINE_COLOR = (0.8, 0.8, 0.8)
 
+SYSTEM_SOFTWARE_LIST = ["deepin-software-center", "system-log"]
+
 class ToolbarSep(gtk.HBox):
 
     def __init__(self):
@@ -413,7 +415,11 @@ class DetailWindow(Window):
         
         # add to data
         app_name = row[MESSAGE].app_name
-        self.classified_items.setdefault(app_name, []).insert(0, row)
+        if app_name in self.classified_items.keys():
+            self.classified_items[app_name].insert(0, row)
+        else:
+            self.classified_items.setdefault(app_name, []).insert(0, row)
+            self.treeview_add_item(app_name)
 
         # add to view
         if app_name == self.treeview.get_highlight_item().get_title():
@@ -500,14 +506,12 @@ class DetailWindow(Window):
 
             Menu(menu_items, True).show((int(root_x), int(root_y)))
 
-
     def add_treeview(self):
-
         categories = self.classified_items.keys()
         # root eles
-        root_ele_software = TreeViewItem(_("Software Messages"), True)
-        root_ele_system = TreeViewItem(_("System Messages"), True)
-        self.treeview = TreeView([root_ele_software, root_ele_system], expand_column=0)
+        self.root_ele_software = TreeViewItem(_("Software Messages"), True)
+        self.root_ele_system = TreeViewItem(_("System Messages"), True)
+        self.treeview = TreeView([self.root_ele_software, self.root_ele_system], expand_column=0)
 
         # add child items , CAN'T add_child_items before treeview constructed
         software_children = []
@@ -517,13 +521,13 @@ class DetailWindow(Window):
             if category in blacklist.bl:
                 treeview_item.is_in_blacklist = True
 
-            if category in ["deepin-software-center", "system-log"]:
+            if category in SYSTEM_SOFTWARE_LIST:
                 system_children.append(treeview_item)
             else:
                 software_children.append(treeview_item)
 
-        root_ele_software.add_child_items(software_children)
-        root_ele_system.add_child_items(system_children)
+        self.root_ele_software.add_child_items(software_children)
+        self.root_ele_system.add_child_items(system_children)
         self.treeview.draw_mask = self.on_treeview_draw_mask
 
         if len(software_children):
@@ -539,12 +543,15 @@ class DetailWindow(Window):
         container_remove_all(self.treeview_box)
         self.treeview_box.pack_start(self.treeview, True, True)
         self.treeview_box.show_all()
-
+        
+    def treeview_add_item(self, item):
+        if item in SYSTEM_SOFTWARE_LIST:
+            self.root_ele_system.add_child_items([TreeViewItem(item)])
+        else:
+            self.root_ele_software.add_child_items([TreeViewItem(item)])
+        self.treeview_box.show_all()
 
     def add_listview(self, items):
-        '''
-        docs
-        '''
         container_remove_all(self.listview_box)
 
         if len(items) != 0:
@@ -558,7 +565,6 @@ class DetailWindow(Window):
             self.listview_box.pack_start(empty_box_align)
 
         self.listview_box.show_all()
-
 
     def get_items_from_treeview_highlight(self):
         '''
