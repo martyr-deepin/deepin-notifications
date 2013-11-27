@@ -57,7 +57,7 @@ class TrayIcon(gtk.StatusIcon):
     def generate_traypop_position(self):
         x, y, not_important = gtk.status_icon_position_menu(gtk.Menu(), self)
         
-        return x + 7, y - 20
+        return x + 7, y + 7
     
     def on_notify_receive(self, data):
         self.increase_unread(data)
