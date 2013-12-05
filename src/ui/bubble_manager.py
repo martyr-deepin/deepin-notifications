@@ -75,13 +75,14 @@ class BubbleManager(object):
             message, height, incoming_time = self.incoming_queue.popleft()
             if not preference.disable_bubble:
                 if message.app_name not in blacklist.bl:
-                    if not self.is_in_animation:
-                        self.is_in_animation = True
-                        self.bubble_queue.appendleft(Bubble(message, height, incoming_time))
-                        self.start_move_up_animation(height)
-                    else:
-                        # remember to put it back :)
-                        self.incoming_queue.appendleft((message, height, incoming_time))
+                    if message.hints.get("just_record", False) == True:
+                        if not self.is_in_animation:
+                            self.is_in_animation = True
+                            self.bubble_queue.appendleft(Bubble(message, height, incoming_time))
+                            self.start_move_up_animation(height)
+                        else:
+                            # remember to put it back :)
+                            self.incoming_queue.appendleft((message, height, incoming_time))
                         
                     db.add(incoming_time, message)
                     trayicon.on_notify_receive((incoming_time, message))
