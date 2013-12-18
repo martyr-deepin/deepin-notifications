@@ -3,151 +3,149 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# Automatically generated, 2013
-# freddy4212 <freddy4212@gmail.com>, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version: Deepin Notifications\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-08-06 15:00+0800\n"
-"PO-Revision-Date: 2013-12-14 07:23+0000\n"
-"Last-Translator: freddy4212 <freddy4212@gmail.com>\n"
-"Language-Team: Chinese (Taiwan) (http://www.transifex.com/projects/p/deepin-notifications/language/zh_TW/)\n"
+"PO-Revision-Date: 2013-12-11 04:49+0000\n"
+"Last-Translator: 648trindade <rafaelgt.mbin@gmail.com>\n"
+"Language-Team: Portuguese (Brazil) (http://www.transifex.com/projects/p/deepin-notifications/language/pt_BR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: zh_TW\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Language: pt_BR\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: ../src/ui/window_view.py:159
 msgid "Search"
-msgstr "搜尋"
+msgstr "Procurar"
 
 #: ../src/ui/window_view.py:420 ../src/ui/traypop.py:178
 msgid "(Empty)"
-msgstr "(空)"
+msgstr "(Vazio)"
 
 #: ../src/ui/window_view.py:496
 msgid "Remove from Blacklist"
-msgstr "從黑名單移除"
+msgstr "Remover da Lista Negra"
 
 #: ../src/ui/window_view.py:498
 msgid "Add to Blacklist"
-msgstr "加入到黑名單"
+msgstr "Adicionar à Lista Negra"
 
 #: ../src/ui/window_view.py:507
 msgid "Software Messages"
-msgstr "軟體訊息"
+msgstr "Mensagens de Aplicativos"
 
 #: ../src/ui/window_view.py:508
 msgid "System Messages"
-msgstr "系統訊息"
+msgstr "Mensagens do Sistema"
 
 #: ../src/ui/window_view.py:570
 msgid "Message Manager"
-msgstr "訊息管理員"
+msgstr "Gerenciador de Mensagens"
 
 #: ../src/ui/window_view.py:603
 msgid "Import"
-msgstr "匯入"
+msgstr "Importar"
 
 #: ../src/ui/window_view.py:605
 msgid "Export"
-msgstr "匯出"
+msgstr "Exportar"
 
 #: ../src/ui/window_view.py:607
 msgid "Delete"
-msgstr "刪除"
+msgstr "Excluir"
 
 #: ../src/ui/window_view.py:609
 msgid "Refresh"
-msgstr "重新整理"
+msgstr "Atualizar"
 
 #: ../src/ui/window_view.py:618
 msgid "Look up in"
-msgstr "查詢"
+msgstr "Olhar em"
 
 #: ../src/ui/window_view.py:620 ../src/ui/window_view.py:627
 msgid "All"
-msgstr "全部"
+msgstr "Tudo"
 
 #: ../src/ui/window_view.py:622
 msgid "Today"
-msgstr "今天"
+msgstr "Hoje"
 
 #: ../src/ui/window_view.py:623
 msgid "Last week"
-msgstr "上一週"
+msgstr "Semana passada"
 
 #: ../src/ui/window_view.py:624
 msgid "Last month"
-msgstr "上個月"
+msgstr "Mês passado"
 
 #: ../src/ui/window_view.py:625
 msgid "Last three months"
-msgstr "過去三個月"
+msgstr "Últimos três meses"
 
 #: ../src/ui/window_view.py:626
 msgid "Last year"
-msgstr "過去一年"
+msgstr "Ano passado"
 
 #: ../src/ui/window_view.py:644
 msgid "Find in content"
-msgstr "搜尋內容"
+msgstr "Procurar no conteúdo"
 
 #: ../src/ui/window_view.py:707
 msgid "Select File to Import"
-msgstr "選擇要匯入的檔案"
+msgstr "Selecionar Arquivo para Importar"
 
 #: ../src/ui/window_view.py:723
 msgid "Export to File"
-msgstr "匯出到檔案"
+msgstr "Exportar para Arquivo"
 
 #: ../src/ui/window_view.py:736 ../src/ui/listview_factory.py:148
 #: ../src/ui/listview_factory.py:163
 msgid "Delete Item(s)"
-msgstr "刪除向目"
+msgstr "Excluir Item(ns)"
 
 #: ../src/ui/window_view.py:737
 msgid "Are you sure you want to delete the selected items?"
-msgstr "確定要刪除選中的項目嗎？"
+msgstr "Tem certeza que quer excluir os itens selecionados?"
 
 #: ../src/ui/traypop.py:162
 msgid "Unread Messages"
-msgstr "未讀訊息"
+msgstr "Mensagens não lidas"
 
 #: ../src/ui/traypop.py:164 ../src/ui/traypop.py:231
 msgid "Turn Off Global Notifications"
-msgstr "關閉全域通知"
+msgstr "Desativar Notificações globais"
 
 #: ../src/ui/traypop.py:183
 msgid "More Advanced Options... "
-msgstr "進階設定..."
+msgstr "Mais Opções Avançadas..."
 
 #: ../src/ui/traypop.py:234
 msgid "Turn On Global Notifications"
-msgstr "啟用全域通知"
+msgstr "Ativar Notificações Globais"
 
 #: ../src/ui/listview_factory.py:110
 msgid "Content of messages"
-msgstr "訊息內容"
+msgstr "Conteúdo das mensagens"
 
 #: ../src/ui/listview_factory.py:110
 msgid "Time"
-msgstr "時間"
+msgstr "Tempo"
 
 #: ../src/ui/listview_factory.py:149
 msgid "Are you sure you want to delete the selected item(s)?"
-msgstr "確定要刪除選中的項目嗎？"
+msgstr "Tem certeza que quer excluir o(s) item(ns) selecionado(s)?"
 
 #: ../src/ui/listview_factory.py:164
 msgid "Are you sure delete all items?"
-msgstr "確定要刪除全部項目嗎？"
+msgstr "Tem certeza que quer excluir todos os itens?"
 
 #: ../src/ui/listview_factory.py:168
 msgid "Delete selected item(s)"
-msgstr "刪除選中項目"
+msgstr "Excluir item(ns) selecionados"
 
 #: ../src/ui/listview_factory.py:169
 msgid "Delete all items"
-msgstr "刪除全部項目"
+msgstr "Excluir todos os itens"
