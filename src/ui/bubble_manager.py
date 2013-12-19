@@ -75,7 +75,7 @@ class BubbleManager(object):
             message, height, incoming_time = self.incoming_queue.popleft()
             if not preference.disable_bubble:
                 if message.app_name not in blacklist.bl:
-                    if message.hints.get("just_record", False) == True:
+                    if message.hints.get("just_record", False) == False:
                         if not self.is_in_animation:
                             self.is_in_animation = True
                             self.bubble_queue.appendleft(Bubble(message, height, incoming_time))
