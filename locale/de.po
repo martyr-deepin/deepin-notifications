@@ -3,63 +3,64 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# corEr <baracus.de@gmail.com>, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version: Deepin Notifications\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-08-06 15:00+0800\n"
-"PO-Revision-Date: 2013-12-06 07:19+0000\n"
-"Last-Translator: lihongwu <lihongwu1987@gmail.com>\n"
-"Language-Team: Chinese (Hong Kong) (http://www.transifex.com/projects/p/deepin-notifications/language/zh_HK/)\n"
+"PO-Revision-Date: 2013-12-17 21:57+0000\n"
+"Last-Translator: corEr <baracus.de@gmail.com>\n"
+"Language-Team: German (http://www.transifex.com/projects/p/deepin-notifications/language/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: zh_HK\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Language: de\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../src/ui/window_view.py:159
 msgid "Search"
-msgstr ""
+msgstr "Suchen"
 
 #: ../src/ui/window_view.py:420 ../src/ui/traypop.py:178
 msgid "(Empty)"
-msgstr ""
+msgstr "(Leer)"
 
 #: ../src/ui/window_view.py:496
 msgid "Remove from Blacklist"
-msgstr ""
+msgstr "Von der schwarzen Liste löschen"
 
 #: ../src/ui/window_view.py:498
 msgid "Add to Blacklist"
-msgstr ""
+msgstr "Zur schwarzen Liste hinzufügen"
 
 #: ../src/ui/window_view.py:507
 msgid "Software Messages"
-msgstr ""
+msgstr "Software Nachrichten"
 
 #: ../src/ui/window_view.py:508
 msgid "System Messages"
-msgstr ""
+msgstr "System Nachrichten"
 
 #: ../src/ui/window_view.py:570
 msgid "Message Manager"
-msgstr ""
+msgstr "Nachrichten Verwaltung"
 
 #: ../src/ui/window_view.py:603
 msgid "Import"
-msgstr ""
+msgstr "Importieren"
 
 #: ../src/ui/window_view.py:605
 msgid "Export"
-msgstr ""
+msgstr "Exportieren"
 
 #: ../src/ui/window_view.py:607
 msgid "Delete"
-msgstr ""
+msgstr "Löschen"
 
 #: ../src/ui/window_view.py:609
 msgid "Refresh"
-msgstr ""
+msgstr "Aktualisieren"
 
 #: ../src/ui/window_view.py:618
 msgid "Look up in"
@@ -67,27 +68,27 @@ msgstr ""
 
 #: ../src/ui/window_view.py:620 ../src/ui/window_view.py:627
 msgid "All"
-msgstr ""
+msgstr "Alles"
 
 #: ../src/ui/window_view.py:622
 msgid "Today"
-msgstr ""
+msgstr "Heute"
 
 #: ../src/ui/window_view.py:623
 msgid "Last week"
-msgstr ""
+msgstr "Letzte Woche"
 
 #: ../src/ui/window_view.py:624
 msgid "Last month"
-msgstr ""
+msgstr "Letzten Monat"
 
 #: ../src/ui/window_view.py:625
 msgid "Last three months"
-msgstr ""
+msgstr "Letzten drei Monate"
 
 #: ../src/ui/window_view.py:626
 msgid "Last year"
-msgstr ""
+msgstr "Letztes Jahr"
 
 #: ../src/ui/window_view.py:644
 msgid "Find in content"
@@ -104,15 +105,15 @@ msgstr ""
 #: ../src/ui/window_view.py:736 ../src/ui/listview_factory.py:148
 #: ../src/ui/listview_factory.py:163
 msgid "Delete Item(s)"
-msgstr ""
+msgstr "Datei(en) löschen"
 
 #: ../src/ui/window_view.py:737
 msgid "Are you sure you want to delete the selected items?"
-msgstr ""
+msgstr "Sind Sie sicher, dass Sie die ausgewählte Datei löschen wollen?"
 
 #: ../src/ui/traypop.py:162
 msgid "Unread Messages"
-msgstr ""
+msgstr "Ungelesene Nachrichten"
 
 #: ../src/ui/traypop.py:164 ../src/ui/traypop.py:231
 msgid "Turn Off Global Notifications"
@@ -128,24 +129,24 @@ msgstr ""
 
 #: ../src/ui/listview_factory.py:110
 msgid "Content of messages"
-msgstr ""
+msgstr "Inhalt der Nachrichten"
 
 #: ../src/ui/listview_factory.py:110
 msgid "Time"
-msgstr ""
+msgstr "Zeit"
 
 #: ../src/ui/listview_factory.py:149
 msgid "Are you sure you want to delete the selected item(s)?"
-msgstr ""
+msgstr "Sind Sie sicher, dass Sie die ausgewählten Dateien löschen wollen?"
 
 #: ../src/ui/listview_factory.py:164
 msgid "Are you sure delete all items?"
-msgstr ""
+msgstr "Sind Sie sicher, dass Sie alle Dateien löschen wollen?"
 
 #: ../src/ui/listview_factory.py:168
 msgid "Delete selected item(s)"
-msgstr ""
+msgstr "Ausgewählte Datei(en) löschen"
 
 #: ../src/ui/listview_factory.py:169
 msgid "Delete all items"
-msgstr ""
+msgstr "Alle Dateien löschen"

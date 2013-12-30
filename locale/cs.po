@@ -3,149 +3,150 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# fri <pavelfric@seznam.cz>, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version: Deepin Notifications\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-08-06 15:00+0800\n"
-"PO-Revision-Date: 2013-12-06 07:19+0000\n"
-"Last-Translator: lihongwu <lihongwu1987@gmail.com>\n"
-"Language-Team: Chinese (Hong Kong) (http://www.transifex.com/projects/p/deepin-notifications/language/zh_HK/)\n"
+"PO-Revision-Date: 2013-12-22 09:47+0000\n"
+"Last-Translator: fri <pavelfric@seznam.cz>\n"
+"Language-Team: Czech (http://www.transifex.com/projects/p/deepin-notifications/language/cs/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: zh_HK\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Language: cs\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
 #: ../src/ui/window_view.py:159
 msgid "Search"
-msgstr ""
+msgstr "Hledat"
 
 #: ../src/ui/window_view.py:420 ../src/ui/traypop.py:178
 msgid "(Empty)"
-msgstr ""
+msgstr "(Prázdný)"
 
 #: ../src/ui/window_view.py:496
 msgid "Remove from Blacklist"
-msgstr ""
+msgstr "Odebrat z černé listiny"
 
 #: ../src/ui/window_view.py:498
 msgid "Add to Blacklist"
-msgstr ""
+msgstr "Přidat na černou listinu"
 
 #: ../src/ui/window_view.py:507
 msgid "Software Messages"
-msgstr ""
+msgstr "Zprávy programů"
 
 #: ../src/ui/window_view.py:508
 msgid "System Messages"
-msgstr ""
+msgstr "Zprávy systému"
 
 #: ../src/ui/window_view.py:570
 msgid "Message Manager"
-msgstr ""
+msgstr "Správce zpráv"
 
 #: ../src/ui/window_view.py:603
 msgid "Import"
-msgstr ""
+msgstr "Zavést"
 
 #: ../src/ui/window_view.py:605
 msgid "Export"
-msgstr ""
+msgstr "Vyvést"
 
 #: ../src/ui/window_view.py:607
 msgid "Delete"
-msgstr ""
+msgstr "Smazat"
 
 #: ../src/ui/window_view.py:609
 msgid "Refresh"
-msgstr ""
+msgstr "Obnovit"
 
 #: ../src/ui/window_view.py:618
 msgid "Look up in"
-msgstr ""
+msgstr "Vyhledat v"
 
 #: ../src/ui/window_view.py:620 ../src/ui/window_view.py:627
 msgid "All"
-msgstr ""
+msgstr "Vše"
 
 #: ../src/ui/window_view.py:622
 msgid "Today"
-msgstr ""
+msgstr "Dnes"
 
 #: ../src/ui/window_view.py:623
 msgid "Last week"
-msgstr ""
+msgstr "Minulý týden"
 
 #: ../src/ui/window_view.py:624
 msgid "Last month"
-msgstr ""
+msgstr "Minulý měsíc"
 
 #: ../src/ui/window_view.py:625
 msgid "Last three months"
-msgstr ""
+msgstr "Poslední tři měsíce"
 
 #: ../src/ui/window_view.py:626
 msgid "Last year"
-msgstr ""
+msgstr "Poslední rok"
 
 #: ../src/ui/window_view.py:644
 msgid "Find in content"
-msgstr ""
+msgstr "Najít v obsahu"
 
 #: ../src/ui/window_view.py:707
 msgid "Select File to Import"
-msgstr ""
+msgstr "Vyberte soubor k zavedení"
 
 #: ../src/ui/window_view.py:723
 msgid "Export to File"
-msgstr ""
+msgstr "Vyvést do souboru"
 
 #: ../src/ui/window_view.py:736 ../src/ui/listview_factory.py:148
 #: ../src/ui/listview_factory.py:163
 msgid "Delete Item(s)"
-msgstr ""
+msgstr "Smazat položku(y)"
 
 #: ../src/ui/window_view.py:737
 msgid "Are you sure you want to delete the selected items?"
-msgstr ""
+msgstr "Opravdu chcete smazat vybrané položky?"
 
 #: ../src/ui/traypop.py:162
 msgid "Unread Messages"
-msgstr ""
+msgstr "Nepřečtené zprávy"
 
 #: ../src/ui/traypop.py:164 ../src/ui/traypop.py:231
 msgid "Turn Off Global Notifications"
-msgstr ""
+msgstr "Vypnout celkové oznamování"
 
 #: ../src/ui/traypop.py:183
 msgid "More Advanced Options... "
-msgstr ""
+msgstr "Pokročilé volby... "
 
 #: ../src/ui/traypop.py:234
 msgid "Turn On Global Notifications"
-msgstr ""
+msgstr "Zapnout celkové oznamování"
 
 #: ../src/ui/listview_factory.py:110
 msgid "Content of messages"
-msgstr ""
+msgstr "Obsah zpráv"
 
 #: ../src/ui/listview_factory.py:110
 msgid "Time"
-msgstr ""
+msgstr "Čas"
 
 #: ../src/ui/listview_factory.py:149
 msgid "Are you sure you want to delete the selected item(s)?"
-msgstr ""
+msgstr "Opravdu chcete smazat vybranou položku(y)?"
 
 #: ../src/ui/listview_factory.py:164
 msgid "Are you sure delete all items?"
-msgstr ""
+msgstr "Opravdu chcete smazat všechny položky?"
 
 #: ../src/ui/listview_factory.py:168
 msgid "Delete selected item(s)"
-msgstr ""
+msgstr "Smazat vybranou položku(y)"
 
 #: ../src/ui/listview_factory.py:169
 msgid "Delete all items"
-msgstr ""
+msgstr "Smazat všechny položky"
