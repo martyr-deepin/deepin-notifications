@@ -3,149 +3,150 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# Karim Oulad Chalha <herr.linux88@gmail.com>, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version: Deepin Notifications\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-08-06 15:00+0800\n"
-"PO-Revision-Date: 2013-12-06 07:19+0000\n"
-"Last-Translator: lihongwu <lihongwu1987@gmail.com>\n"
-"Language-Team: Chinese (Hong Kong) (http://www.transifex.com/projects/p/deepin-notifications/language/zh_HK/)\n"
+"PO-Revision-Date: 2013-12-29 15:37+0000\n"
+"Last-Translator: Karim Oulad Chalha <herr.linux88@gmail.com>\n"
+"Language-Team: Arabic (http://www.transifex.com/projects/p/deepin-notifications/language/ar/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: zh_HK\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Language: ar\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
 
 #: ../src/ui/window_view.py:159
 msgid "Search"
-msgstr ""
+msgstr "بحث"
 
 #: ../src/ui/window_view.py:420 ../src/ui/traypop.py:178
 msgid "(Empty)"
-msgstr ""
+msgstr "(فارغ)"
 
 #: ../src/ui/window_view.py:496
 msgid "Remove from Blacklist"
-msgstr ""
+msgstr "حذف من الائحة السوداء"
 
 #: ../src/ui/window_view.py:498
 msgid "Add to Blacklist"
-msgstr ""
+msgstr "أضف إلى الائحة السوداء"
 
 #: ../src/ui/window_view.py:507
 msgid "Software Messages"
-msgstr ""
+msgstr "برنامج الرسائل"
 
 #: ../src/ui/window_view.py:508
 msgid "System Messages"
-msgstr ""
+msgstr "نظام الرسائل"
 
 #: ../src/ui/window_view.py:570
 msgid "Message Manager"
-msgstr ""
+msgstr "مدير الرسائل"
 
 #: ../src/ui/window_view.py:603
 msgid "Import"
-msgstr ""
+msgstr "إسترد"
 
 #: ../src/ui/window_view.py:605
 msgid "Export"
-msgstr ""
+msgstr "صدر"
 
 #: ../src/ui/window_view.py:607
 msgid "Delete"
-msgstr ""
+msgstr "حذف"
 
 #: ../src/ui/window_view.py:609
 msgid "Refresh"
-msgstr ""
+msgstr "إنعاش"
 
 #: ../src/ui/window_view.py:618
 msgid "Look up in"
-msgstr ""
+msgstr "البحث في"
 
 #: ../src/ui/window_view.py:620 ../src/ui/window_view.py:627
 msgid "All"
-msgstr ""
+msgstr "كل"
 
 #: ../src/ui/window_view.py:622
 msgid "Today"
-msgstr ""
+msgstr "اليوم"
 
 #: ../src/ui/window_view.py:623
 msgid "Last week"
-msgstr ""
+msgstr "الأسبوع الماضي"
 
 #: ../src/ui/window_view.py:624
 msgid "Last month"
-msgstr ""
+msgstr "الشهر الماضي"
 
 #: ../src/ui/window_view.py:625
 msgid "Last three months"
-msgstr ""
+msgstr "أخر ثلاث أشهر"
 
 #: ../src/ui/window_view.py:626
 msgid "Last year"
-msgstr ""
+msgstr "السنة الماضية"
 
 #: ../src/ui/window_view.py:644
 msgid "Find in content"
-msgstr ""
+msgstr "البحث في المحتوى"
 
 #: ../src/ui/window_view.py:707
 msgid "Select File to Import"
-msgstr ""
+msgstr "حدد الملف لإستراد"
 
 #: ../src/ui/window_view.py:723
 msgid "Export to File"
-msgstr ""
+msgstr "صدر إلى الملف"
 
 #: ../src/ui/window_view.py:736 ../src/ui/listview_factory.py:148
 #: ../src/ui/listview_factory.py:163
 msgid "Delete Item(s)"
-msgstr ""
+msgstr "حذف العن(ا)صر"
 
 #: ../src/ui/window_view.py:737
 msgid "Are you sure you want to delete the selected items?"
-msgstr ""
+msgstr "هل انت متأكد من أنك تريد حذف العناصر المحددة؟"
 
 #: ../src/ui/traypop.py:162
 msgid "Unread Messages"
-msgstr ""
+msgstr "رسائل غبر مقروئة"
 
 #: ../src/ui/traypop.py:164 ../src/ui/traypop.py:231
 msgid "Turn Off Global Notifications"
-msgstr ""
+msgstr "توقيف الإشعارات العامة"
 
 #: ../src/ui/traypop.py:183
 msgid "More Advanced Options... "
-msgstr ""
+msgstr "المزيد من الخيارات المتقدمة..."
 
 #: ../src/ui/traypop.py:234
 msgid "Turn On Global Notifications"
-msgstr ""
+msgstr "تشغيل الإشعارات العامة"
 
 #: ../src/ui/listview_factory.py:110
 msgid "Content of messages"
-msgstr ""
+msgstr "محتوى الرسائل"
 
 #: ../src/ui/listview_factory.py:110
 msgid "Time"
-msgstr ""
+msgstr "الوقت"
 
 #: ../src/ui/listview_factory.py:149
 msgid "Are you sure you want to delete the selected item(s)?"
-msgstr ""
+msgstr "هل انت متأكد من أنك تريد حذف العن(ا)صر المحددة؟"
 
 #: ../src/ui/listview_factory.py:164
 msgid "Are you sure delete all items?"
-msgstr ""
+msgstr "هل أنت متأكد من حذف كل العناصر؟"
 
 #: ../src/ui/listview_factory.py:168
 msgid "Delete selected item(s)"
-msgstr ""
+msgstr "حذف العن(ا)صر المحددة"
 
 #: ../src/ui/listview_factory.py:169
 msgid "Delete all items"
-msgstr ""
+msgstr "حذف كل العناصر"
