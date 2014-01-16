@@ -1,43 +1,51 @@
 package main
 
 import (
-	"os/exec"
-	"bytes"
-	"time"
+	"encoding/json"
 )
 
-func execAndWait(timeout int, name string, arg ...string) error {
-    cmd := exec.Command(name, arg...)
-    var stdout, stderr bytes.Buffer
-    cmd.Stdout = &stdout
-    cmd.Stderr = &stderr
-    err := cmd.Start()
-    if err != nil {
-        logError(err.Error()) // TODO
-        return err
-    }
+type NotificationInfo struct {
+	AppName string   `json:"app_name"`
+	AppIcon string   `json:"app_icon"`
+	Summary string   `json:"summary"`
+	Body    string   `json:"body"`
+	Actions []string `json:"actions"`
+}
 
-    // wait for process finish
-    done := make(chan error)
-    go func() {
-        done <- cmd.Wait()
-    }()
+func (ni *NotificationInfo) FromJSON(jsonString string) {
+	err := json.Unmarshal([]byte(jsonString), ni)
+	if err != nil {
+		logger.Println(err)
+	}
+}
 
-    select {
-    case <-time.After(time.Duration(timeout) * time.Millisecond):
-        if err := cmd.Process.Kill(); err != nil {
-            logError(err.Error()) // TODO
-            return err
-        }
-        <-done
-        logInfo("time out and process was killed") // TODO
-    case err := <-done:
-        logInfo("process output: %s", stdout.String())
-        if err != nil {
-            logError("process error output: %s", stderr.String())
-            logError("process done with error = %v", err) // TODO
-            return err
-        }
-    }
-    return nil
+func (ni *NotificationInfo) ToJSON() string {
+	result, err := json.Marshal(ni)
+	if err != nil {
+		logger.Println(err)
+	}
+	return string(result)
+}
+
+func actionsEqual(actionsOne, actionsTwo []string) bool {
+	if len(actionsOne) != len(actionsTwo) {
+		return false
+	}
+	for i := 0; i < len(actionsOne); i++ {
+		if !(actionsOne[i] == actionsTwo[i]) {
+			return false
+		}
+	}
+	return true
+}
+
+func (ni *NotificationInfo) Equal(another *NotificationInfo) bool{
+	if (ni.AppName == another.AppName &&
+		ni.AppIcon == another.AppIcon &&
+		ni.Summary == another.Summary &&
+		ni.Body == another.Body &&
+		actionsEqual(ni.Actions, another.Actions)) {
+		return true
+	}
+	return false
 }

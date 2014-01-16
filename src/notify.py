@@ -28,9 +28,8 @@ from PyQt5 import QtCore
 from PyQt5.QtQuick import QQuickView
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtGui import QSurfaceFormat, QColor
-from PyQt5.QtCore import QPropertyAnimation, QEasingCurve, QTimer
-
-from logger import func_logger, logger
+from PyQt5.QtCore import (QPropertyAnimation, QParallelAnimationGroup, 
+                          QEasingCurve, QTimer)
 
 SURFACE_FORMAT = QSurfaceFormat()
 SURFACE_FORMAT.setAlphaBufferSize(8)
@@ -51,28 +50,48 @@ class Bubble(QQuickView):
             os.path.join(os.path.dirname(__file__), 'ui/bubble.qml')
         ))
         
-        self._animation = self._getDefaultAnimation()
+        self._in_animation = self._getInAnimation()
+        self._out_animation = self._getOutAnimation()
+        self._in_animation.finished.connect(lambda: self._timer.start())
+        self._out_animation.finished.connect(lambda: app.exit())
         self._timer = self._getTimer(self.timeout)
-        self._timer.timeout.connect(lambda: self.destroy())
+        self._timer.timeout.connect(lambda: self._out_animation.start())
         
-    def _getDefaultAnimation(self):
+    def _getInAnimation(self):
         animation = QPropertyAnimation(self, "y")
         animation.setEndValue(24)
         animation.setDuration(200)
         animation.setEasingCurve(QEasingCurve.OutCubic)
         return animation
         
+    def _getOutAnimation(self):
+        animation = QParallelAnimationGroup()
+        
+        anim1 = QPropertyAnimation(self, "x")
+        anim1.setEndValue(SCREEN_WIDTH)
+        anim1.setDuration(500)
+        anim1.setEasingCurve(QEasingCurve.OutCubic)
+        animation.addAnimation(anim1)
+        
+        anim2 = QPropertyAnimation(self, "opacity")
+        anim2.setEndValue(0.2)
+        anim2.setDuration(500)
+        anim2.setEasingCurve(QEasingCurve.OutCubic)
+        animation.addAnimation(anim2)
+        
+        return animation
+        
     def _getTimer(self, timeout):
         timer = QTimer(self)
         timer.setSingleShot(True)
-        timer.start(timeout)
+        timer.setInterval(timeout)
         return timer
         
     def showWithAnimation(self, animation=None):
         self.setX(SCREEN_WIDTH - 24 - self.width())
         self.setY(-self.height())
         self.show()
-        (animation or self._animation).start()
+        (animation or self._in_animation).start()
         
 SCREEN_WIDTH = 0
 if __name__ == "__main__":

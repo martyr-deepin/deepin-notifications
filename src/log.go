@@ -1,39 +1,12 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"os"
 )
 
-const (
-	LOG_INFO = iota
-	LOG_ERROR
-)
+var logger *log.Logger
 
-// TODO just for test
-func log(format string, v ...interface{}) {
-	fmt.Printf("==> "+format+"\n", v...)
-}
-
-func logInfo(format string, v ...interface{}) {
-	log(fmt.Sprintf("[INFO] "+format, v...))
-}
-
-func logWarn(format string, v ...interface{}) {
-	log(fmt.Sprintf("[WARN] "+format, v...))
-}
-
-func logError(format string, v ...interface{}) {
-	log(fmt.Sprintf("[WARN] "+format, v...))
-}
-
-func logPanic(format string, v ...interface{}) {
-	s := fmt.Sprintf("[ERROR] "+format, v...)
-	log(s)
-	panic(s)
-}
-
-func logFatal(format string, v ...interface{}) {
-	log(fmt.Sprintf("[ERROR] "+format, v...))
-	os.Exit(1)
+func logInit() {
+	logger = log.New(os.Stdout, "Deepin Notification", log.Ldate | log.Ltime | log.Llongfile)
 }
