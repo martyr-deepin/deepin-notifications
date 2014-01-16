@@ -24,7 +24,7 @@ func execAndWait(timeout int, name string, arg ...string) error {
     }()
 
     select {
-    case <-time.After(time.Duration(timeout) * time.Second):
+    case <-time.After(time.Duration(timeout) * time.Millisecond):
         if err := cmd.Process.Kill(); err != nil {
             logError(err.Error()) // TODO
             return err

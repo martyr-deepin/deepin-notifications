@@ -3,12 +3,15 @@ package main
 import (
 	"dlib/dbus"
 	"github.com/niemeyer/qml"
+	"dlib"
 )
 
 const (
 	_DN_SERVICE = "com.deepin.Notifications"
 	_DN_PATH    = "/org/freedesktop/Notifications"
 	_DN_IFACE   = "org.freedesktop.Notifications"
+	
+	_SUBPROCESS_TIMEOUT_ = 5000
 )
 
 type DeepinNotifications struct {
@@ -53,7 +56,7 @@ func (dn *DeepinNotifications) Notify(
 }
 
 func showBubble() {
-	execAndWait(3, "python", "notify.py")
+	execAndWait(_SUBPROCESS_TIMEOUT_, "python", "notify.py")
 }
 
 func main() {
@@ -63,6 +66,5 @@ func main() {
 	dbus.InstallOnSession(dn)
 
 	dbus.DealWithUnhandledMessage()
-
-	select {}
+	dlib.StartLoop()
 }
