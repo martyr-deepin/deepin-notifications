@@ -60,13 +60,16 @@ func (dn *DeepinNotifications) Notify(
 }
 
 func showBubble(ni *NotificationInfo) {
-	exec.Command("python", "notify.py", ni.ToJSON())
+	cmd := exec.Command("python", "notify.py", ni.ToJSON())
+	cmd.Start()
 }
 
 func main() {
 	dn := NewDeepinNotifications()
 	dbus.InstallOnSession(dn)
 	dbus.DealWithUnhandledMessage()
+	
+	logInit()
 
-	select{}
+	select {}
 }
