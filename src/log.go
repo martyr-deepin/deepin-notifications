@@ -7,6 +7,6 @@ import (
 
 var logger *log.Logger
 
-func logInit() {
+func init() {
 	logger = log.New(os.Stdout, "Deepin Notification ", log.Ltime | log.Llongfile)
 }
