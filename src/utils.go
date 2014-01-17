@@ -2,7 +2,17 @@ package main
 
 import (
 	"encoding/json"
+	"dbus/org/freedesktop/dbus"
 )
+
+var dbusInterface *dbus.DBusDaemon
+func init() {
+	var err error
+	dbusInterface, err = dbus.NewDBusDaemon("/org/freedesktop/DBus")
+	if err != nil {
+		logger.Println(err)
+	}
+}
 
 type NotificationInfo struct {
 	AppName string   `json:"app_name"`
@@ -48,4 +58,13 @@ func (ni *NotificationInfo) Equal(another *NotificationInfo) bool{
 		return true
 	}
 	return false
+}
+
+
+func checkServiceExistence(serviceName string) bool{
+	result, err := dbusInterface.NameHasOwner(serviceName)
+	if err != nil || !result {
+		return false
+	} 
+	return true
 }

@@ -45,6 +45,7 @@ class BubbleService(QObject):
         self._bubble = bubble
         
     def updateContent(self, content):
+        self._bubble._timer.start()
         self._bubble.updateContent(content)
 
 class BubbleServiceAdaptor(QDBusAbstractAdaptor):
@@ -151,7 +152,6 @@ if __name__ == "__main__":
                                     QDBusConnectionInterface.AllowReplacement)
     bus.registerObject('/com/deepin/Bubble', bubbleService)
     bus.interface().serviceUnregistered.connect(serviceReplacedByOtherSlot)
-    
     
     signal.signal(signal.SIGINT, signal.SIG_DFL)
     sys.exit(app.exec_())

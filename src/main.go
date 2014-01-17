@@ -4,6 +4,7 @@ import (
 	"dlib/dbus"
 	"os/exec"
 	"os"
+	"dbus/com/deepin/bubble"
 )
 
 var _SERVER_CAPS_ = []string{"action-icons", "actions",
@@ -15,6 +16,8 @@ const (
 	_DN_SERVICE = "com.deepin.Notifications"
 	_DN_PATH    = "/org/freedesktop/Notifications"
 	_DN_IFACE   = "org.freedesktop.Notifications"
+	
+	_BUBBLE_SERVICE_ = "com.deepin.Bubble"
 
 	_SUBPROCESS_TIMEOUT_ = 10000
 )
@@ -60,11 +63,24 @@ func (dn *DeepinNotifications) Notify(
 	return id
 }
 
-func showBubble(ni *NotificationInfo) {
-	logger.Println(ni.ToJSON())
+func fork(ni *NotificationInfo){
 	cmd := exec.Command("python", "notify.py", ni.ToJSON())
 	cmd.Stdout = os.Stdout
 	cmd.Start()
+}
+
+func showBubble(ni *NotificationInfo) {
+	if checkServiceExistence(_BUBBLE_SERVICE_) {
+		bb, err := bubble.NewBubble("/com/deepin/Bubble")
+		if err != nil {
+			logger.Println(err)
+			fork(ni)
+		} else {
+			bb.UpdateContent(ni.ToJSON())
+		}
+	} else {
+		fork(ni)
+	}
 }
 
 func main() {
@@ -72,7 +88,5 @@ func main() {
 	dbus.InstallOnSession(dn)
 	dbus.DealWithUnhandledMessage()
 	
-	logInit()
-
 	select {}
 }
