@@ -7,7 +7,14 @@ Item {
 
     property int leftPadding: 15
     property int rightPadding: 15
-
+    
+    function updateContent(content) {
+        var contObj = JSON.parse(content)
+        /* icon.source = contObj.app_icon */
+        summary.text = contObj.summary
+        body.text = contObj.body
+    }
+    
     Rectangle {
         radius: 10
         color: "transparent"
@@ -41,7 +48,6 @@ Item {
             Text {
                 id: summary
 
-                text: "Deepin screenshot"
                 color: Qt.rgba(1, 1, 1, 0.5)
 
                 anchors.left: icon.right
@@ -52,7 +58,6 @@ Item {
             Text {
                 id: body
 
-                text: "这是一个测试，看看能表达什么意思<a href='http://baidu.com'>Google</a>"
                 color: "white"
                 wrapMode: Text.Wrap
                 linkColor: "#19A9F9"

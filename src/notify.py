@@ -28,10 +28,12 @@ from PyQt5 import QtCore
 from PyQt5.QtQuick import QQuickView
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtGui import QSurfaceFormat, QColor
-from PyQt5.QtCore import (QObject, Q_CLASSINFO, pyqtSlot,
+from PyQt5.QtCore import (QObject, Q_CLASSINFO, pyqtSlot, pyqtProperty,
                           QPropertyAnimation, QParallelAnimationGroup, 
                           QEasingCurve, QTimer)
 from PyQt5.QtDBus import QDBusConnection, QDBusAbstractAdaptor
+
+_BUBBLE_TIMEOUT_ = 3000
 
 class BubbleService(QObject):
     def __init__(self, bubble):
@@ -64,13 +66,9 @@ class BubbleServiceAdaptor(QDBusAbstractAdaptor):
 SURFACE_FORMAT = QSurfaceFormat()
 SURFACE_FORMAT.setAlphaBufferSize(8)
 class Bubble(QQuickView):
-    def __init__(self, id, summary, body, actions, timeout):
+    def __init__(self, content):
         QQuickView.__init__(self)
-        self.id = id
-        self.summary = summary or ""
-        self.body = body or ""
-        self.actions = actions or ()
-        self.timeout = 2000
+        self._content = content
         
         self.setFormat(SURFACE_FORMAT)
         self.setFlags(QtCore.Qt.Popup)
@@ -84,8 +82,12 @@ class Bubble(QQuickView):
         self._out_animation = self._getOutAnimation()
         self._in_animation.finished.connect(lambda: self._timer.start())
         self._out_animation.finished.connect(lambda: app.exit())
-        self._timer = self._getTimer(self.timeout)
+        self._timer = self._getTimer(_BUBBLE_TIMEOUT_)
         self._timer.timeout.connect(lambda: self._out_animation.start())
+        
+    @pyqtProperty(str)
+    def content(self):
+        return self._content
         
     def _getInAnimation(self):
         animation = QPropertyAnimation(self, "y")
@@ -117,7 +119,12 @@ class Bubble(QQuickView):
         timer.setInterval(timeout)
         return timer
         
+    def updateContent(self, content):
+        self._content = content
+        self.rootObject().updateContent(self._content)
+        
     def showWithAnimation(self, animation=None):
+        self.updateContent(self._content)
         self.setX(SCREEN_WIDTH - 24 - self.width())
         self.setY(-self.height())
         self.show()
@@ -129,9 +136,7 @@ if __name__ == "__main__":
     geo = app.desktop().screenGeometry()
     SCREEN_WIDTH = geo.width()
     
-    bubble = Bubble(1024, "标题", "这里填写要显示的内容，不能太多 :)", 
-                    (("default", None), ("reply", "回复"), ("reject", "拒绝")),
-                    2000)
+    bubble = Bubble(sys.argv[1])
     bubble.showWithAnimation()
     
     signal.signal(signal.SIGINT, signal.SIG_DFL)

@@ -3,6 +3,7 @@ package main
 import (
 	"dlib/dbus"
 	"os/exec"
+	"os"
 )
 
 var _SERVER_CAPS_ = []string{"action-icons", "actions",
@@ -60,7 +61,9 @@ func (dn *DeepinNotifications) Notify(
 }
 
 func showBubble(ni *NotificationInfo) {
+	logger.Println(ni.ToJSON())
 	cmd := exec.Command("python", "notify.py", ni.ToJSON())
+	cmd.Stdout = os.Stdout
 	cmd.Start()
 }
 
