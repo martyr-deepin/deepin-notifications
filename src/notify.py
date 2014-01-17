@@ -28,8 +28,38 @@ from PyQt5 import QtCore
 from PyQt5.QtQuick import QQuickView
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtGui import QSurfaceFormat, QColor
-from PyQt5.QtCore import (QPropertyAnimation, QParallelAnimationGroup, 
+from PyQt5.QtCore import (QObject, Q_CLASSINFO, pyqtSlot,
+                          QPropertyAnimation, QParallelAnimationGroup, 
                           QEasingCurve, QTimer)
+from PyQt5.QtDBus import QDBusConnection, QDBusAbstractAdaptor
+
+class BubbleService(QObject):
+    def __init__(self, bubble):
+        super(BubbleService, self).__init__()
+        self.__dbusAdaptor = BubbleServiceAdaptor(self)
+        self._sessionBus = QDBusConnection.sessionBus()
+        
+        self._bubble = bubble
+        
+    def updateContent(self, content):
+        self._bubble.updateContent(content)
+
+class BubbleServiceAdaptor(QDBusAbstractAdaptor):
+
+    Q_CLASSINFO("D-Bus Interface", "com.deepin.Bubbles")
+    Q_CLASSINFO("D-Bus Introspection",
+                '  <interface name="com.deepin.Bubbles">\n'
+                '    <method name="UpdateContent">\n'
+                '      <arg direction="in" type="s" name="content"/>\n'
+                '    </method>\n'
+                '  </interface>\n')
+
+    def __init__(self, parent):
+        super(BubbleServiceAdaptor, self).__init__(parent)
+
+    @pyqtSlot(str)
+    def UpdateContent(self, content):
+        return self.parent().updateContent(content)
 
 SURFACE_FORMAT = QSurfaceFormat()
 SURFACE_FORMAT.setAlphaBufferSize(8)
