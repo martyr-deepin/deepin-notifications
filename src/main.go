@@ -7,13 +7,14 @@ import (
 	"dbus/com/deepin/bubble"
 )
 
+var _SERVER_COUNTER_ = uint32(0)
 var _SERVER_CAPS_ = []string{"action-icons", "actions",
 	"body", "body-hyperlinks", "body-markup"}
 var _SERVER_INFO_ = []string{"DeepinNotifications",
 	"LinuxDeepin", "2.0", "1.2"}
 
 const (
-	_DN_SERVICE = "com.deepin.Notifications"
+	_DN_SERVICE = "org.freedesktop.Notifications"
 	_DN_PATH    = "/org/freedesktop/Notifications"
 	_DN_IFACE   = "org.freedesktop.Notifications"
 	
@@ -56,11 +57,12 @@ func (dn *DeepinNotifications) Notify(
 	body string,
 	actions []string,
 	hints map[string]dbus.Variant,
-	expire_timeout uint32) (id int32) {
+	expire_timeout int32) (uint32) {
 
+	_SERVER_COUNTER_++
 	showBubble(&NotificationInfo{app_name, app_icon, summary, body, actions})
 
-	return id
+	return _SERVER_COUNTER_
 }
 
 func fork(ni *NotificationInfo){

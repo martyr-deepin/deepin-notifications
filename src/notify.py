@@ -83,7 +83,7 @@ class Bubble(QQuickView):
         self._in_animation = self._getInAnimation()
         self._out_animation = self._getOutAnimation()
         self._in_animation.finished.connect(lambda: self._timer.start())
-        # self._out_animation.finished.connect(lambda: app.exit())
+        self._out_animation.finished.connect(lambda: app.exit())
         self._timer = self._getTimer(_BUBBLE_TIMEOUT_)
         self._timer.timeout.connect(lambda: self._out_animation.start())
         
