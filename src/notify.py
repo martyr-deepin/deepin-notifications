@@ -31,7 +31,8 @@ from PyQt5.QtGui import QSurfaceFormat, QColor
 from PyQt5.QtCore import (QObject, Q_CLASSINFO, pyqtSlot, pyqtProperty,
                           QPropertyAnimation, QParallelAnimationGroup, 
                           QEasingCurve, QTimer)
-from PyQt5.QtDBus import QDBusConnection, QDBusAbstractAdaptor
+from PyQt5.QtDBus import (QDBusConnection, QDBusAbstractAdaptor,
+                          QDBusConnectionInterface)
 
 _BUBBLE_TIMEOUT_ = 3000
 
@@ -48,9 +49,9 @@ class BubbleService(QObject):
 
 class BubbleServiceAdaptor(QDBusAbstractAdaptor):
 
-    Q_CLASSINFO("D-Bus Interface", "com.deepin.Bubbles")
+    Q_CLASSINFO("D-Bus Interface", "com.deepin.Bubble")
     Q_CLASSINFO("D-Bus Introspection",
-                '  <interface name="com.deepin.Bubbles">\n'
+                '  <interface name="com.deepin.Bubble">\n'
                 '    <method name="UpdateContent">\n'
                 '      <arg direction="in" type="s" name="content"/>\n'
                 '    </method>\n'
@@ -81,7 +82,7 @@ class Bubble(QQuickView):
         self._in_animation = self._getInAnimation()
         self._out_animation = self._getOutAnimation()
         self._in_animation.finished.connect(lambda: self._timer.start())
-        self._out_animation.finished.connect(lambda: app.exit())
+        # self._out_animation.finished.connect(lambda: app.exit())
         self._timer = self._getTimer(_BUBBLE_TIMEOUT_)
         self._timer.timeout.connect(lambda: self._out_animation.start())
         
@@ -130,6 +131,10 @@ class Bubble(QQuickView):
         self.show()
         (animation or self._in_animation).start()
         
+@pyqtSlot(str)
+def serviceReplacedByOtherSlot(name):
+    os._exit(0)
+        
 SCREEN_WIDTH = 0
 if __name__ == "__main__":
     app = QApplication(sys.argv)
@@ -138,6 +143,15 @@ if __name__ == "__main__":
     
     bubble = Bubble(sys.argv[1])
     bubble.showWithAnimation()
+    
+    bubbleService = BubbleService(bubble)
+    bus = QDBusConnection.sessionBus()
+    bus.interface().registerService('com.deepin.Bubble',
+                                    QDBusConnectionInterface.ReplaceExistingService,
+                                    QDBusConnectionInterface.AllowReplacement)
+    bus.registerObject('/com/deepin/Bubble', bubbleService)
+    bus.interface().serviceUnregistered.connect(serviceReplacedByOtherSlot)
+    
     
     signal.signal(signal.SIGINT, signal.SIG_DFL)
     sys.exit(app.exec_())
