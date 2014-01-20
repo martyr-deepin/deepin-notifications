@@ -154,7 +154,8 @@ def sendNotificationClosed(id, reason):
 @pyqtSlot(str)
 def serviceReplacedByOtherSlot(name):
     os._exit(0)
-        
+    
+    
 SCREEN_WIDTH = 0
 if __name__ == "__main__":
     app = QApplication(sys.argv)

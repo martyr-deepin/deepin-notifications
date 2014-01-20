@@ -5,7 +5,7 @@ import (
 )
 
 func TestEqual(t *testing.T) {
-	goal := &NotificationInfo{110, "APP_NAME", "ICON", "SUMMARY", "BODY", []string{"ONE", "TWO"}}	
+	goal := &NotificationInfo{110, "APP_NAME", "ICON", "SUMMARY", "BODY", []string{"ONE", "TWO"}}
 	ni := &NotificationInfo{110, "APP_NAME", "ICON", "SUMMARY", "BODY", []string{"ONE", "TWO"}}
 	if !goal.Equal(ni) {
 		t.Error("")
@@ -24,7 +24,7 @@ func TestFromJSON(t *testing.T) {
 func TestToJSON(t *testing.T) {
 	goal := `{"id":110,"app_name":"APP_NAME","app_icon":"ICON","summary":"SUMMARY","body":"BODY","actions":["ONE","TWO"]}`
 	ni := &NotificationInfo{110, "APP_NAME", "ICON", "SUMMARY", "BODY", []string{"ONE", "TWO"}}
-	if (goal != ni.ToJSON()){
+	if goal != ni.ToJSON() {
 		t.Error("")
 	}
 }

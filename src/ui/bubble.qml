@@ -10,7 +10,7 @@ Item {
     
     function updateContent(content) {
         var contObj = JSON.parse(content)
-        /* icon.source = contObj.app_icon */
+        icon.source = contObj.app_icon
         summary.text = contObj.summary
         body.text = contObj.body
     }
@@ -39,10 +39,16 @@ Item {
                 width: 48
                 height: 48
 
-                source: "icon.jpg"
+                source: "default.png"
                 anchors.left: parent.left
                 anchors.leftMargin: bubble.leftPadding
                 anchors.verticalCenter: parent.verticalCenter
+                
+                onStatusChanged: {
+                    if(status != Image.Ready && status != Image.Loading) {
+                        icon.source = "default.png"
+                    }
+                }
             }
 
             Text {
