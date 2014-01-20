@@ -60,7 +60,7 @@ func (dn *DeepinNotifications) Notify(
 	expire_timeout int32) (uint32) {
 
 	_SERVER_COUNTER_++
-	showBubble(&NotificationInfo{app_name, app_icon, summary, body, actions})
+	showBubble(&NotificationInfo{_SERVER_COUNTER_, app_name, app_icon, summary, body, actions})
 
 	return _SERVER_COUNTER_
 }
@@ -68,6 +68,7 @@ func (dn *DeepinNotifications) Notify(
 func fork(ni *NotificationInfo){
 	cmd := exec.Command("python", "notify.py", ni.ToJSON())
 	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 	cmd.Start()
 }
 

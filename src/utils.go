@@ -1,11 +1,12 @@
 package main
 
 import (
-	"encoding/json"
 	"dbus/org/freedesktop/dbus"
+	"encoding/json"
 )
 
 var dbusInterface *dbus.DBusDaemon
+
 func init() {
 	var err error
 	dbusInterface, err = dbus.NewDBusDaemon("/org/freedesktop/DBus")
@@ -15,6 +16,7 @@ func init() {
 }
 
 type NotificationInfo struct {
+	Id      uint32   `json:"id"`
 	AppName string   `json:"app_name"`
 	AppIcon string   `json:"app_icon"`
 	Summary string   `json:"summary"`
@@ -49,22 +51,21 @@ func actionsEqual(actionsOne, actionsTwo []string) bool {
 	return true
 }
 
-func (ni *NotificationInfo) Equal(another *NotificationInfo) bool{
-	if (ni.AppName == another.AppName &&
+func (ni *NotificationInfo) Equal(another *NotificationInfo) bool {
+	if ni.AppName == another.AppName &&
 		ni.AppIcon == another.AppIcon &&
 		ni.Summary == another.Summary &&
 		ni.Body == another.Body &&
-		actionsEqual(ni.Actions, another.Actions)) {
+		actionsEqual(ni.Actions, another.Actions) {
 		return true
 	}
 	return false
 }
 
-
-func checkServiceExistence(serviceName string) bool{
+func checkServiceExistence(serviceName string) bool {
 	result, err := dbusInterface.NameHasOwner(serviceName)
 	if err != nil || !result {
 		return false
-	} 
+	}
 	return true
 }

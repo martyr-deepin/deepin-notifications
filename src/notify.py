@@ -23,6 +23,9 @@
 import os
 import sys
 import signal
+import json
+from collections import namedtuple
+ClosedReason = namedtuple("ClosedReason", ("EXPIRED", "DISMISSED", "CLOSED", "UNDEFINED"))
 
 from PyQt5 import QtCore
 from PyQt5.QtQuick import QQuickView
@@ -32,9 +35,10 @@ from PyQt5.QtCore import (QObject, Q_CLASSINFO, pyqtSlot, pyqtProperty,
                           QPropertyAnimation, QParallelAnimationGroup, 
                           QEasingCurve, QTimer)
 from PyQt5.QtDBus import (QDBusConnection, QDBusAbstractAdaptor,
-                          QDBusConnectionInterface)
+                          QDBusConnectionInterface, QDBusMessage)
 
 _BUBBLE_TIMEOUT_ = 3000
+_CLOSED_REASON_ = ClosedReason(1, 2, 3, 4)
 
 class BubbleService(QObject):
     def __init__(self, bubble):
@@ -83,9 +87,13 @@ class Bubble(QQuickView):
         self._in_animation = self._getInAnimation()
         self._out_animation = self._getOutAnimation()
         self._in_animation.finished.connect(lambda: self._timer.start())
-        self._out_animation.finished.connect(lambda: app.exit())
+        self._out_animation.finished.connect(lambda: self.exit())
         self._timer = self._getTimer(_BUBBLE_TIMEOUT_)
         self._timer.timeout.connect(lambda: self._out_animation.start())
+        
+    @pyqtProperty(int)
+    def id(self):
+        return json.loads(self._content)["id"]
         
     @pyqtProperty(str)
     def content(self):
@@ -131,6 +139,17 @@ class Bubble(QQuickView):
         self.setY(-self.height())
         self.show()
         (animation or self._in_animation).start()
+        
+    def exit(self):
+        sendNotificationClosed(self.id, 2)
+        app.exit()
+        
+def sendNotificationClosed(id, reason):
+    msg = QDBusMessage.createSignal('/com/deepin/Bubble', 
+                                    'com.deepin.Bubble', 
+                                    'NotificationClosed')
+    msg << id << reason
+    QDBusConnection.sessionBus().send(msg)
         
 @pyqtSlot(str)
 def serviceReplacedByOtherSlot(name):
