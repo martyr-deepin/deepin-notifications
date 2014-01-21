@@ -1,25 +1,47 @@
 import QtQuick 2.1
+import QtGraphicalEffects 1.0
 
 Item {
     id: bubble
-    width: 300
-    height: 80
+    width: content.width + 10
+    height: content.height + 10
 
     property int leftPadding: 15
     property int rightPadding: 15
-    
+
     function updateContent(content) {
         var contObj = JSON.parse(content)
         icon.source = contObj.app_icon
         summary.text = contObj.summary
         body.text = contObj.body
     }
+
+    RectangularRing {
+        id: ring
+        visible: false
+        outterWidth: innerWidth + 2
+        outterHeight: innerHeight + 2
+        innerWidth: content.width
+        innerHeight: content.height
+        innerRadius: content.radius
+        
+        anchors.centerIn: parent
+    }
+    
+    GaussianBlur {
+        anchors.fill: ring
+        source: ring
+        radius: 4
+        samples: 16
+        transparentBorder: true
+    }
     
     Rectangle {
+        id: content
         radius: 10
-        color: "transparent"
-        border.color: "black"
-        anchors.fill: parent
+        width: 300
+        height: 80
+        anchors.centerIn: parent
 
         gradient: Gradient {
             GradientStop { position: 0.0; color: Qt.rgba(0, 0, 0, 0.7)}
@@ -29,10 +51,8 @@ Item {
         Rectangle {
             radius: 10
             color: "transparent"
-            width: parent.width - 2
-            height: parent.height - 2
             border.color: Qt.rgba(1, 1, 1, 0.2)
-            anchors.centerIn: parent
+            anchors.fill: parent
 
             Image {
                 id: icon
@@ -43,7 +63,7 @@ Item {
                 anchors.left: parent.left
                 anchors.leftMargin: bubble.leftPadding
                 anchors.verticalCenter: parent.verticalCenter
-                
+
                 onStatusChanged: {
                     if(status != Image.Ready && status != Image.Loading) {
                         icon.source = "default.png"
@@ -90,8 +110,8 @@ Item {
                 Column {
                     id: action_buttons
                     spacing: 6
-                    
-                    ActionButton{ 
+
+                    ActionButton{
                         text: "回复"
                     }
                     ActionButton{
