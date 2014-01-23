@@ -13,6 +13,8 @@ Canvas {
     property int innerRadius: 5
     property int innerWidth: 50
     property int innerHeight: 50
+    property int horizontalCenterOffset: 0
+    property int verticalCenterOffset: 0
     property color color: "black"
     
     onOutterWidthChanged: requestPaint()
@@ -22,6 +24,8 @@ Canvas {
     onColorChanged: requestPaint()
     onOutterRadiusChanged: requestPaint()
     onInnerRadiusChanged: requestPaint()
+    onHorizontalCenterOffsetChanged: requestPaint()
+    onVerticalCenterOffsetChanged: requestPaint()
 
     onPaint: {
         var ctx = canvas.getContext('2d');
@@ -39,8 +43,8 @@ Canvas {
         ctx.globalCompositeOperation = "destination-out"
         ctx.fillStyle = "#000000"
         ctx.beginPath()
-        ctx.roundedRect((canvas.outterWidth - canvas.innerWidth) / 2, 
-                        (canvas.outterHeight - canvas.innerHeight) / 2, 
+        ctx.roundedRect((canvas.outterWidth - canvas.innerWidth) / 2 + horizontalCenterOffset, 
+                        (canvas.outterHeight - canvas.innerHeight) / 2 + verticalCenterOffset, 
                         canvas.innerWidth, canvas.innerHeight, 
                         canvas.innerRadius, canvas.innerRadius)
         ctx.closePath()

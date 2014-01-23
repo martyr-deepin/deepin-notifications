@@ -3,8 +3,8 @@ import QtGraphicalEffects 1.0
 
 Item {
     id: bubble
-    width: content.width + 10
-    height: content.height + 10
+    width: content.width + 20
+    height: content.height + 20
 
     property int leftPadding: 15
     property int rightPadding: 15
@@ -20,18 +20,22 @@ Item {
         id: ring
         visible: false
         outterWidth: innerWidth + 2
-        outterHeight: innerHeight + 2
+        outterHeight: innerHeight + 3
+        outterRadius: content.radius + 2
         innerWidth: content.width
         innerHeight: content.height
         innerRadius: content.radius
         
+        verticalCenterOffset: -2
+        
         anchors.centerIn: parent
+        anchors.verticalCenterOffset: 2
     }
     
     GaussianBlur {
         anchors.fill: ring
         source: ring
-        radius: 4
+        radius: 10
         samples: 16
         transparentBorder: true
     }
