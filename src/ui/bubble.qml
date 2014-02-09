@@ -113,6 +113,8 @@ Item {
 
                 Column {
                     id: action_buttons
+                    
+                    visible: false
                     spacing: 6
 
                     ActionButton{
