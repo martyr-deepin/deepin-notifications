@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=com.deepin.Bubble
+Exec=/usr/share/deepin-notifications/deepin-notifications

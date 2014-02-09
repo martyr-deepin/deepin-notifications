@@ -3,8 +3,10 @@ package main
 import (
 	"dlib/dbus"
 	"os/exec"
-	"os"
 	"dbus/com/deepin/bubble"
+	"runtime"
+	"os"
+	"path"
 )
 
 var _SERVER_COUNTER_ = uint32(0)
@@ -66,7 +68,8 @@ func (dn *DeepinNotifications) Notify(
 }
 
 func fork(ni *NotificationInfo){
-	cmd := exec.Command("python", "notify.py", ni.ToJSON())
+	_, filename, _, _ := runtime.Caller(1)
+	cmd := exec.Command("python", path.Join(path.Dir(filename), "notify.py"), ni.ToJSON())
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Start()
