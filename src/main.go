@@ -4,7 +4,6 @@ import (
 	"dlib/dbus"
 	"os/exec"
 	"dbus/com/deepin/bubble"
-	"runtime"
 	"os"
 	"path"
 )
@@ -68,7 +67,8 @@ func (dn *DeepinNotifications) Notify(
 }
 
 func fork(ni *NotificationInfo){
-	_, filename, _, _ := runtime.Caller(1)
+	// _, filename, _, _ := runtime.Caller(1)
+	filename := os.Args[1]
 	cmd := exec.Command("python", path.Join(path.Dir(filename), "notify.py"), ni.ToJSON())
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
