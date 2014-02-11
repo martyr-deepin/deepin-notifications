@@ -3,18 +3,17 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
-# gamjachib <drios9420@gmail.com>, 2013
-# kazzike <jeancarlosrivas@gmail.com>, 2013
+# Arreyu <massi_gi@hotmail.it>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: Deepin Notifications\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-02-11 09:25+0800\n"
-"PO-Revision-Date: 2013-12-10 12:41+0000\n"
-"Last-Translator: kazzike <jeancarlosrivas@gmail.com>\n"
-"Language-Team: Spanish (http://www.transifex.com/projects/p/deepin-"
-"notifications/language/es/)\n"
-"Language: es\n"
+"PO-Revision-Date: 2014-01-08 10:49+0000\n"
+"Last-Translator: Arreyu <massi_gi@hotmail.it>\n"
+"Language-Team: Italian (http://www.transifex.com/projects/p/deepin-"
+"notifications/language/it/)\n"
+"Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -22,133 +21,133 @@ msgstr ""
 
 #: ../src/ui/listview_factory.py:117
 msgid "Content of messages"
-msgstr "Contenido de los mensajes"
+msgstr "Contenuto dei messaggi"
 
 #: ../src/ui/listview_factory.py:117
 msgid "Time"
-msgstr "Tiempo"
+msgstr "Tempo"
 
 #: ../src/ui/listview_factory.py:155 ../src/ui/listview_factory.py:170
 #: ../src/ui/window_view.py:751
 msgid "Delete Item(s)"
-msgstr "Eliminar elemento(s)"
+msgstr "Elimina Elemento(i)"
 
 #: ../src/ui/listview_factory.py:156
 msgid "Are you sure you want to delete the selected item(s)?"
-msgstr "¿Estás seguro que deseas eliminar los elementos seleccionados?"
+msgstr "Sei sicuro di voler eliminare l'elemento(i) selezionato"
 
 #: ../src/ui/listview_factory.py:171
 msgid "Are you sure delete all items?"
-msgstr "¿Estás seguro que quieres borrar todos los elementos? "
+msgstr "Sei sicuro di eliminare tutti gli elementi?"
 
 #: ../src/ui/listview_factory.py:175
 msgid "Delete selected item(s)"
-msgstr "Eliminar los elementos seleccionados"
+msgstr "Elimina l'elemento(i) selezionato"
 
 #: ../src/ui/listview_factory.py:176
 msgid "Delete all items"
-msgstr "Eliminar todos los elementos"
+msgstr "Elimina tutti gli elementi"
 
 #: ../src/ui/traypop.py:172
 msgid "Unread Messages"
-msgstr "Mensajes sin leer"
+msgstr "Messaggi Non Letti"
 
 #: ../src/ui/traypop.py:174 ../src/ui/traypop.py:241
 msgid "Turn Off Global Notifications"
-msgstr "Apagar Notificaciones Globales"
+msgstr "Disattiva Notifiche Globali"
 
 #: ../src/ui/traypop.py:188 ../src/ui/window_view.py:436
 msgid "(Empty)"
-msgstr "(Vacío)"
+msgstr "(Vuoto)"
 
 #: ../src/ui/traypop.py:193
 msgid "More Advanced Options... "
-msgstr "Más opciones avanzadas..."
+msgstr "Opzioni più Avanzate..."
 
 #: ../src/ui/traypop.py:244
 msgid "Turn On Global Notifications"
-msgstr "Encender Notificaciones Globales"
+msgstr "Attiva Notifiche Globali"
 
 #: ../src/ui/window_view.py:161
 msgid "Search"
-msgstr "Buscar"
+msgstr "Cerca"
 
 #: ../src/ui/window_view.py:503
 msgid "Remove from Blacklist"
-msgstr "Quitar de la lista negra"
+msgstr "Rimuovi dalla Blacklist"
 
 #: ../src/ui/window_view.py:505
 msgid "Add to Blacklist"
-msgstr "Agregar a la lista negra"
+msgstr "Aggiungi alla Blacklist"
 
 #: ../src/ui/window_view.py:512
 msgid "Software Messages"
-msgstr "Mensajes de Software"
+msgstr "Messaggi del Software"
 
 #: ../src/ui/window_view.py:513
 msgid "System Messages"
-msgstr "Mensajes del Sistema"
+msgstr "Messaggi di Sistema"
 
 #: ../src/ui/window_view.py:579
 msgid "Message Manager"
-msgstr "Administrador de Mensajes"
+msgstr "Manager dei Messaggi"
 
 #: ../src/ui/window_view.py:612
 msgid "Import"
-msgstr "Importar"
+msgstr "Importa"
 
 #: ../src/ui/window_view.py:614
 msgid "Export"
-msgstr "Exportar"
+msgstr "Esporta"
 
 #: ../src/ui/window_view.py:616
 msgid "Delete"
-msgstr "Eliminar"
+msgstr "Elimina"
 
 #: ../src/ui/window_view.py:618
 msgid "Refresh"
-msgstr "Refrescar"
+msgstr "Aggiorna"
 
 #: ../src/ui/window_view.py:628
 msgid "Look up in"
-msgstr "Buscar en"
+msgstr "Cerca in"
 
 #: ../src/ui/window_view.py:632 ../src/ui/window_view.py:639
 msgid "All"
-msgstr "Todo"
+msgstr "Tutto"
 
 #: ../src/ui/window_view.py:634
 msgid "Today"
-msgstr "Hoy"
+msgstr "Oggi"
 
 #: ../src/ui/window_view.py:635
 msgid "Last week"
-msgstr "La semana pasada"
+msgstr "Ultima settimana"
 
 #: ../src/ui/window_view.py:636
 msgid "Last month"
-msgstr "El mes pasado"
+msgstr "Ultimo mese"
 
 #: ../src/ui/window_view.py:637
 msgid "Last three months"
-msgstr "Los últimos tres meses"
+msgstr "Ultimi tre mesi"
 
 #: ../src/ui/window_view.py:638
 msgid "Last year"
-msgstr "El año pasado"
+msgstr "Scorso anno"
 
 #: ../src/ui/window_view.py:657
 msgid "Find in content"
-msgstr "Buscar en el Contenido"
+msgstr ""
 
 #: ../src/ui/window_view.py:722
 msgid "Select File to Import"
-msgstr "Seleccionar archivo para importar"
+msgstr "Seleziona File da Importare"
 
 #: ../src/ui/window_view.py:738
 msgid "Export to File"
-msgstr "Exportar a archivo"
+msgstr "Esporta su File"
 
 #: ../src/ui/window_view.py:752
 msgid "Are you sure you want to delete the selected items?"
-msgstr "¿Estás seguro que deseas eliminar los elementos seleccionados?"
+msgstr "Sei sicuro di voler eliminare gli elementi selezionati?"
