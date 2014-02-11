@@ -5,7 +5,6 @@ import (
 	"os/exec"
 	"dbus/com/deepin/bubble"
 	"os"
-	"path"
 )
 
 var _SERVER_COUNTER_ = uint32(0)
