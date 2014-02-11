@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 # FFXP <ffxpstudio@gmail.com>, 2013
 # Karim Oulad Chalha <herr.linux88@gmail.com>, 2013
@@ -9,145 +9,146 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Deepin Notifications\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-06 15:00+0800\n"
+"POT-Creation-Date: 2014-02-11 09:25+0800\n"
 "PO-Revision-Date: 2013-12-29 16:58+0000\n"
 "Last-Translator: Karim Oulad Chalha <herr.linux88@gmail.com>\n"
-"Language-Team: French (http://www.transifex.com/projects/p/deepin-notifications/language/fr/)\n"
+"Language-Team: French (http://www.transifex.com/projects/p/deepin-"
+"notifications/language/fr/)\n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: fr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: ../src/ui/window_view.py:159
-msgid "Search"
-msgstr "Rechercher"
-
-#: ../src/ui/window_view.py:420 ../src/ui/traypop.py:178
-msgid "(Empty)"
-msgstr "(Vide)"
-
-#: ../src/ui/window_view.py:496
-msgid "Remove from Blacklist"
-msgstr "Retirer de la Liste Noire"
-
-#: ../src/ui/window_view.py:498
-msgid "Add to Blacklist"
-msgstr "Ajouter à la Liste Noire"
-
-#: ../src/ui/window_view.py:507
-msgid "Software Messages"
-msgstr "Notifications des Applications"
-
-#: ../src/ui/window_view.py:508
-msgid "System Messages"
-msgstr "Notifications du Système"
-
-#: ../src/ui/window_view.py:570
-msgid "Message Manager"
-msgstr "Gestionnaire de Notifications"
-
-#: ../src/ui/window_view.py:603
-msgid "Import"
-msgstr "Importer"
-
-#: ../src/ui/window_view.py:605
-msgid "Export"
-msgstr "Exporter"
-
-#: ../src/ui/window_view.py:607
-msgid "Delete"
-msgstr "Supprimer"
-
-#: ../src/ui/window_view.py:609
-msgid "Refresh"
-msgstr "Rafraîchir"
-
-#: ../src/ui/window_view.py:618
-msgid "Look up in"
-msgstr "Rechercher dans"
-
-#: ../src/ui/window_view.py:620 ../src/ui/window_view.py:627
-msgid "All"
-msgstr "Tout"
-
-#: ../src/ui/window_view.py:622
-msgid "Today"
-msgstr "Aujourd'hui"
-
-#: ../src/ui/window_view.py:623
-msgid "Last week"
-msgstr "Cette semaine"
-
-#: ../src/ui/window_view.py:624
-msgid "Last month"
-msgstr "Ce mois"
-
-#: ../src/ui/window_view.py:625
-msgid "Last three months"
-msgstr "Les trois derniers mois"
-
-#: ../src/ui/window_view.py:626
-msgid "Last year"
-msgstr "Cette année"
-
-#: ../src/ui/window_view.py:644
-msgid "Find in content"
-msgstr "Rechercher dans le contenu"
-
-#: ../src/ui/window_view.py:707
-msgid "Select File to Import"
-msgstr "Sélectionner les fichier à importer"
-
-#: ../src/ui/window_view.py:723
-msgid "Export to File"
-msgstr "Exporter vers un fichier"
-
-#: ../src/ui/window_view.py:736 ../src/ui/listview_factory.py:148
-#: ../src/ui/listview_factory.py:163
-msgid "Delete Item(s)"
-msgstr "Supprimer les éléments"
-
-#: ../src/ui/window_view.py:737
-msgid "Are you sure you want to delete the selected items?"
-msgstr "Voulez-vous vraiment supprimer les éléments sélectionnés?"
-
-#: ../src/ui/traypop.py:162
-msgid "Unread Messages"
-msgstr "Notifications non lues"
-
-#: ../src/ui/traypop.py:164 ../src/ui/traypop.py:231
-msgid "Turn Off Global Notifications"
-msgstr "Désactiver les Notifications Globales"
-
-#: ../src/ui/traypop.py:183
-msgid "More Advanced Options... "
-msgstr "Options Avancées (expert)"
-
-#: ../src/ui/traypop.py:234
-msgid "Turn On Global Notifications"
-msgstr "Activer les Notifications Globales"
-
-#: ../src/ui/listview_factory.py:110
+#: ../src/ui/listview_factory.py:117
 msgid "Content of messages"
 msgstr "Contenu des messages"
 
-#: ../src/ui/listview_factory.py:110
+#: ../src/ui/listview_factory.py:117
 msgid "Time"
 msgstr "Heure"
 
-#: ../src/ui/listview_factory.py:149
+#: ../src/ui/listview_factory.py:155 ../src/ui/listview_factory.py:170
+#: ../src/ui/window_view.py:751
+msgid "Delete Item(s)"
+msgstr "Supprimer les éléments"
+
+#: ../src/ui/listview_factory.py:156
 msgid "Are you sure you want to delete the selected item(s)?"
 msgstr "Voulez-vous vraiment supprimer le(s) élément(s) sélectionné(s)?"
 
-#: ../src/ui/listview_factory.py:164
+#: ../src/ui/listview_factory.py:171
 msgid "Are you sure delete all items?"
 msgstr "Confirmer la suppression des éléments?"
 
-#: ../src/ui/listview_factory.py:168
+#: ../src/ui/listview_factory.py:175
 msgid "Delete selected item(s)"
 msgstr "Supprimer les éléments sélectionnés"
 
-#: ../src/ui/listview_factory.py:169
+#: ../src/ui/listview_factory.py:176
 msgid "Delete all items"
 msgstr "Supprimer tous les éléments"
+
+#: ../src/ui/traypop.py:172
+msgid "Unread Messages"
+msgstr "Notifications non lues"
+
+#: ../src/ui/traypop.py:174 ../src/ui/traypop.py:241
+msgid "Turn Off Global Notifications"
+msgstr "Désactiver les Notifications Globales"
+
+#: ../src/ui/traypop.py:188 ../src/ui/window_view.py:436
+msgid "(Empty)"
+msgstr "(Vide)"
+
+#: ../src/ui/traypop.py:193
+msgid "More Advanced Options... "
+msgstr "Options Avancées (expert)"
+
+#: ../src/ui/traypop.py:244
+msgid "Turn On Global Notifications"
+msgstr "Activer les Notifications Globales"
+
+#: ../src/ui/window_view.py:161
+msgid "Search"
+msgstr "Rechercher"
+
+#: ../src/ui/window_view.py:503
+msgid "Remove from Blacklist"
+msgstr "Retirer de la Liste Noire"
+
+#: ../src/ui/window_view.py:505
+msgid "Add to Blacklist"
+msgstr "Ajouter à la Liste Noire"
+
+#: ../src/ui/window_view.py:512
+msgid "Software Messages"
+msgstr "Notifications des Applications"
+
+#: ../src/ui/window_view.py:513
+msgid "System Messages"
+msgstr "Notifications du Système"
+
+#: ../src/ui/window_view.py:579
+msgid "Message Manager"
+msgstr "Gestionnaire de Notifications"
+
+#: ../src/ui/window_view.py:612
+msgid "Import"
+msgstr "Importer"
+
+#: ../src/ui/window_view.py:614
+msgid "Export"
+msgstr "Exporter"
+
+#: ../src/ui/window_view.py:616
+msgid "Delete"
+msgstr "Supprimer"
+
+#: ../src/ui/window_view.py:618
+msgid "Refresh"
+msgstr "Rafraîchir"
+
+#: ../src/ui/window_view.py:628
+msgid "Look up in"
+msgstr "Rechercher dans"
+
+#: ../src/ui/window_view.py:632 ../src/ui/window_view.py:639
+msgid "All"
+msgstr "Tout"
+
+#: ../src/ui/window_view.py:634
+msgid "Today"
+msgstr "Aujourd'hui"
+
+#: ../src/ui/window_view.py:635
+msgid "Last week"
+msgstr "Cette semaine"
+
+#: ../src/ui/window_view.py:636
+msgid "Last month"
+msgstr "Ce mois"
+
+#: ../src/ui/window_view.py:637
+msgid "Last three months"
+msgstr "Les trois derniers mois"
+
+#: ../src/ui/window_view.py:638
+msgid "Last year"
+msgstr "Cette année"
+
+#: ../src/ui/window_view.py:657
+msgid "Find in content"
+msgstr "Rechercher dans le contenu"
+
+#: ../src/ui/window_view.py:722
+msgid "Select File to Import"
+msgstr "Sélectionner les fichier à importer"
+
+#: ../src/ui/window_view.py:738
+msgid "Export to File"
+msgstr "Exporter vers un fichier"
+
+#: ../src/ui/window_view.py:752
+msgid "Are you sure you want to delete the selected items?"
+msgstr "Voulez-vous vraiment supprimer les éléments sélectionnés?"

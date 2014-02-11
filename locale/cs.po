@@ -1,152 +1,153 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 # fri <pavelfric@seznam.cz>, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version: Deepin Notifications\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-06 15:00+0800\n"
+"POT-Creation-Date: 2014-02-11 09:25+0800\n"
 "PO-Revision-Date: 2013-12-22 09:47+0000\n"
 "Last-Translator: fri <pavelfric@seznam.cz>\n"
-"Language-Team: Czech (http://www.transifex.com/projects/p/deepin-notifications/language/cs/)\n"
+"Language-Team: Czech (http://www.transifex.com/projects/p/deepin-"
+"notifications/language/cs/)\n"
+"Language: cs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: cs\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
-#: ../src/ui/window_view.py:159
-msgid "Search"
-msgstr "Hledat"
-
-#: ../src/ui/window_view.py:420 ../src/ui/traypop.py:178
-msgid "(Empty)"
-msgstr "(Prázdný)"
-
-#: ../src/ui/window_view.py:496
-msgid "Remove from Blacklist"
-msgstr "Odebrat z černé listiny"
-
-#: ../src/ui/window_view.py:498
-msgid "Add to Blacklist"
-msgstr "Přidat na černou listinu"
-
-#: ../src/ui/window_view.py:507
-msgid "Software Messages"
-msgstr "Zprávy programů"
-
-#: ../src/ui/window_view.py:508
-msgid "System Messages"
-msgstr "Zprávy systému"
-
-#: ../src/ui/window_view.py:570
-msgid "Message Manager"
-msgstr "Správce zpráv"
-
-#: ../src/ui/window_view.py:603
-msgid "Import"
-msgstr "Zavést"
-
-#: ../src/ui/window_view.py:605
-msgid "Export"
-msgstr "Vyvést"
-
-#: ../src/ui/window_view.py:607
-msgid "Delete"
-msgstr "Smazat"
-
-#: ../src/ui/window_view.py:609
-msgid "Refresh"
-msgstr "Obnovit"
-
-#: ../src/ui/window_view.py:618
-msgid "Look up in"
-msgstr "Vyhledat v"
-
-#: ../src/ui/window_view.py:620 ../src/ui/window_view.py:627
-msgid "All"
-msgstr "Vše"
-
-#: ../src/ui/window_view.py:622
-msgid "Today"
-msgstr "Dnes"
-
-#: ../src/ui/window_view.py:623
-msgid "Last week"
-msgstr "Minulý týden"
-
-#: ../src/ui/window_view.py:624
-msgid "Last month"
-msgstr "Minulý měsíc"
-
-#: ../src/ui/window_view.py:625
-msgid "Last three months"
-msgstr "Poslední tři měsíce"
-
-#: ../src/ui/window_view.py:626
-msgid "Last year"
-msgstr "Poslední rok"
-
-#: ../src/ui/window_view.py:644
-msgid "Find in content"
-msgstr "Najít v obsahu"
-
-#: ../src/ui/window_view.py:707
-msgid "Select File to Import"
-msgstr "Vyberte soubor k zavedení"
-
-#: ../src/ui/window_view.py:723
-msgid "Export to File"
-msgstr "Vyvést do souboru"
-
-#: ../src/ui/window_view.py:736 ../src/ui/listview_factory.py:148
-#: ../src/ui/listview_factory.py:163
-msgid "Delete Item(s)"
-msgstr "Smazat položku(y)"
-
-#: ../src/ui/window_view.py:737
-msgid "Are you sure you want to delete the selected items?"
-msgstr "Opravdu chcete smazat vybrané položky?"
-
-#: ../src/ui/traypop.py:162
-msgid "Unread Messages"
-msgstr "Nepřečtené zprávy"
-
-#: ../src/ui/traypop.py:164 ../src/ui/traypop.py:231
-msgid "Turn Off Global Notifications"
-msgstr "Vypnout celkové oznamování"
-
-#: ../src/ui/traypop.py:183
-msgid "More Advanced Options... "
-msgstr "Pokročilé volby... "
-
-#: ../src/ui/traypop.py:234
-msgid "Turn On Global Notifications"
-msgstr "Zapnout celkové oznamování"
-
-#: ../src/ui/listview_factory.py:110
+#: ../src/ui/listview_factory.py:117
 msgid "Content of messages"
 msgstr "Obsah zpráv"
 
-#: ../src/ui/listview_factory.py:110
+#: ../src/ui/listview_factory.py:117
 msgid "Time"
 msgstr "Čas"
 
-#: ../src/ui/listview_factory.py:149
+#: ../src/ui/listview_factory.py:155 ../src/ui/listview_factory.py:170
+#: ../src/ui/window_view.py:751
+msgid "Delete Item(s)"
+msgstr "Smazat položku(y)"
+
+#: ../src/ui/listview_factory.py:156
 msgid "Are you sure you want to delete the selected item(s)?"
 msgstr "Opravdu chcete smazat vybranou položku(y)?"
 
-#: ../src/ui/listview_factory.py:164
+#: ../src/ui/listview_factory.py:171
 msgid "Are you sure delete all items?"
 msgstr "Opravdu chcete smazat všechny položky?"
 
-#: ../src/ui/listview_factory.py:168
+#: ../src/ui/listview_factory.py:175
 msgid "Delete selected item(s)"
 msgstr "Smazat vybranou položku(y)"
 
-#: ../src/ui/listview_factory.py:169
+#: ../src/ui/listview_factory.py:176
 msgid "Delete all items"
 msgstr "Smazat všechny položky"
+
+#: ../src/ui/traypop.py:172
+msgid "Unread Messages"
+msgstr "Nepřečtené zprávy"
+
+#: ../src/ui/traypop.py:174 ../src/ui/traypop.py:241
+msgid "Turn Off Global Notifications"
+msgstr "Vypnout celkové oznamování"
+
+#: ../src/ui/traypop.py:188 ../src/ui/window_view.py:436
+msgid "(Empty)"
+msgstr "(Prázdný)"
+
+#: ../src/ui/traypop.py:193
+msgid "More Advanced Options... "
+msgstr "Pokročilé volby... "
+
+#: ../src/ui/traypop.py:244
+msgid "Turn On Global Notifications"
+msgstr "Zapnout celkové oznamování"
+
+#: ../src/ui/window_view.py:161
+msgid "Search"
+msgstr "Hledat"
+
+#: ../src/ui/window_view.py:503
+msgid "Remove from Blacklist"
+msgstr "Odebrat z černé listiny"
+
+#: ../src/ui/window_view.py:505
+msgid "Add to Blacklist"
+msgstr "Přidat na černou listinu"
+
+#: ../src/ui/window_view.py:512
+msgid "Software Messages"
+msgstr "Zprávy programů"
+
+#: ../src/ui/window_view.py:513
+msgid "System Messages"
+msgstr "Zprávy systému"
+
+#: ../src/ui/window_view.py:579
+msgid "Message Manager"
+msgstr "Správce zpráv"
+
+#: ../src/ui/window_view.py:612
+msgid "Import"
+msgstr "Zavést"
+
+#: ../src/ui/window_view.py:614
+msgid "Export"
+msgstr "Vyvést"
+
+#: ../src/ui/window_view.py:616
+msgid "Delete"
+msgstr "Smazat"
+
+#: ../src/ui/window_view.py:618
+msgid "Refresh"
+msgstr "Obnovit"
+
+#: ../src/ui/window_view.py:628
+msgid "Look up in"
+msgstr "Vyhledat v"
+
+#: ../src/ui/window_view.py:632 ../src/ui/window_view.py:639
+msgid "All"
+msgstr "Vše"
+
+#: ../src/ui/window_view.py:634
+msgid "Today"
+msgstr "Dnes"
+
+#: ../src/ui/window_view.py:635
+msgid "Last week"
+msgstr "Minulý týden"
+
+#: ../src/ui/window_view.py:636
+msgid "Last month"
+msgstr "Minulý měsíc"
+
+#: ../src/ui/window_view.py:637
+msgid "Last three months"
+msgstr "Poslední tři měsíce"
+
+#: ../src/ui/window_view.py:638
+msgid "Last year"
+msgstr "Poslední rok"
+
+#: ../src/ui/window_view.py:657
+msgid "Find in content"
+msgstr "Najít v obsahu"
+
+#: ../src/ui/window_view.py:722
+msgid "Select File to Import"
+msgstr "Vyberte soubor k zavedení"
+
+#: ../src/ui/window_view.py:738
+msgid "Export to File"
+msgstr "Vyvést do souboru"
+
+#: ../src/ui/window_view.py:752
+msgid "Are you sure you want to delete the selected items?"
+msgstr "Opravdu chcete smazat vybrané položky?"

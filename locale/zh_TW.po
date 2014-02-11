@@ -1,153 +1,154 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 # Automatically generated, 2013
-# freddy4212 <freddy4212@gmail.com>, 2013
+# freddy4212 <freddy4212@gmail.com>, 2013-2014
 msgid ""
 msgstr ""
 "Project-Id-Version: Deepin Notifications\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-06 15:00+0800\n"
-"PO-Revision-Date: 2013-12-14 07:23+0000\n"
+"POT-Creation-Date: 2014-02-11 09:25+0800\n"
+"PO-Revision-Date: 2014-01-24 03:10+0000\n"
 "Last-Translator: freddy4212 <freddy4212@gmail.com>\n"
-"Language-Team: Chinese (Taiwan) (http://www.transifex.com/projects/p/deepin-notifications/language/zh_TW/)\n"
+"Language-Team: Chinese (Taiwan) (http://www.transifex.com/projects/p/deepin-"
+"notifications/language/zh_TW/)\n"
+"Language: zh_TW\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: zh_TW\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../src/ui/window_view.py:159
-msgid "Search"
-msgstr "搜尋"
-
-#: ../src/ui/window_view.py:420 ../src/ui/traypop.py:178
-msgid "(Empty)"
-msgstr "(空)"
-
-#: ../src/ui/window_view.py:496
-msgid "Remove from Blacklist"
-msgstr "從黑名單移除"
-
-#: ../src/ui/window_view.py:498
-msgid "Add to Blacklist"
-msgstr "加入到黑名單"
-
-#: ../src/ui/window_view.py:507
-msgid "Software Messages"
-msgstr "軟體訊息"
-
-#: ../src/ui/window_view.py:508
-msgid "System Messages"
-msgstr "系統訊息"
-
-#: ../src/ui/window_view.py:570
-msgid "Message Manager"
-msgstr "訊息管理員"
-
-#: ../src/ui/window_view.py:603
-msgid "Import"
-msgstr "匯入"
-
-#: ../src/ui/window_view.py:605
-msgid "Export"
-msgstr "匯出"
-
-#: ../src/ui/window_view.py:607
-msgid "Delete"
-msgstr "刪除"
-
-#: ../src/ui/window_view.py:609
-msgid "Refresh"
-msgstr "重新整理"
-
-#: ../src/ui/window_view.py:618
-msgid "Look up in"
-msgstr "查詢"
-
-#: ../src/ui/window_view.py:620 ../src/ui/window_view.py:627
-msgid "All"
-msgstr "全部"
-
-#: ../src/ui/window_view.py:622
-msgid "Today"
-msgstr "今天"
-
-#: ../src/ui/window_view.py:623
-msgid "Last week"
-msgstr "上一週"
-
-#: ../src/ui/window_view.py:624
-msgid "Last month"
-msgstr "上個月"
-
-#: ../src/ui/window_view.py:625
-msgid "Last three months"
-msgstr "過去三個月"
-
-#: ../src/ui/window_view.py:626
-msgid "Last year"
-msgstr "過去一年"
-
-#: ../src/ui/window_view.py:644
-msgid "Find in content"
-msgstr "搜尋內容"
-
-#: ../src/ui/window_view.py:707
-msgid "Select File to Import"
-msgstr "選擇要匯入的檔案"
-
-#: ../src/ui/window_view.py:723
-msgid "Export to File"
-msgstr "匯出到檔案"
-
-#: ../src/ui/window_view.py:736 ../src/ui/listview_factory.py:148
-#: ../src/ui/listview_factory.py:163
-msgid "Delete Item(s)"
-msgstr "刪除向目"
-
-#: ../src/ui/window_view.py:737
-msgid "Are you sure you want to delete the selected items?"
-msgstr "確定要刪除選中的項目嗎？"
-
-#: ../src/ui/traypop.py:162
-msgid "Unread Messages"
-msgstr "未讀訊息"
-
-#: ../src/ui/traypop.py:164 ../src/ui/traypop.py:231
-msgid "Turn Off Global Notifications"
-msgstr "關閉全域通知"
-
-#: ../src/ui/traypop.py:183
-msgid "More Advanced Options... "
-msgstr "進階設定..."
-
-#: ../src/ui/traypop.py:234
-msgid "Turn On Global Notifications"
-msgstr "啟用全域通知"
-
-#: ../src/ui/listview_factory.py:110
+#: ../src/ui/listview_factory.py:117
 msgid "Content of messages"
 msgstr "訊息內容"
 
-#: ../src/ui/listview_factory.py:110
+#: ../src/ui/listview_factory.py:117
 msgid "Time"
 msgstr "時間"
 
-#: ../src/ui/listview_factory.py:149
-msgid "Are you sure you want to delete the selected item(s)?"
-msgstr "確定要刪除選中的項目嗎？"
+#: ../src/ui/listview_factory.py:155 ../src/ui/listview_factory.py:170
+#: ../src/ui/window_view.py:751
+msgid "Delete Item(s)"
+msgstr "刪除項目"
 
-#: ../src/ui/listview_factory.py:164
+#: ../src/ui/listview_factory.py:156
+msgid "Are you sure you want to delete the selected item(s)?"
+msgstr "確定要刪除選擇的項目嗎？"
+
+#: ../src/ui/listview_factory.py:171
 msgid "Are you sure delete all items?"
 msgstr "確定要刪除全部項目嗎？"
 
-#: ../src/ui/listview_factory.py:168
+#: ../src/ui/listview_factory.py:175
 msgid "Delete selected item(s)"
-msgstr "刪除選中項目"
+msgstr "刪除選擇的項目"
 
-#: ../src/ui/listview_factory.py:169
+#: ../src/ui/listview_factory.py:176
 msgid "Delete all items"
 msgstr "刪除全部項目"
+
+#: ../src/ui/traypop.py:172
+msgid "Unread Messages"
+msgstr "未讀訊息"
+
+#: ../src/ui/traypop.py:174 ../src/ui/traypop.py:241
+msgid "Turn Off Global Notifications"
+msgstr "關閉全域通知"
+
+#: ../src/ui/traypop.py:188 ../src/ui/window_view.py:436
+msgid "(Empty)"
+msgstr "(空)"
+
+#: ../src/ui/traypop.py:193
+msgid "More Advanced Options... "
+msgstr "進階設定..."
+
+#: ../src/ui/traypop.py:244
+msgid "Turn On Global Notifications"
+msgstr "啟用全域通知"
+
+#: ../src/ui/window_view.py:161
+msgid "Search"
+msgstr "搜尋"
+
+#: ../src/ui/window_view.py:503
+msgid "Remove from Blacklist"
+msgstr "從黑名單移除"
+
+#: ../src/ui/window_view.py:505
+msgid "Add to Blacklist"
+msgstr "加入到黑名單"
+
+#: ../src/ui/window_view.py:512
+msgid "Software Messages"
+msgstr "軟體訊息"
+
+#: ../src/ui/window_view.py:513
+msgid "System Messages"
+msgstr "系統訊息"
+
+#: ../src/ui/window_view.py:579
+msgid "Message Manager"
+msgstr "訊息管理員"
+
+#: ../src/ui/window_view.py:612
+msgid "Import"
+msgstr "匯入"
+
+#: ../src/ui/window_view.py:614
+msgid "Export"
+msgstr "匯出"
+
+#: ../src/ui/window_view.py:616
+msgid "Delete"
+msgstr "刪除"
+
+#: ../src/ui/window_view.py:618
+msgid "Refresh"
+msgstr "重新整理"
+
+#: ../src/ui/window_view.py:628
+msgid "Look up in"
+msgstr "查詢"
+
+#: ../src/ui/window_view.py:632 ../src/ui/window_view.py:639
+msgid "All"
+msgstr "全部"
+
+#: ../src/ui/window_view.py:634
+msgid "Today"
+msgstr "今天"
+
+#: ../src/ui/window_view.py:635
+msgid "Last week"
+msgstr "上一週"
+
+#: ../src/ui/window_view.py:636
+msgid "Last month"
+msgstr "上個月"
+
+#: ../src/ui/window_view.py:637
+msgid "Last three months"
+msgstr "過去三個月"
+
+#: ../src/ui/window_view.py:638
+msgid "Last year"
+msgstr "過去一年"
+
+#: ../src/ui/window_view.py:657
+msgid "Find in content"
+msgstr "尋找內容"
+
+#: ../src/ui/window_view.py:722
+msgid "Select File to Import"
+msgstr "選擇要匯入的檔案"
+
+#: ../src/ui/window_view.py:738
+msgid "Export to File"
+msgstr "匯出到檔案"
+
+#: ../src/ui/window_view.py:752
+msgid "Are you sure you want to delete the selected items?"
+msgstr "確定要刪除選擇的項目嗎？"
