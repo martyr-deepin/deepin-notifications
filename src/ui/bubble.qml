@@ -57,6 +57,19 @@ Item {
             color: "transparent"
             border.color: Qt.rgba(1, 1, 1, 0.2)
             anchors.fill: parent
+            
+            MouseArea {
+                hoverEnabled: true
+                anchors.fill: parent
+                
+                onEntered: {
+                    _notify.pauseTimer()
+                }
+                
+                onExited: {
+                    _notify.resumeTimer()
+                }
+            }
 
             Image {
                 id: icon
@@ -71,6 +84,14 @@ Item {
                 onStatusChanged: {
                     if(status != Image.Ready && status != Image.Loading) {
                         icon.source = "default.png"
+                    }
+                }
+                
+                MouseArea {
+                    anchors.fill: parent
+                    
+                    onClicked: {
+                        _notify.openSenderProgram()
                     }
                 }
             }

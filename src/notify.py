@@ -24,6 +24,7 @@ import os
 import sys
 import signal
 import json
+import subprocess
 from collections import namedtuple
 ClosedReason = namedtuple("ClosedReason", ("EXPIRED", "DISMISSED", "CLOSED", "UNDEFINED"))
 
@@ -84,12 +85,17 @@ class Bubble(QQuickView):
             os.path.join(os.path.dirname(__file__), 'ui/bubble.qml')
         ))
         
+        qml_context = self.rootContext()
+        qml_context.setContextProperty("_notify", self)
+        
         self._in_animation = self._getInAnimation()
         self._out_animation = self._getOutAnimation()
         self._in_animation.finished.connect(lambda: self._timer.start())
         self._out_animation.finished.connect(lambda: self.exit())
         self._timer = self._getTimer(_BUBBLE_TIMEOUT_)
         self._timer.timeout.connect(lambda: self._out_animation.start())
+        
+        self._timer_remaining_time = _BUBBLE_TIMEOUT_
         
     @pyqtProperty(int)
     def id(self):
@@ -98,6 +104,21 @@ class Bubble(QQuickView):
     @pyqtProperty(str)
     def content(self):
         return self._content
+        
+    @pyqtSlot()
+    def pauseTimer(self):
+        self._timer_remaining_time = self._timer.remainingTime()
+        self._timer.stop()
+        
+    @pyqtSlot()
+    def resumeTimer(self):
+        self._timer.start(self._timer_remaining_time)
+        
+    @pyqtSlot()
+    def openSenderProgram(self):
+        self.resumeTimer()
+        app_name = json.loads(self._content)["app_name"]
+        subprocess.Popen(app_name)
         
     def _getInAnimation(self):
         animation = QPropertyAnimation(self, "y")
