@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Deepin Notifications\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-11 09:25+0800\n"
-"PO-Revision-Date: 2014-02-09 20:38+0000\n"
+"POT-Creation-Date: 2014-02-25 11:18+0800\n"
+"PO-Revision-Date: 2014-02-11 22:47+0000\n"
 "Last-Translator: Mohd <mo-hd@windowslive.com>\n"
 "Language-Team: Arabic (http://www.transifex.com/projects/p/deepin-"
 "notifications/language/ar/)\n"
@@ -33,7 +33,7 @@ msgstr "الوقت"
 #: ../src/ui/listview_factory.py:155 ../src/ui/listview_factory.py:170
 #: ../src/ui/window_view.py:751
 msgid "Delete Item(s)"
-msgstr "حذف العنصر(العناصر)"
+msgstr "حذف العنصر (العناصر)"
 
 #: ../src/ui/listview_factory.py:156
 msgid "Are you sure you want to delete the selected item(s)?"
@@ -41,11 +41,11 @@ msgstr "هل انت متأكد من أنك تريد حذف العن(ا)صر ال
 
 #: ../src/ui/listview_factory.py:171
 msgid "Are you sure delete all items?"
-msgstr "هل أنت متأكد من حذف كل العناصر؟"
+msgstr "هل أنت متأكد من حذف كل العناصر ؟"
 
 #: ../src/ui/listview_factory.py:175
 msgid "Delete selected item(s)"
-msgstr "حذف العن(ا)صر المحددة"
+msgstr "حذف العن(ا)صر المحددة "
 
 #: ../src/ui/listview_factory.py:176
 msgid "Delete all items"
@@ -61,11 +61,11 @@ msgstr "توقيف الإشعارات العامة"
 
 #: ../src/ui/traypop.py:188 ../src/ui/window_view.py:436
 msgid "(Empty)"
-msgstr "(فارغ)"
+msgstr "( فارغ )"
 
 #: ../src/ui/traypop.py:193
 msgid "More Advanced Options... "
-msgstr "...المزيد من الخيارات المتقدمة"
+msgstr "المزيد من الخيارات المتقدمة..."
 
 #: ../src/ui/traypop.py:244
 msgid "Turn On Global Notifications"
@@ -153,4 +153,4 @@ msgstr "صدر إلى ملف"
 
 #: ../src/ui/window_view.py:752
 msgid "Are you sure you want to delete the selected items?"
-msgstr "هل انت متأكد من أنك تريد حذف العناصر المحددة؟"
+msgstr "هل انت متأكد من أنك تريد حذف العناصر المحددة ؟"

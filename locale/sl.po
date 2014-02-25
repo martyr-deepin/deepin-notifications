@@ -3,150 +3,152 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
+# kloki <klokimass@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: Deepin Notifications\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-02-25 11:18+0800\n"
-"PO-Revision-Date: 2013-12-28 12:46+0000\n"
-"Last-Translator: lihongwu <lihongwu1987@gmail.com>\n"
-"Language-Team: Indonesian (Indonesia) (http://www.transifex.com/projects/p/"
-"deepin-notifications/language/id_ID/)\n"
-"Language: id_ID\n"
+"PO-Revision-Date: 2014-02-20 21:39+0000\n"
+"Last-Translator: kloki <klokimass@gmail.com>\n"
+"Language-Team: Slovenian (http://www.transifex.com/projects/p/deepin-"
+"notifications/language/sl/)\n"
+"Language: sl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Plural-Forms: nplurals=4; plural=(n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || n"
+"%100==4 ? 2 : 3);\n"
 
 #: ../src/ui/listview_factory.py:117
 msgid "Content of messages"
-msgstr ""
+msgstr "Vsebina obvestil"
 
 #: ../src/ui/listview_factory.py:117
 msgid "Time"
-msgstr ""
+msgstr "Čas"
 
 #: ../src/ui/listview_factory.py:155 ../src/ui/listview_factory.py:170
 #: ../src/ui/window_view.py:751
 msgid "Delete Item(s)"
-msgstr ""
+msgstr "Izbriši element(e)"
 
 #: ../src/ui/listview_factory.py:156
 msgid "Are you sure you want to delete the selected item(s)?"
-msgstr ""
+msgstr "Ali ste prepričani, da želite izbrisati izbrani element(e)?"
 
 #: ../src/ui/listview_factory.py:171
 msgid "Are you sure delete all items?"
-msgstr ""
+msgstr "Ali ste prepričani, da želite izbrisati vse elemente?"
 
 #: ../src/ui/listview_factory.py:175
 msgid "Delete selected item(s)"
-msgstr ""
+msgstr "Izbriši izbrani element(e)"
 
 #: ../src/ui/listview_factory.py:176
 msgid "Delete all items"
-msgstr ""
+msgstr "Izbriši vse elemente"
 
 #: ../src/ui/traypop.py:172
 msgid "Unread Messages"
-msgstr ""
+msgstr "Neprebrana sporočila"
 
 #: ../src/ui/traypop.py:174 ../src/ui/traypop.py:241
 msgid "Turn Off Global Notifications"
-msgstr ""
+msgstr "Izklopi vsa obvestila"
 
 #: ../src/ui/traypop.py:188 ../src/ui/window_view.py:436
 msgid "(Empty)"
-msgstr ""
+msgstr "(Prazno)"
 
 #: ../src/ui/traypop.py:193
 msgid "More Advanced Options... "
-msgstr ""
+msgstr "Naprednejše možnosti..."
 
 #: ../src/ui/traypop.py:244
 msgid "Turn On Global Notifications"
-msgstr ""
+msgstr "Vklopi vsa obvestila"
 
 #: ../src/ui/window_view.py:161
 msgid "Search"
-msgstr ""
+msgstr "Iskanje"
 
 #: ../src/ui/window_view.py:503
 msgid "Remove from Blacklist"
-msgstr ""
+msgstr "Odstrani s Črne liste"
 
 #: ../src/ui/window_view.py:505
 msgid "Add to Blacklist"
-msgstr ""
+msgstr "Dodaj na Črno listo"
 
 #: ../src/ui/window_view.py:512
 msgid "Software Messages"
-msgstr ""
+msgstr "Programska sporočila"
 
 #: ../src/ui/window_view.py:513
 msgid "System Messages"
-msgstr ""
+msgstr "Sistemska sporočila"
 
 #: ../src/ui/window_view.py:579
 msgid "Message Manager"
-msgstr ""
+msgstr "Upravljalec sporočil"
 
 #: ../src/ui/window_view.py:612
 msgid "Import"
-msgstr ""
+msgstr "Uvozi"
 
 #: ../src/ui/window_view.py:614
 msgid "Export"
-msgstr ""
+msgstr "Izvozi"
 
 #: ../src/ui/window_view.py:616
 msgid "Delete"
-msgstr ""
+msgstr "Izbriši"
 
 #: ../src/ui/window_view.py:618
 msgid "Refresh"
-msgstr ""
+msgstr "Osveži"
 
 #: ../src/ui/window_view.py:628
 msgid "Look up in"
-msgstr ""
+msgstr "Poglej v"
 
 #: ../src/ui/window_view.py:632 ../src/ui/window_view.py:639
 msgid "All"
-msgstr ""
+msgstr "Vse"
 
 #: ../src/ui/window_view.py:634
 msgid "Today"
-msgstr ""
+msgstr "Danes"
 
 #: ../src/ui/window_view.py:635
 msgid "Last week"
-msgstr ""
+msgstr "Zadnji teden"
 
 #: ../src/ui/window_view.py:636
 msgid "Last month"
-msgstr ""
+msgstr "Zadnji mesec"
 
 #: ../src/ui/window_view.py:637
 msgid "Last three months"
-msgstr ""
+msgstr "Zadnji trije meseci"
 
 #: ../src/ui/window_view.py:638
 msgid "Last year"
-msgstr ""
+msgstr "Minulo leto"
 
 #: ../src/ui/window_view.py:657
 msgid "Find in content"
-msgstr ""
+msgstr "Najdi v vsebini"
 
 #: ../src/ui/window_view.py:722
 msgid "Select File to Import"
-msgstr ""
+msgstr "Izberi datoteko za uvoz"
 
 #: ../src/ui/window_view.py:738
 msgid "Export to File"
-msgstr ""
+msgstr "Izvozi v datoteko"
 
 #: ../src/ui/window_view.py:752
 msgid "Are you sure you want to delete the selected items?"
-msgstr ""
+msgstr "Ali ste prepričani, da želite izbrisati izbrane elemente?"
