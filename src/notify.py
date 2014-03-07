@@ -50,7 +50,6 @@ class BubbleService(QObject):
         self._bubble = bubble
         
     def updateContent(self, content):
-        self._bubble._timer.start()
         self._bubble.updateContent(content)
 
 class BubbleServiceAdaptor(QDBusAbstractAdaptor):
@@ -88,15 +87,6 @@ class Bubble(QQuickView):
         qml_context = self.rootContext()
         qml_context.setContextProperty("_notify", self)
         
-        self._in_animation = self._getInAnimation()
-        self._out_animation = self._getOutAnimation()
-        self._in_animation.finished.connect(lambda: self._timer.start())
-        self._out_animation.finished.connect(lambda: self.exit())
-        self._timer = self._getTimer(_BUBBLE_TIMEOUT_)
-        self._timer.timeout.connect(lambda: self._out_animation.start())
-        
-        self._timer_remaining_time = _BUBBLE_TIMEOUT_
-        
     @pyqtProperty(int)
     def id(self):
         return json.loads(self._content)["id"]
@@ -106,61 +96,22 @@ class Bubble(QQuickView):
         return self._content
         
     @pyqtSlot()
-    def pauseTimer(self):
-        self._timer_remaining_time = self._timer.remainingTime()
-        self._timer.stop()
-        
-    @pyqtSlot()
-    def resumeTimer(self):
-        self._timer.start(self._timer_remaining_time)
-        
-    @pyqtSlot()
     def openSenderProgram(self):
         self.resumeTimer()
         app_name = json.loads(self._content)["app_name"]
         subprocess.Popen(app_name)
         
-    def _getInAnimation(self):
-        animation = QPropertyAnimation(self, "y")
-        animation.setEndValue(24)
-        animation.setDuration(200)
-        animation.setEasingCurve(QEasingCurve.OutCubic)
-        return animation
-        
-    def _getOutAnimation(self):
-        animation = QParallelAnimationGroup()
-        
-        anim1 = QPropertyAnimation(self, "x")
-        anim1.setEndValue(SCREEN_WIDTH)
-        anim1.setDuration(500)
-        anim1.setEasingCurve(QEasingCurve.OutCubic)
-        animation.addAnimation(anim1)
-        
-        anim2 = QPropertyAnimation(self, "opacity")
-        anim2.setEndValue(0.2)
-        anim2.setDuration(500)
-        anim2.setEasingCurve(QEasingCurve.OutCubic)
-        animation.addAnimation(anim2)
-        
-        return animation
-        
-    def _getTimer(self, timeout):
-        timer = QTimer(self)
-        timer.setSingleShot(True)
-        timer.setInterval(timeout)
-        return timer
-        
     def updateContent(self, content):
         self._content = content
         self.rootObject().updateContent(self._content)
         
-    def showWithAnimation(self, animation=None):
+    def showBubble(self):
         self.updateContent(self._content)
         self.setX(SCREEN_WIDTH - 24 - self.width())
-        self.setY(-self.height())
+        self.setY(24)
         self.show()
-        (animation or self._in_animation).start()
         
+    @pyqtSlot()
     def exit(self):
         sendNotificationClosed(self.id, 2)
         app.exit()
@@ -184,7 +135,7 @@ if __name__ == "__main__":
     SCREEN_WIDTH = geo.width()
     
     bubble = Bubble(sys.argv[1])
-    bubble.showWithAnimation()
+    bubble.showBubble()
     
     bubbleService = BubbleService(bubble)
     bus = QDBusConnection.sessionBus()

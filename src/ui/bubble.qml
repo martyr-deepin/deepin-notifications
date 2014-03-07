@@ -3,13 +3,60 @@ import QtGraphicalEffects 1.0
 
 Item {
     id: bubble
+    y: - height
     width: content.width + 20
     height: content.height + 20
 
     property int leftPadding: 15
     property int rightPadding: 15
 
+    PropertyAnimation {
+        id: in_animation
+
+        running: true
+        target: bubble
+        property: "y"
+        to: 0
+        duration: 300
+        easing.type: Easing.OutCubic
+
+        onStopped: out_timer.restart()
+    }
+
+    ParallelAnimation {
+        id: out_animation
+
+        PropertyAnimation {
+            target: bubble
+            property: "x"
+            to: width
+            duration: 500
+            easing.type: Easing.OutCubic            
+        }
+
+        PropertyAnimation {
+            target: bubble
+            property: "opacity"
+            to: 0.2
+            duration: 500
+            easing.type: Easing.OutCubic            
+        }
+
+        onStopped: _notify.exit()
+    }
+
+    Timer {
+        id: out_timer
+        
+        interval: 5000
+        onTriggered: {
+            out_animation.start()
+        }
+    }
+
     function updateContent(content) {
+        out_timer.restart()
+        
         var contObj = JSON.parse(content)
         icon.source = contObj.app_icon
         summary.text = contObj.summary
@@ -25,13 +72,13 @@ Item {
         innerWidth: content.width
         innerHeight: content.height
         innerRadius: content.radius
-        
+
         verticalCenterOffset: -2
-        
+
         anchors.centerIn: parent
         anchors.verticalCenterOffset: 2
     }
-    
+
     GaussianBlur {
         anchors.fill: ring
         source: ring
@@ -39,7 +86,7 @@ Item {
         samples: 16
         transparentBorder: true
     }
-    
+
     Rectangle {
         id: content
         radius: 10
@@ -57,17 +104,17 @@ Item {
             color: "transparent"
             border.color: Qt.rgba(1, 1, 1, 0.2)
             anchors.fill: parent
-            
+
             MouseArea {
                 hoverEnabled: true
                 anchors.fill: parent
-                
+
                 onEntered: {
-                    _notify.pauseTimer()
+                    out_timer.stop()
                 }
-                
+
                 onExited: {
-                    _notify.resumeTimer()
+                    out_timer.restart()
                 }
             }
 
@@ -86,10 +133,10 @@ Item {
                         icon.source = "default.png"
                     }
                 }
-                
+
                 MouseArea {
                     anchors.fill: parent
-                    
+
                     onClicked: {
                         _notify.openSenderProgram()
                     }
@@ -135,7 +182,7 @@ Item {
 
                 Column {
                     id: action_buttons
-                    
+
                     visible: false
                     spacing: 6
 
