@@ -98,7 +98,8 @@ Item {
 
             Text {
                 id: summary
-
+                width: 200
+                elide: Text.ElideRight
                 color: Qt.rgba(1, 1, 1, 0.5)
 
                 anchors.left: icon.right

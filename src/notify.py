@@ -38,7 +38,7 @@ from PyQt5.QtCore import (QObject, Q_CLASSINFO, pyqtSlot, pyqtProperty,
 from PyQt5.QtDBus import (QDBusConnection, QDBusAbstractAdaptor,
                           QDBusConnectionInterface, QDBusMessage)
 
-_BUBBLE_TIMEOUT_ = 3000
+_BUBBLE_TIMEOUT_ = 5000
 _CLOSED_REASON_ = ClosedReason(1, 2, 3, 4)
 
 class BubbleService(QObject):
