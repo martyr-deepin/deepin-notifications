@@ -158,7 +158,7 @@ Item {
                 id: body
 
                 color: "white"
-                wrapMode: Text.Wrap
+                wrapMode: Text.WrapAnywhere
                 linkColor: "#19A9F9"
                 maximumLineCount: 2
 
