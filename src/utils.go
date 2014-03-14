@@ -9,7 +9,7 @@ var dbusInterface *dbus.DBusDaemon
 
 func init() {
 	var err error
-	dbusInterface, err = dbus.NewDBusDaemon("/org/freedesktop/DBus")
+	dbusInterface, err = dbus.NewDBusDaemon("org.freedesktop.DBus", "/org/freedesktop/DBus")
 	if err != nil {
 		logger.Println(err)
 	}

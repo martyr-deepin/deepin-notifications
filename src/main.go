@@ -78,7 +78,7 @@ func fork(ni *NotificationInfo){
 
 func showBubble(ni *NotificationInfo) {
     if checkServiceExistence(_BUBBLE_SERVICE_) {
-        bb, err := bubble.NewBubble("/com/deepin/Bubble")
+        bb, err := bubble.NewBubble(_BUBBLE_SERVICE_, "/com/deepin/Bubble")
         if err != nil {
             logger.Println(err)
             fork(ni)
