@@ -32,9 +32,7 @@ from PyQt5 import QtCore
 from PyQt5.QtQuick import QQuickView
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtGui import QSurfaceFormat, QColor
-from PyQt5.QtCore import (QObject, Q_CLASSINFO, pyqtSlot, pyqtProperty,
-                          QPropertyAnimation, QParallelAnimationGroup, 
-                          QEasingCurve, QTimer)
+from PyQt5.QtCore import (QObject, Q_CLASSINFO, pyqtSlot, pyqtProperty)
 from PyQt5.QtDBus import (QDBusConnection, QDBusAbstractAdaptor,
                           QDBusConnectionInterface, QDBusMessage)
 
@@ -107,7 +105,7 @@ class Bubble(QQuickView):
         
     def showBubble(self):
         self.updateContent(self._content)
-        self.setX(SCREEN_WIDTH - 24 - self.width())
+        self.setX(SCREEN_WIDTH - self.width())
         self.setY(24)
         self.show()
         
