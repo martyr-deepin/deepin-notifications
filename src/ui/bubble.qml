@@ -7,8 +7,8 @@ Item {
     width: content.width + 20
     height: content.height + 20
 
-    property int leftPadding: 15
-    property int rightPadding: 15
+    property int leftPadding: (content.height - 48) / 2
+    property int rightPadding: (content.height - 48) / 2 
 
     PropertyAnimation {
         id: in_animation
@@ -31,7 +31,7 @@ Item {
             property: "x"
             to: width
             duration: 500
-            easing.type: Easing.OutCubic            
+            easing.type: Easing.OutCubic
         }
 
         PropertyAnimation {
@@ -39,7 +39,7 @@ Item {
             property: "opacity"
             to: 0.2
             duration: 500
-            easing.type: Easing.OutCubic            
+            easing.type: Easing.OutCubic
         }
 
         onStopped: _notify.exit()
@@ -47,7 +47,7 @@ Item {
 
     Timer {
         id: out_timer
-        
+
         interval: 5000
         onTriggered: {
             out_animation.start()
@@ -56,7 +56,7 @@ Item {
 
     function updateContent(content) {
         out_timer.restart()
-        
+
         var contObj = JSON.parse(content)
         icon.source = contObj.app_icon
         summary.text = contObj.summary
@@ -91,106 +91,117 @@ Item {
         id: content
         radius: 10
         width: 300
-        height: 80
+        height: 70
         anchors.centerIn: parent
 
         gradient: Gradient {
-            GradientStop { position: 0.0; color: Qt.rgba(0, 0, 0, 0.7)}
-            GradientStop { position: 1.0; color: Qt.rgba(0, 0, 0, 0.8)}
+            GradientStop { position: 0.0; color: Qt.rgba(0, 0, 0, 0.8)}
+            GradientStop { position: 1.0; color: Qt.rgba(0, 0, 0, 0.95)}
         }
 
         Rectangle {
             radius: 10
             color: "transparent"
-            border.color: Qt.rgba(1, 1, 1, 0.2)
+            border.color: Qt.rgba(0, 0, 0, 0.7)
             anchors.fill: parent
 
-            MouseArea {
-                hoverEnabled: true
+            Rectangle {
+                radius: 10
+                color: "transparent"
+                border.color: Qt.rgba(1, 1, 1, 0.1)
                 anchors.fill: parent
+                anchors.topMargin: 1
+                anchors.bottomMargin: 1
+                anchors.leftMargin: 1
+                anchors.rightMargin: 1
 
-                onEntered: {
-                    out_timer.stop()
-                }
-
-                onExited: {
-                    out_timer.restart()
-                }
-            }
-
-            Image {
-                id: icon
-                width: 48
-                height: 48
-
-                source: "default.png"
-                anchors.left: parent.left
-                anchors.leftMargin: bubble.leftPadding
-                anchors.verticalCenter: parent.verticalCenter
-
-                onStatusChanged: {
-                    if(status != Image.Ready && status != Image.Loading) {
-                        icon.source = "default.png"
-                    }
-                }
 
                 MouseArea {
+                    hoverEnabled: true
                     anchors.fill: parent
 
-                    onClicked: {
-                        _notify.openSenderProgram()
+                    onEntered: {
+                        out_timer.stop()
+                    }
+
+                    onExited: {
+                        out_timer.restart()
                     }
                 }
-            }
 
-            Text {
-                id: summary
-                width: 200
-                elide: Text.ElideRight
-                color: Qt.rgba(1, 1, 1, 0.5)
+                Image {
+                    id: icon
+                    width: 48
+                    height: 48
 
-                anchors.left: icon.right
-                anchors.leftMargin: bubble.leftPadding
-                anchors.top: icon.top
-            }
+                    source: "default.png"
+                    anchors.left: parent.left
+                    anchors.leftMargin: bubble.leftPadding
+                    anchors.verticalCenter: parent.verticalCenter
 
-            Text {
-                id: body
-
-                color: "white"
-                wrapMode: Text.WrapAnywhere
-                linkColor: "#19A9F9"
-                maximumLineCount: 2
-
-                onLinkActivated: Qt.openUrlExternally(link)
-
-                anchors.left: summary.left
-                anchors.right: action.left
-                anchors.rightMargin: bubble.rightPadding
-                anchors.top: summary.bottom
-                anchors.topMargin: 5
-            }
-
-
-            Item {
-                id: action
-                width: action_buttons.width
-                height: action_buttons.height
-                anchors.right: parent.right
-                anchors.rightMargin: bubble.rightPadding
-                anchors.verticalCenter: parent.verticalCenter
-
-                Column {
-                    id: action_buttons
-
-                    visible: false
-                    spacing: 6
-
-                    ActionButton{
-                        text: "回复"
+                    onStatusChanged: {
+                        if(status != Image.Ready && status != Image.Loading) {
+                            icon.source = "default.png"
+                        }
                     }
-                    ActionButton{
-                        text: "拒绝"
+
+                    MouseArea {
+                        anchors.fill: parent
+
+                        onClicked: {
+                            _notify.openSenderProgram()
+                        }
+                    }
+                }
+
+                Text {
+                    id: summary
+                    width: 200
+                    elide: Text.ElideRight
+                    font.pixelSize: 11                    
+                    color: Qt.rgba(1, 1, 1, 0.5)
+
+                    anchors.left: icon.right
+                    anchors.leftMargin: bubble.leftPadding
+                    anchors.top: icon.top
+                }
+
+                Text {
+                    id: body
+
+                    color: "white"
+                    wrapMode: Text.WrapAnywhere
+                    linkColor: "#19A9F9"
+                    font.pixelSize: 11
+                    maximumLineCount: 2
+
+                    onLinkActivated: Qt.openUrlExternally(link)
+
+                    anchors.left: summary.left
+                    anchors.right: parent.right
+                    anchors.rightMargin: bubble.rightPadding
+                    anchors.top: summary.bottom
+                    anchors.topMargin: 3
+                }
+
+
+                Item {
+                    id: action
+                    width: action_buttons.width
+                    height: action_buttons.height
+                    anchors.right: parent.right
+                    anchors.rightMargin: bubble.rightPadding
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    Column {
+                        id: action_buttons
+
+                        visible: false
+                        spacing: 6
+
+                        ActionButton{
+                            text: "回复"
+                        }
                     }
                 }
             }
