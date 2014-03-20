@@ -22,6 +22,8 @@ type NotificationInfo struct {
 	Summary string   `json:"summary"`
 	Body    string   `json:"body"`
 	Actions []string `json:"actions"`
+	// variables below are fetched from hints parameter
+	ImagePath string `json:"image_path"`
 }
 
 func (ni *NotificationInfo) FromJSON(jsonString string) {
@@ -56,6 +58,7 @@ func (ni *NotificationInfo) Equal(another *NotificationInfo) bool {
 		ni.AppIcon == another.AppIcon &&
 		ni.Summary == another.Summary &&
 		ni.Body == another.Body &&
+		ni.ImagePath == another.ImagePath &&
 		actionsEqual(ni.Actions, another.Actions) {
 		return true
 	}

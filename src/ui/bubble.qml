@@ -7,8 +7,10 @@ Item {
     width: content.width + 20
     height: content.height + 20
 
+    property url defaultIcon: "default.png"
     property int leftPadding: (content.height - 48) / 2
     property int rightPadding: (content.height - 48) / 2 
+    property var notificationObj
 
     PropertyAnimation {
         id: in_animation
@@ -56,11 +58,13 @@ Item {
 
     function updateContent(content) {
         out_timer.restart()
+        
+        print(content)
 
-        var contObj = JSON.parse(content)
-        icon.source = contObj.app_icon
-        summary.text = contObj.summary
-        body.text = contObj.body
+        notificationObj = JSON.parse(content)
+        icon.source = notificationObj.app_icon
+        summary.text = notificationObj.summary
+        body.text = notificationObj.body
     }
 
     RectangularRing {
@@ -134,14 +138,21 @@ Item {
                     width: 48
                     height: 48
 
-                    source: "default.png"
+                    source: bubble.defaultIcon
                     anchors.left: parent.left
                     anchors.leftMargin: bubble.leftPadding
                     anchors.verticalCenter: parent.verticalCenter
+                    
+                    property bool checkedFlag: false
 
                     onStatusChanged: {
                         if(status != Image.Ready && status != Image.Loading) {
-                            icon.source = "default.png"
+                            if (checkedFlag) {
+                                icon.source = bubble.defaultIcon
+                            } else {
+                                icon.source = notificationObj.image_path
+                                checkedFlag = true
+                            }
                         }
                     }
 
