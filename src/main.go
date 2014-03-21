@@ -60,7 +60,11 @@ func (dn *DeepinNotifications) Notify(
 	expire_timeout int32) uint32 {
 
 	_SERVER_COUNTER_++
-	showBubble(&NotificationInfo{_SERVER_COUNTER_, app_name, app_icon, summary, body, actions, hints["image-path"].Value().(string)})
+	hints_image_path := ""
+	if v, ok := hints["image-path"]; ok {
+		hints_image_path = v.Value().(string)
+	} 
+	showBubble(&NotificationInfo{_SERVER_COUNTER_, app_name, app_icon, summary, body, actions, hints_image_path})
 
 	return _SERVER_COUNTER_
 }
