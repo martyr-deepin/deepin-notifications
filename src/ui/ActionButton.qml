@@ -12,6 +12,8 @@ Rectangle {
     
     property alias text: label.text
     
+    signal action ()
+    
     Text {
         id: label
         color: Qt.rgba(1, 1, 1, 0.5)
@@ -42,8 +44,9 @@ Rectangle {
         anchors.fill: parent
         hoverEnabled: true
         onPressed: button.state = "pressed"
-        onReleased: button.state = "normal"
+        onReleased: button.state = "hover"
         onEntered: button.state = "hover"
         onExited: button.state = "normal"
+        onClicked: button.action()
     }
 }

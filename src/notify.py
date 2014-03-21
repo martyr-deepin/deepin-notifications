@@ -99,6 +99,14 @@ class Bubble(QQuickView):
         app_name = json.loads(self._content)["app_name"]
         subprocess.Popen(app_name)
         
+    @pyqtSlot(int, str)
+    def sendActionInvokedSignal(self, notify_id, action_id):
+        msg = QDBusMessage.createSignal('/org/freedesktop/Notifications', 
+                                        'org.freedesktop.Notifications', 
+                                        'ActionInvoked')
+        msg << notify_id << action_id
+        QDBusConnection.sessionBus().send(msg)
+        
     def updateContent(self, content):
         self._content = content
         self.rootObject().updateContent(self._content)

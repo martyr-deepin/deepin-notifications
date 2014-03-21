@@ -9,7 +9,7 @@ Item {
 
     property url defaultIcon: "default.png"
     property int leftPadding: (content.height - 48) / 2
-    property int rightPadding: (content.height - 48) / 2 
+    property int rightPadding: (content.height - 48) / 2
     property var notificationObj
 
     PropertyAnimation {
@@ -58,8 +58,6 @@ Item {
 
     function updateContent(content) {
         out_timer.restart()
-        
-        print(content)
 
         notificationObj = JSON.parse(content)
         icon.source = notificationObj.app_icon
@@ -131,6 +129,14 @@ Item {
                     onExited: {
                         out_timer.restart()
                     }
+
+                    onClicked: {
+                        var default_action_id
+                        for (var i = 0; i < notificationObj.actions.length; i += 2) {
+                            if (notificationObj[i + 1] == "default") {default_action_id = notificationObj[i]}
+                        }
+                        if (default_action_id) {_notify.sendActionInvokedSignal(notificationObj.id, default_action_id)}
+                    }
                 }
 
                 Image {
@@ -155,21 +161,13 @@ Item {
                             }
                         }
                     }
-
-                    MouseArea {
-                        anchors.fill: parent
-
-                        onClicked: {
-                            _notify.openSenderProgram()
-                        }
-                    }
                 }
 
                 Text {
                     id: summary
                     width: 200
                     elide: Text.ElideRight
-                    font.pixelSize: 11                    
+                    font.pixelSize: 11
                     color: Qt.rgba(1, 1, 1, 0.5)
 
                     anchors.left: icon.right
@@ -197,21 +195,37 @@ Item {
 
 
                 Item {
-                    id: action
+                    id: action_area
                     width: action_buttons.width
                     height: action_buttons.height
                     anchors.right: parent.right
                     anchors.rightMargin: bubble.rightPadding
                     anchors.verticalCenter: parent.verticalCenter
 
+                    property var actionsExceptDefault: {
+                        var result = []
+                        for (var i = 0; i < notificationObj.actions.length; i += 2) {
+                            if (i + 1 < notificationObj.actions.length && notificationObj.actions[i + 1] != "default") {
+                                result.push({"value": notificationObj.actions[i + 1], "key": notificationObj.actions[i]})
+                            }
+                        }
+                        return result
+                    }
+
                     Column {
                         id: action_buttons
 
-                        visible: false
+                        visible: action_area.actionsExceptDefault.length != 0
                         spacing: 6
 
                         ActionButton{
-                            text: "回复"
+                            text: action_area.actionsExceptDefault[0].value
+
+                            onAction: {
+                                out_animation.start()                                
+                                _notify.sendActionInvokedSignal(notificationObj.id,
+                                                                action_area.actionsExceptDefault[0].key)
+                            }
                         }
                     }
                 }
