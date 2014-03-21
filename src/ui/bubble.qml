@@ -142,16 +142,16 @@ Item {
                     anchors.left: parent.left
                     anchors.leftMargin: bubble.leftPadding
                     anchors.verticalCenter: parent.verticalCenter
-                    
+
                     property bool checkedFlag: false
 
                     onStatusChanged: {
                         if(status != Image.Ready && status != Image.Loading) {
-                            if (checkedFlag) {
-                                icon.source = bubble.defaultIcon
-                            } else {
+                            if (!checkedFlag && notificationObj.image_path != "") {
                                 icon.source = notificationObj.image_path
                                 checkedFlag = true
+                            } else {
+                                icon.source = bubble.defaultIcon
                             }
                         }
                     }
