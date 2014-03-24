@@ -7,6 +7,7 @@ Item {
     width: content.width + 20
     height: content.height + 20
 
+    property bool inCloseButton: false
     property url defaultIcon: "default.png"
     property int leftPadding: (content.height - 48) / 2
     property int rightPadding: (content.height - 48) / 2
@@ -50,7 +51,7 @@ Item {
     Timer {
         id: out_timer
 
-        interval: 5000
+        interval: 3500
         onTriggered: {
             out_animation.start()
         }
@@ -127,7 +128,7 @@ Item {
                     }
 
                     onExited: {
-                        out_timer.restart()
+                        if (!bubble.inCloseButton) {out_timer.restart()}
                     }
 
                     onClicked: {
@@ -204,9 +205,11 @@ Item {
 
                     property var actionsExceptDefault: {
                         var result = []
-                        for (var i = 0; i < notificationObj.actions.length; i += 2) {
-                            if (i + 1 < notificationObj.actions.length && notificationObj.actions[i + 1] != "default") {
-                                result.push({"value": notificationObj.actions[i + 1], "key": notificationObj.actions[i]})
+                        if (notificationObj) {
+                            for (var i = 0; i < notificationObj.actions.length; i += 2) {
+                                if (i + 1 < notificationObj.actions.length && notificationObj.actions[i + 1] != "default") {
+                                    result.push({"value": notificationObj.actions[i + 1], "key": notificationObj.actions[i]})
+                                }
                             }
                         }
                         return result
@@ -219,15 +222,26 @@ Item {
                         spacing: 6
 
                         ActionButton{
-                            text: action_area.actionsExceptDefault[0].value
+                            text: parent.visible ? action_area.actionsExceptDefault[0].value : ""
 
                             onAction: {
-                                out_animation.start()                                
+                                out_animation.start()
                                 _notify.sendActionInvokedSignal(notificationObj.id,
                                                                 action_area.actionsExceptDefault[0].key)
                             }
                         }
                     }
+                }
+
+                CloseButton {
+                    anchors.top: parent.top
+                    anchors.right: parent.right
+                    anchors.topMargin: 5
+                    anchors.rightMargin: 5
+
+                    onEntered: bubble.inCloseButton = true
+                    onExited: bubble.inCloseButton = false
+                    onClicked: _notify.exit()
                 }
             }
         }
