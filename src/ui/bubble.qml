@@ -11,12 +11,12 @@ Item {
     property int leftPadding: (content.height - 48) / 2
     property int rightPadding: (content.height - 48) / 2
     property var notificationObj
-    
+
     function mouseEnterAction() {
         out_timer.stop()
         opacity_mask.visible = true
     }
-    
+
     function mouseExitAction() {
         opacity_mask.visible = false
         out_timer.restart()
@@ -131,24 +131,24 @@ Item {
                 anchors.rightMargin: 1
             }
 
+            MouseArea {
+                hoverEnabled: true
+                anchors.fill: bubble_bg
+
+                onEntered: bubble.mouseEnterAction()
+                onExited: bubble.mouseExitAction()
+                onClicked: {
+                    var default_action_id
+                    for (var i = 0; i < notificationObj.actions.length; i += 2) {
+                        if (notificationObj[i + 1] == "default") {default_action_id = notificationObj[i]}
+                    }
+                    if (default_action_id) {_notify.sendActionInvokedSignal(notificationObj.id, default_action_id)}
+                }
+            }
+
             Item {
                 id: bubble_bg
                 anchors.fill: bubble_inner_border
-
-                MouseArea {
-                    hoverEnabled: true
-                    anchors.fill: parent
-
-                    onEntered: bubble.mouseEnterAction()
-                    onExited: bubble.mouseExitAction()
-                    onClicked: {
-                        var default_action_id
-                        for (var i = 0; i < notificationObj.actions.length; i += 2) {
-                            if (notificationObj[i + 1] == "default") {default_action_id = notificationObj[i]}
-                        }
-                        if (default_action_id) {_notify.sendActionInvokedSignal(notificationObj.id, default_action_id)}
-                    }
-                }
 
                 Image {
                     id: icon
