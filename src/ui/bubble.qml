@@ -7,11 +7,20 @@ Item {
     width: content.width + 20
     height: content.height + 20
 
-    property bool inCloseButton: false
     property url defaultIcon: "default.png"
     property int leftPadding: (content.height - 48) / 2
     property int rightPadding: (content.height - 48) / 2
     property var notificationObj
+    
+    function mouseEnterAction() {
+        out_timer.stop()
+        opacity_mask.visible = true
+    }
+    
+    function mouseExitAction() {
+        opacity_mask.visible = false
+        out_timer.restart()
+    }
 
     PropertyAnimation {
         id: in_animation
@@ -103,34 +112,35 @@ Item {
         }
 
         Rectangle {
+            id: bubble_border
             radius: 10
             color: "transparent"
             border.color: Qt.rgba(0, 0, 0, 0.7)
             anchors.fill: parent
 
             Rectangle {
+                id: bubble_inner_border
                 radius: 10
                 color: "transparent"
                 border.color: Qt.rgba(1, 1, 1, 0.1)
+
                 anchors.fill: parent
                 anchors.topMargin: 1
                 anchors.bottomMargin: 1
                 anchors.leftMargin: 1
                 anchors.rightMargin: 1
+            }
 
+            Item {
+                id: bubble_bg
+                anchors.fill: bubble_inner_border
 
                 MouseArea {
                     hoverEnabled: true
                     anchors.fill: parent
 
-                    onEntered: {
-                        out_timer.stop()
-                    }
-
-                    onExited: {
-                        if (!bubble.inCloseButton) {out_timer.restart()}
-                    }
-
+                    onEntered: bubble.mouseEnterAction()
+                    onExited: bubble.mouseExitAction()
                     onClicked: {
                         var default_action_id
                         for (var i = 0; i < notificationObj.actions.length; i += 2) {
@@ -193,56 +203,78 @@ Item {
                     anchors.top: summary.bottom
                     anchors.topMargin: 3
                 }
+            }
 
+            LinearGradient {
+                id: bubble_bg_mask
+                visible: false
+                anchors.fill: bubble_bg
 
-                Item {
-                    id: action_area
-                    width: action_buttons.width
-                    height: action_buttons.height
-                    anchors.right: parent.right
-                    anchors.rightMargin: bubble.rightPadding
-                    anchors.verticalCenter: parent.verticalCenter
+                start: Qt.point(0, 0)
+                end: Qt.point(width - action_area.width - action_area.anchors.rightMargin - close_button.width - close_button.anchors.rightMargin, 0)
+                gradient: Gradient {
+                    GradientStop { position: 0.0; color: Qt.rgba(0, 0, 0, 1)}
+                    GradientStop { position: 0.8; color: Qt.rgba(0, 0, 0, 1)}
+                    GradientStop { position: 1.0; color: Qt.rgba(0, 0, 0, 0)}
+                }
+            }
 
-                    property var actionsExceptDefault: {
-                        var result = []
-                        if (notificationObj) {
-                            for (var i = 0; i < notificationObj.actions.length; i += 2) {
-                                if (i + 1 < notificationObj.actions.length && notificationObj.actions[i + 1] != "default") {
-                                    result.push({"value": notificationObj.actions[i + 1], "key": notificationObj.actions[i]})
-                                }
+            OpacityMask {
+                id: opacity_mask
+                visible: false
+                anchors.fill: bubble_bg
+                source: ShaderEffectSource { sourceItem: bubble_bg; hideSource: opacity_mask.visible }
+                maskSource: ShaderEffectSource { sourceItem: bubble_bg_mask; hideSource: opacity_mask.visible }
+            }
+
+            Item {
+                id: action_area
+                width: action_buttons.width
+                height: action_buttons.height
+                anchors.right: close_button.right
+                anchors.rightMargin: bubble.rightPadding
+                anchors.verticalCenter: bubble_bg.verticalCenter
+                visible: opacity_mask.visible && action_area.actionsExceptDefault.length != 0
+
+                property var actionsExceptDefault: {
+                    var result = []
+                    if (notificationObj) {
+                        for (var i = 0; i < notificationObj.actions.length; i += 2) {
+                            if (i + 1 < notificationObj.actions.length && notificationObj.actions[i + 1] != "default") {
+                                result.push({"value": notificationObj.actions[i + 1], "key": notificationObj.actions[i]})
                             }
                         }
-                        return result
                     }
+                    return result
+                }
 
-                    Column {
-                        id: action_buttons
+                Column {
+                    id: action_buttons
+                    spacing: 6
+                    visible: parent.visible
 
-                        visible: action_area.actionsExceptDefault.length != 0
-                        spacing: 6
+                    ActionButton{
+                        text: parent.visible ? action_area.actionsExceptDefault[0].value : ""
 
-                        ActionButton{
-                            text: parent.visible ? action_area.actionsExceptDefault[0].value : ""
-
-                            onAction: {
-                                out_animation.start()
-                                _notify.sendActionInvokedSignal(notificationObj.id,
-                                                                action_area.actionsExceptDefault[0].key)
-                            }
+                        onEntered: bubble.mouseEnterAction()
+                        onAction: {
+                            _notify.sendActionInvokedSignal(notificationObj.id,
+                                                            action_area.actionsExceptDefault[0].key)
+                            _notify.exit()
                         }
                     }
                 }
+            }
 
-                CloseButton {
-                    anchors.top: parent.top
-                    anchors.right: parent.right
-                    anchors.topMargin: 5
-                    anchors.rightMargin: 5
+            CloseButton {
+                id: close_button
+                anchors.top: bubble_bg.top
+                anchors.right: bubble_bg.right
+                anchors.topMargin: 5
+                anchors.rightMargin: 5
 
-                    onEntered: bubble.inCloseButton = true
-                    onExited: bubble.inCloseButton = false
-                    onClicked: _notify.exit()
-                }
+                onEntered: bubble.mouseEnterAction()
+                onClicked: _notify.exit()
             }
         }
     }
