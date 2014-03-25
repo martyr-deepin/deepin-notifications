@@ -4,7 +4,7 @@ import QtGraphicalEffects 1.0
 Item {
     id: bubble
     y: - height
-    width: content.width + 20
+    width: content.width + 20 + 24 * 2
     height: content.height + 20
 
     property url defaultIcon: "default.png"
