@@ -272,6 +272,7 @@ Item {
                 anchors.right: bubble_bg.right
                 anchors.topMargin: 5
                 anchors.rightMargin: 5
+                visible: opacity_mask.visible
 
                 onEntered: bubble.mouseEnterAction()
                 onClicked: _notify.exit()
