@@ -94,14 +94,14 @@ Item {
     GaussianBlur {
         anchors.fill: ring
         source: ring
-        radius: 10
+        radius: 4
         samples: 16
         transparentBorder: true
     }
 
     Rectangle {
         id: content
-        radius: 10
+        radius: 4
         width: 300
         height: 70
         anchors.centerIn: parent
@@ -113,14 +113,14 @@ Item {
 
         Rectangle {
             id: bubble_border
-            radius: 10
+            radius: 4
             color: "transparent"
             border.color: Qt.rgba(0, 0, 0, 0.7)
             anchors.fill: parent
 
             Rectangle {
                 id: bubble_inner_border
-                radius: 10
+                radius: 4
                 color: "transparent"
                 border.color: Qt.rgba(1, 1, 1, 0.1)
 
