@@ -75,7 +75,7 @@ class Bubble(QQuickView):
         self._content = content
         
         self.setFormat(SURFACE_FORMAT)
-        self.setFlags(QtCore.Qt.Popup)
+        self.setFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.Tool)
 
         self.setColor(QColor(0, 0, 0, 0))
         self.setSource(QtCore.QUrl.fromLocalFile(
