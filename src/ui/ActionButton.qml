@@ -18,11 +18,12 @@ Rectangle {
     
     Text {
         id: label
+        text: ""
         width: Math.min(48, implicitWidth)
         height: implicitHeight
         elide: Text.ElideRight
         color: Qt.rgba(1, 1, 1, 0.5)
-        text: ""
+        font.pixelSize: 12
         
         anchors.centerIn: parent
     }
