@@ -80,7 +80,7 @@ func fork(ni *NotificationInfo) {
 	cmd := exec.Command("python", "/usr/share/deepin-notifications/notify.py", ni.ToJSON())
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	cmd.Start()
+	cmd.Run()
 }
 
 func showBubble(ni *NotificationInfo) {
