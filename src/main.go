@@ -67,7 +67,7 @@ func (dn *DeepinNotifications) Notify(
 		hints_image_path = v.Value().(string)
 	} 
 	
-	showBubble(&NotificationInfo{_SERVER_COUNTER_, app_name, app_icon, summary, body, actions, hints_image_path})
+	go showBubble(&NotificationInfo{_SERVER_COUNTER_, app_name, app_icon, summary, body, actions, hints_image_path})
 
 	return _SERVER_COUNTER_
 }
