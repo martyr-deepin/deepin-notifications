@@ -120,13 +120,18 @@ class Bubble(QQuickView):
         self.show()
         
     @pyqtSlot()
-    def exit(self):
-        sendNotificationClosed(self.id, 2)
+    def expire(self):
+        sendNotificationClosed(self.id, _CLOSED_REASON_.EXPIRED)
+        app.exit()
+        
+    @pyqtSlot()
+    def dismiss(self):
+        sendNotificationClosed(self.id, _CLOSED_REASON_.DISMISSED)
         app.exit()
         
 def sendNotificationClosed(id, reason):
-    msg = QDBusMessage.createSignal('/com/deepin/Bubble', 
-                                    'com.deepin.Bubble', 
+    msg = QDBusMessage.createSignal('/org/freedesktop/Notifications', 
+                                    'org.freedesktop.Notifications', 
                                     'NotificationClosed')
     msg << id << reason
     QDBusConnection.sessionBus().send(msg)

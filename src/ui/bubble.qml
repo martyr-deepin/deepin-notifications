@@ -54,7 +54,7 @@ Item {
             easing.type: Easing.OutCubic
         }
 
-        onStopped: _notify.exit()
+        onStopped: _notify.expire()
     }
 
     Timer {
@@ -221,10 +221,12 @@ Item {
                 onClicked: {
                     var default_action_id
                     for (var i = 0; i < notificationObj.actions.length; i += 2) {
-                        if (notificationObj[i + 1] == "default") {default_action_id = notificationObj[i]}
+                        if (notificationObj.actions[i + 1] == "default") {
+                            default_action_id = notificationObj.actions[i]
+                        }
                     }
                     if (default_action_id) {_notify.sendActionInvokedSignal(notificationObj.id, default_action_id)}
-                    _notify.exit()                    
+                    _notify.dismiss()                    
                 }
             }
 
@@ -261,7 +263,7 @@ Item {
                         onAction: {
                             _notify.sendActionInvokedSignal(notificationObj.id,
                                                             action_area.actionsExceptDefault[0].key)
-                            _notify.exit()
+                            _notify.dismiss()
                         }
                     }
                 }
@@ -276,7 +278,7 @@ Item {
                 visible: opacity_mask.visible
 
                 onEntered: bubble.mouseEnterAction()
-                onClicked: _notify.exit()
+                onClicked: _notify.dismiss()
             }
         }
     }
