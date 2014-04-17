@@ -7,7 +7,6 @@ Item {
     width: content.width + 20 + 24 * 2
     height: content.height + 20
 
-    property url defaultIcon: "default.png"
     property int leftPadding: (content.height - 48) / 2
     property int rightPadding: (content.height - 48) / 2
     property var notificationObj
@@ -70,7 +69,7 @@ Item {
         out_timer.restart()
 
         notificationObj = JSON.parse(content)
-        icon.source = notificationObj.app_icon
+        icon.source = "image://imageProvider/" + (notificationObj.image_path || notificationObj.app_icon)
         summary.text = notificationObj.summary
         body.text = notificationObj.body
     }
@@ -140,23 +139,11 @@ Item {
                     width: 48
                     height: 48
 
-                    source: bubble.defaultIcon
                     anchors.left: parent.left
                     anchors.leftMargin: bubble.leftPadding
                     anchors.verticalCenter: parent.verticalCenter
 
                     property bool checkedFlag: false
-
-                    onStatusChanged: {
-                        if(status != Image.Ready && status != Image.Loading) {
-                            if (!checkedFlag && notificationObj.image_path != "") {
-                                icon.source = notificationObj.image_path
-                                checkedFlag = true
-                            } else {
-                                icon.source = bubble.defaultIcon
-                            }
-                        }
-                    }
                 }
 
                 Text {

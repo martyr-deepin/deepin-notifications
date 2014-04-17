@@ -36,6 +36,8 @@ from PyQt5.QtCore import (QObject, Q_CLASSINFO, pyqtSlot, pyqtProperty)
 from PyQt5.QtDBus import (QDBusConnection, QDBusAbstractAdaptor,
                           QDBusConnectionInterface, QDBusMessage)
 
+from image_provider import imageProvider
+
 _BUBBLE_TIMEOUT_ = 5000
 _CLOSED_REASON_ = ClosedReason(1, 2, 3, 4)
 
@@ -80,12 +82,14 @@ class Bubble(QQuickView):
                       |QtCore.Qt.BypassWindowManagerHint)
 
         self.setColor(QColor(0, 0, 0, 0))
+
+        qml_context = self.rootContext()
+        qml_context.setContextProperty("_notify", self)
+        qml_context.engine().addImageProvider("imageProvider", imageProvider)
+
         self.setSource(QtCore.QUrl.fromLocalFile(
             os.path.join(os.path.dirname(__file__), 'ui/bubble.qml')
         ))
-        
-        qml_context = self.rootContext()
-        qml_context.setContextProperty("_notify", self)
         
     @pyqtProperty(int)
     def id(self):
