@@ -21,28 +21,35 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import re
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtQuick import QQuickImageProvider
 
 IMAGE_WIDTH = 48
 IMAGE_HEIGHT = 48
+HOME_DIR = os.path.expanduser("~")
 
 class MyImageProvider(QQuickImageProvider):
     def __init__(self):
         super(MyImageProvider, self).__init__(QQuickImageProvider.Pixmap)
 
     def requestPixmap(self, id, size):
+        themeName, iconName = re.match("\[(.*?)\](.*)", id).groups()
         defaultIcon = QPixmap(IMAGE_WIDTH, IMAGE_HEIGHT)
         defaultIcon.load(os.path.join(os.path.dirname(__file__), 'ui/default.png'))
 
-        if (os.path.exists(id)):
+        if (os.path.exists(iconName)):
             self._pixmap = QPixmap(IMAGE_WIDTH, IMAGE_HEIGHT)
-            self._pixmap.load(id)
+            self._pixmap.load(iconName)
         else:
-            QIcon.setThemeSearchPaths([os.path.expanduser("~/.icons"), "/usr/share/icons", ":/icons"])
-            QIcon.setThemeName("Deepin")
-            icon = QIcon.fromTheme(id)
+            QIcon.setThemeSearchPaths([os.path.join(HOME_DIR, ".icons"), 
+                os.path.join(HOME_DIR, ".local/share/icons"),
+                "/usr/local/share/icons", 
+                "/usr/share/icons", 
+                ":/icons"])
+            QIcon.setThemeName(themeName)
+            icon = QIcon.fromTheme(iconName)
             self._pixmap = defaultIcon if icon.isNull() else icon.pixmap(IMAGE_WIDTH, IMAGE_HEIGHT)
 
         return self._pixmap, QSize(IMAGE_WIDTH, IMAGE_HEIGHT)

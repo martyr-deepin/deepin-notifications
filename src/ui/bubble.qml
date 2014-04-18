@@ -1,5 +1,6 @@
 import QtQuick 2.1
 import QtGraphicalEffects 1.0
+import DBus.Com.Deepin.Daemon.Themes 1.0
 
 Item {
     id: bubble
@@ -10,6 +11,15 @@ Item {
     property int leftPadding: (content.height - 48) / 2
     property int rightPadding: (content.height - 48) / 2
     property var notificationObj
+
+    ThemeManager { id: dbus_theme_manager }
+    Theme { 
+        id: dbus_theme 
+        path: {
+            var result = dbus_theme_manager.GetThemeByName(dbus_theme_manager.currentTheme) 
+            return result[0]
+        }
+    }
 
     function mouseEnterAction() {
         out_timer.stop()
@@ -69,7 +79,7 @@ Item {
         out_timer.restart()
 
         notificationObj = JSON.parse(content)
-        icon.source = "image://imageProvider/" + (notificationObj.image_path || notificationObj.app_icon)
+        icon.source = "image://imageProvider/" + "[" + dbus_theme.iconTheme + "]" + (notificationObj.image_path || notificationObj.app_icon)
         summary.text = notificationObj.summary
         body.text = notificationObj.body
     }
