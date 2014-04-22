@@ -5,6 +5,7 @@ import (
 	"dlib/dbus"
 	"os"
 	"os/exec"
+	"dlib"
 )
 
 var _SERVER_COUNTER_ = uint32(0)
@@ -60,19 +61,19 @@ func (dn *DeepinNotifications) Notify(
 	expire_timeout int32) uint32 {
 
 	_SERVER_COUNTER_++
-	
+
 	// meaningful hints we support
 	hints_image_path := ""
 	if v, ok := hints["image-path"]; ok {
 		hints_image_path = v.Value().(string)
-	} 
-	
+	}
+
 	go showBubble(&NotificationInfo{_SERVER_COUNTER_, app_name, app_icon, summary, body, actions, hints_image_path})
 
 	return _SERVER_COUNTER_
 }
 
-func fork(ni *NotificationInfo) {
+func fork(ni *NotificationInfo) (result int) {
 	// _, filename, _, _ := runtime.Caller(1)
 	// filename := os.Args[0]
 	// logger.Println(filename)
@@ -80,7 +81,11 @@ func fork(ni *NotificationInfo) {
 	cmd := exec.Command("python", "/usr/share/deepin-notifications/notify.py", ni.ToJSON())
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	cmd.Run()
+
+	if err := cmd.Run(); err != nil {
+		return 0
+	} 
+	return 1
 }
 
 func showBubble(ni *NotificationInfo) {
@@ -88,16 +93,21 @@ func showBubble(ni *NotificationInfo) {
 		bb, err := bubble.NewBubble(_BUBBLE_SERVICE_, "/com/deepin/Bubble")
 		if err != nil {
 			logger.Info(err)
-			fork(ni)
+			os.Exit(fork(ni))
 		} else {
 			bb.UpdateContent(ni.ToJSON())
 		}
 	} else {
-		fork(ni)
+		os.Exit(fork(ni))
 	}
 }
 
 func main() {
+	if !dlib.UniqueOnSession("org.freedesktop.Notifications") {
+		logger.Info("Bus name alreay in use.")
+		return
+	}
+	
 	dn := NewDeepinNotifications()
 	dbus.InstallOnSession(dn)
 	dbus.DealWithUnhandledMessage()
