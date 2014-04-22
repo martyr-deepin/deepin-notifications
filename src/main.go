@@ -87,7 +87,7 @@ func showBubble(ni *NotificationInfo) {
 	if checkServiceExistence(_BUBBLE_SERVICE_) {
 		bb, err := bubble.NewBubble(_BUBBLE_SERVICE_, "/com/deepin/Bubble")
 		if err != nil {
-			logger.Println(err)
+			logger.Info(err)
 			fork(ni)
 		} else {
 			bb.UpdateContent(ni.ToJSON())

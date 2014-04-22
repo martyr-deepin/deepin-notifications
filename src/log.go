@@ -1,12 +1,11 @@
 package main
 
 import (
-	"log"
-	"os"
+	log "dlib/logger"
 )
 
 var logger *log.Logger
 
 func init() {
-	logger = log.New(os.Stdout, "Deepin Notification ", log.Ltime | log.Llongfile)
+	logger = log.NewLogger("com.deepin.notifications")
 }

@@ -11,7 +11,7 @@ func init() {
 	var err error
 	dbusInterface, err = dbus.NewDBusDaemon("org.freedesktop.DBus", "/org/freedesktop/DBus")
 	if err != nil {
-		logger.Println(err)
+		logger.Info(err)
 	}
 }
 
@@ -29,14 +29,14 @@ type NotificationInfo struct {
 func (ni *NotificationInfo) FromJSON(jsonString string) {
 	err := json.Unmarshal([]byte(jsonString), ni)
 	if err != nil {
-		logger.Println(err)
+		logger.Info(err)
 	}
 }
 
 func (ni *NotificationInfo) ToJSON() string {
 	result, err := json.Marshal(ni)
 	if err != nil {
-		logger.Println(err)
+		logger.Info(err)
 	}
 	return string(result)
 }
