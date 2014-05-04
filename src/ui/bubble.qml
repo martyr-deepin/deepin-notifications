@@ -21,6 +21,10 @@ Item {
         }
     }
 
+    function isAnimating() {
+        return out_animation.running
+    }
+
     function mouseEnterAction() {
         out_timer.stop()
         opacity_mask.visible = true
@@ -76,6 +80,12 @@ Item {
     }
 
     function updateContent(content) {
+        if (x != 0 || opacity != 1) {
+            x = 0
+            opacity = 1
+            y = -height
+            in_animation.start()
+        }
         out_timer.restart()
 
         notificationObj = JSON.parse(content)

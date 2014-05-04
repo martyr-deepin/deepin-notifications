@@ -25,7 +25,7 @@ import sys
 import signal
 import json
 import subprocess
-from collections import namedtuple
+from collections import namedtuple, deque
 ClosedReason = namedtuple("ClosedReason", ("EXPIRED", "DISMISSED", "CLOSED", "UNDEFINED"))
 
 from PyQt5 import QtCore
@@ -50,7 +50,7 @@ class BubbleService(QObject):
         self._bubble = bubble
         
     def updateContent(self, content):
-        self._bubble.updateContent(content)
+        self._bubble.appendContent(content)
 
 class BubbleServiceAdaptor(QDBusAbstractAdaptor):
 
@@ -74,7 +74,8 @@ SURFACE_FORMAT.setAlphaBufferSize(8)
 class Bubble(QQuickView):
     def __init__(self, content):
         QQuickView.__init__(self)
-        self._content = content
+        self._contents = deque()
+        self._contents.appendleft(content)
         
         self.setFormat(SURFACE_FORMAT)
         self.setFlags(QtCore.Qt.FramelessWindowHint 
@@ -113,12 +114,13 @@ class Bubble(QQuickView):
         msg << notify_id << action_id
         QDBusConnection.sessionBus().send(msg)
         
-    def updateContent(self, content):
-        self._content = content
-        self.rootObject().updateContent(self._content)
+    def appendContent(self, content):
+        self._contents.appendleft(content)
+        if not self.rootObject().isAnimating(): self.showBubble()
         
     def showBubble(self):
-        self.updateContent(self._content)
+        self._content = self._contents.pop()
+        self.rootObject().updateContent(self._content)
         self.setX(SCREEN_WIDTH - self.width())
         self.setY(24)
         self.show()
@@ -126,12 +128,19 @@ class Bubble(QQuickView):
     @pyqtSlot()
     def expire(self):
         sendNotificationClosed(self.id, _CLOSED_REASON_.EXPIRED)
-        app.exit()
+        print self._contents
+        if len(self._contents) > 0: 
+            self.showBubble()
+        else:
+            app.exit()
         
     @pyqtSlot()
     def dismiss(self):
         sendNotificationClosed(self.id, _CLOSED_REASON_.DISMISSED)
-        app.exit()
+        if len(self._contents) > 0: 
+            self.showBubble()
+        else:
+            app.exit()
         
 def sendNotificationClosed(id, reason):
     msg = QDBusMessage.createSignal('/org/freedesktop/Notifications', 

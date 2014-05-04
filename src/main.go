@@ -2,10 +2,10 @@ package main
 
 import (
 	"dbus/com/deepin/bubble"
+	"dlib"
 	"dlib/dbus"
 	"os"
 	"os/exec"
-	"dlib"
 )
 
 var _SERVER_COUNTER_ = uint32(0)
@@ -84,7 +84,7 @@ func fork(ni *NotificationInfo) (result int) {
 
 	if err := cmd.Run(); err != nil {
 		return 0
-	} 
+	}
 	return 1
 }
 
@@ -107,7 +107,7 @@ func main() {
 		logger.Info("Bus name alreay in use.")
 		return
 	}
-	
+
 	dn := NewDeepinNotifications()
 	dbus.InstallOnSession(dn)
 	dbus.DealWithUnhandledMessage()
