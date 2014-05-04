@@ -128,7 +128,9 @@ class Bubble(QQuickView):
         
     def appendContent(self, content):
         self._contents.appendleft(content)
-        if not self.rootObject().isAnimating(): self.showBubble()
+        if not self.rootObject().isAnimating(): 
+            self.expire()
+            self.showBubble()
         
     def showBubble(self):
         self._content = self._contents.pop()
