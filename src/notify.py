@@ -24,6 +24,7 @@ import os
 import sys
 import signal
 import json
+import functools
 import subprocess
 from collections import namedtuple, deque
 ClosedReason = namedtuple("ClosedReason", ("EXPIRED", "DISMISSED", "CLOSED", "UNDEFINED"))
@@ -40,6 +41,17 @@ from image_provider import imageProvider
 
 _BUBBLE_TIMEOUT_ = 5000
 _CLOSED_REASON_ = ClosedReason(1, 2, 3, 4)
+
+def checkQueueToQuit(func):
+    def wapper(self):
+        func(self)
+
+        if len(self._contents) > 0: 
+            self.showBubble()
+        else:
+            app.exit() 
+    functools.update_wrapper(wapper, func)
+    return wapper
 
 class BubbleService(QObject):
     def __init__(self, bubble):
@@ -126,21 +138,14 @@ class Bubble(QQuickView):
         self.show()
         
     @pyqtSlot()
+    @checkQueueToQuit
     def expire(self):
         sendNotificationClosed(self.id, _CLOSED_REASON_.EXPIRED)
-        print self._contents
-        if len(self._contents) > 0: 
-            self.showBubble()
-        else:
-            app.exit()
         
     @pyqtSlot()
+    @checkQueueToQuit
     def dismiss(self):
         sendNotificationClosed(self.id, _CLOSED_REASON_.DISMISSED)
-        if len(self._contents) > 0: 
-            self.showBubble()
-        else:
-            app.exit()
         
 def sendNotificationClosed(id, reason):
     msg = QDBusMessage.createSignal('/org/freedesktop/Notifications', 
