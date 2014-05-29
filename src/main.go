@@ -6,6 +6,7 @@ import (
 	"dlib/dbus"
 	"os"
 	"os/exec"
+	"time"
 )
 
 var _SERVER_COUNTER_ = uint32(0)
@@ -61,7 +62,7 @@ func (dn *DeepinNotifications) Notify(
 	expire_timeout int32) uint32 {
 
 	_SERVER_COUNTER_++
-
+	
 	// meaningful hints we support
 	hints_image_path := ""
 	if v, ok := hints["image-path"]; ok {
@@ -71,6 +72,14 @@ func (dn *DeepinNotifications) Notify(
 	go showBubble(&NotificationInfo{_SERVER_COUNTER_, app_name, app_icon, summary, body, actions, hints_image_path})
 
 	return _SERVER_COUNTER_
+}
+
+func (dn *DeepinNotifications) prepareToDie() {
+	timer := time.NewTimer(time.Second * 10)
+	go func() {
+		<-timer.C
+		os.Exit(0)
+	}()
 }
 
 func fork(ni *NotificationInfo) (result int) {
@@ -98,7 +107,7 @@ func showBubble(ni *NotificationInfo) {
 			bb.UpdateContent(ni.ToJSON())
 		}
 	} else {
-		os.Exit(fork(ni))
+		fork(ni)
 	}
 }
 
@@ -111,6 +120,8 @@ func main() {
 	dn := NewDeepinNotifications()
 	dbus.InstallOnSession(dn)
 	dbus.DealWithUnhandledMessage()
+	
+	dn.prepareToDie()
 
 	if err := dbus.Wait(); err != nil {
 		logger.Fatal("lost dbus session:", err)

@@ -133,11 +133,12 @@ class Bubble(QQuickView):
             self.showBubble()
         
     def showBubble(self):
-        self._content = self._contents.pop()
-        self.rootObject().updateContent(self._content)
-        self.setX(SCREEN_WIDTH - self.width())
-        self.setY(24)
-        self.show()
+        if len(self._contents) > 0:
+            self._content = self._contents.pop()
+            self.rootObject().updateContent(self._content)
+            self.setX(SCREEN_WIDTH - self.width())
+            self.setY(24)
+            self.show()
         
     @pyqtSlot()
     @checkQueueToQuit
