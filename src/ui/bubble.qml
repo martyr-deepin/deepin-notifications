@@ -1,6 +1,7 @@
 import QtQuick 2.1
 import QtGraphicalEffects 1.0
-import DBus.Com.Deepin.Daemon.Themes 1.0
+import Deepin.Widgets 1.0
+/* import DBus.Com.Deepin.Daemon.Themes 1.0 */
 
 Item {
     id: bubble
@@ -12,14 +13,14 @@ Item {
     property int rightPadding: (content.height - 48) / 2
     property var notificationObj
 
-    ThemeManager { id: dbus_theme_manager }
-    Theme { 
-        id: dbus_theme 
-        path: {
-            var result = dbus_theme_manager.GetThemeByName(dbus_theme_manager.currentTheme) 
-            return result[0]
-        }
-    }
+    /* ThemeManager { id: dbus_theme_manager } */
+    /* Theme {  */
+    /*     id: dbus_theme  */
+    /*     path: { */
+    /*         var result = dbus_theme_manager.GetThemeByName(dbus_theme_manager.currentTheme)  */
+    /*         return result[0] */
+    /*     } */
+    /* } */
 
     function isAnimating() {
         return out_animation.running
@@ -89,7 +90,7 @@ Item {
         out_timer.restart()
 
         notificationObj = JSON.parse(content)
-        icon.source = "image://imageProvider/" + "[" + dbus_theme.iconTheme + "]" + (notificationObj.image_path || notificationObj.app_icon)
+        icon.icon = notificationObj.image_path || notificationObj.app_icon || "ooxx"
         summary.text = notificationObj.summary
         body.text = notificationObj.body
     }
@@ -172,10 +173,11 @@ Item {
                 id: bubble_bg
                 anchors.fill: bubble_inner_border
 
-                Image {
+                DIcon {
                     id: icon
                     width: 48
                     height: 48
+                    theme: "Deepin"
 
                     anchors.left: parent.left
                     anchors.leftMargin: bubble.leftPadding
