@@ -8,6 +8,7 @@ Item {
     y: - height
     width: content.width + 20 + 24 * 2
     height: content.height + 20
+    layer.enabled: true
 
     property int leftPadding: (content.height - 48) / 2
     property int rightPadding: (content.height - 48) / 2
@@ -28,11 +29,13 @@ Item {
 
     function mouseEnterAction() {
         out_timer.stop()
-        opacity_mask.visible = true
+        close_button.visible = true
+        action_area.visibleSwitch = true
     }
 
     function mouseExitAction() {
-        opacity_mask.visible = false
+        close_button.visible = false
+        action_area.visibleSwitch = false        
         out_timer.restart()
     }
 
@@ -233,7 +236,7 @@ Item {
 
             OpacityMask {
                 id: opacity_mask
-                visible: false
+                visible: action_area.visible
                 anchors.fill: bubble_bg
                 source: ShaderEffectSource { sourceItem: bubble_bg; hideSource: opacity_mask.visible }
                 maskSource: ShaderEffectSource { sourceItem: bubble_bg_mask; hideSource: opacity_mask.visible }
@@ -246,7 +249,9 @@ Item {
                 anchors.right: close_button.right
                 anchors.rightMargin: bubble.rightPadding
                 anchors.verticalCenter: bubble_bg.verticalCenter
-                visible: opacity_mask.visible && action_area.actionsExceptDefault.length != 0
+                visible: visibleSwitch && action_area.actionsExceptDefault.length != 0
+                
+                property bool visibleSwitch: false
 
                 property var actionsExceptDefault: {
                     var result = []
@@ -284,7 +289,7 @@ Item {
                 anchors.right: bubble_bg.right
                 anchors.topMargin: 5
                 anchors.rightMargin: 6
-                visible: opacity_mask.visible
+                visible: false
 
                 onEntered: bubble.mouseEnterAction()
                 onClicked: _notify.dismiss()
