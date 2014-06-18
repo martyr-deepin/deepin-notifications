@@ -15,7 +15,7 @@ Canvas {
     property int innerHeight: 50
     property int horizontalCenterOffset: 0
     property int verticalCenterOffset: 0
-    property color color: "black"
+    property color color: Qt.rgba(0, 0, 0, 0.7)
     
     onOutterWidthChanged: requestPaint()
     onOutterHeightChanged: requestPaint()

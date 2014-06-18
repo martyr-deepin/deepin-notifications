@@ -117,7 +117,7 @@ Item {
     GaussianBlur {
         anchors.fill: ring
         source: ring
-        radius: 4
+        radius: 8
         samples: 16
         transparentBorder: true
     }
