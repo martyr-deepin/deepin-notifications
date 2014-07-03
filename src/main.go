@@ -2,11 +2,11 @@ package main
 
 import (
 	"dbus/com/deepin/bubble"
-	"dlib"
-	"dlib/dbus"
+	"pkg.linuxdeepin.com/lib/dbus"
 	"os"
 	"os/exec"
 	"time"
+	"pkg.linuxdeepin.com/lib"
 )
 
 var _SERVER_COUNTER_ = uint32(0)
@@ -112,7 +112,7 @@ func showBubble(ni *NotificationInfo) {
 }
 
 func main() {
-	if !dlib.UniqueOnSession("org.freedesktop.Notifications") {
+	if !lib.UniqueOnSession("org.freedesktop.Notifications") {
 		logger.Info("Bus name alreay in use.")
 		return
 	}
