@@ -87,7 +87,7 @@ func fork(ni *NotificationInfo) (result int) {
 	// filename := os.Args[0]
 	// logger.Println(filename)
 	// cmd := exec.Command("python", path.Join(path.Dir(filename), "notify.py"), ni.ToJSON())
-	cmd := exec.Command("python", "/usr/share/deepin-notifications/notify.py", ni.ToJSON())
+	cmd := exec.Command("python2", "/usr/share/deepin-notifications/notify.py", ni.ToJSON())
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
