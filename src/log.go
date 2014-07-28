@@ -1,7 +1,7 @@
 package main
 
 import (
-	log "pkg.linuxdeepin.com/lib/logger"
+	log "pkg.linuxdeepin.com/lib/log"
 )
 
 var logger *log.Logger
