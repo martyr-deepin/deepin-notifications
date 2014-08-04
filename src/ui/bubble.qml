@@ -35,7 +35,7 @@ Item {
 
     function mouseExitAction() {
         close_button.visible = false
-        action_area.visibleSwitch = false        
+        action_area.visibleSwitch = false
         out_timer.restart()
     }
 
@@ -82,6 +82,14 @@ Item {
             out_animation.start()
         }
     }
+    
+    function _processContentBody(body) {
+        var result = body
+        
+        result = result.replace("\n", "<br>")
+        
+        return result
+    }
 
     function updateContent(content) {
         if (x != 0 || opacity != 1) {
@@ -95,7 +103,7 @@ Item {
         notificationObj = JSON.parse(content)
         icon.icon = notificationObj.image_path || notificationObj.app_icon || "ooxx"
         summary.text = notificationObj.summary
-        body.text = notificationObj.body
+        body.text = _processContentBody(notificationObj.body)
     }
 
     RectangularRing {
@@ -153,7 +161,7 @@ Item {
                 anchors.leftMargin: 1
                 anchors.rightMargin: 1
             }
-            
+
             MouseArea {
                 hoverEnabled: true
                 anchors.fill: bubble_bg
@@ -168,10 +176,10 @@ Item {
                         }
                     }
                     if (default_action_id) {_notify.sendActionInvokedSignal(notificationObj.id, default_action_id)}
-                    _notify.dismiss()                    
+                    _notify.dismiss()
                 }
             }
-            
+
             Item {
                 id: bubble_bg
                 anchors.fill: bubble_inner_border
@@ -194,6 +202,7 @@ Item {
                     width: 200
                     elide: Text.ElideRight
                     font.pixelSize: 11
+                    textFormat: Text.StyledText
                     color: Qt.rgba(1, 1, 1, 0.5)
 
                     anchors.left: icon.right
@@ -207,6 +216,7 @@ Item {
                     color: "white"
                     wrapMode: Text.WrapAnywhere
                     linkColor: "#19A9F9"
+                    textFormat: Text.StyledText
                     font.pixelSize: 11
                     maximumLineCount: 2
 
@@ -250,7 +260,7 @@ Item {
                 anchors.rightMargin: bubble.rightPadding
                 anchors.verticalCenter: bubble_bg.verticalCenter
                 visible: visibleSwitch && action_area.actionsExceptDefault.length != 0
-                
+
                 property bool visibleSwitch: false
 
                 property var actionsExceptDefault: {
