@@ -1,0 +1,210 @@
+deepin-notifications (0.3+20140804171420~24796788a2) trusty; urgency=low
+
+  * Build from git 24796788a2ee171d7cbd23dbc66b0657f6178817
+
+ -- Yueqian Zhang <zhangyueqian@linuxdeepin.com>  Mon, 04 Aug 2014 17:14:20 +0800
+
+deepin-notifications (0.3+20140804161045~3d015c3452) trusty; urgency=low
+
+  * Build from git 3d015c3452a1873cbf55c831a56143e5e25c8796
+
+ -- Yueqian Zhang <zhangyueqian@linuxdeepin.com>  Mon, 04 Aug 2014 16:10:46 +0800
+
+deepin-notifications (0.3+20140709141546~3d015c3452) trusty; urgency=low
+
+  * Build from git 3d015c3452a1873cbf55c831a56143e5e25c8796
+
+ -- Yueqian Zhang <zhangyueqian@linuxdeepin.com>  Wed, 09 Jul 2014 14:15:47 +0800
+
+deepin-notifications (0.3+20140703162214~cf7ff854a3) trusty; urgency=low
+
+  * Build from git cf7ff854a3162ffd8f89043dd60f850631447448
+
+ -- Yueqian Zhang <zhangyueqian@linuxdeepin.com>  Thu, 03 Jul 2014 16:22:15 +0800
+
+deepin-notifications (0.3+20140703155302~d09979fb8a) trusty; urgency=low
+
+  * Build from git d09979fb8a6c9f8775dcfc7750b9b6498fda6d0d
+
+ -- Yueqian Zhang <zhangyueqian@linuxdeepin.com>  Thu, 03 Jul 2014 15:53:03 +0800
+
+deepin-notifications (0.3-20140618145353~d09979fb8a) trusty; urgency=low
+
+  * Build from git d09979fb8a6c9f8775dcfc7750b9b6498fda6d0d
+
+ -- Yueqian Zhang <zhangyueqian@linuxdeepin.com>  Wed, 18 Jun 2014 14:53:54 +0800
+
+deepin-notifications (0.3-20140618144505~bdb69b31ab) trusty; urgency=low
+
+  * Build from git bdb69b31abe48cfa5e033b801e6f09cb35957dbc
+
+ -- Yueqian Zhang <zhangyueqian@linuxdeepin.com>  Wed, 18 Jun 2014 14:45:06 +0800
+
+deepin-notifications (0.3-20140610180648~015b6f5b62) trusty; urgency=low
+
+  * Build from git 015b6f5b623bfd61fd53abaf4867bfd549bfc0a3
+
+ -- Yueqian Zhang <zhangyueqian@linuxdeepin.com>  Tue, 10 Jun 2014 18:06:48 +0800
+
+deepin-notifications (0.3-20140529150354~09a56eac84) trusty; urgency=low
+
+  * Build from git 09a56eac8446b0b96e17662f9e3647efd20fc249
+
+ -- Yueqian Zhang <zhangyueqian@linuxdeepin.com>  Thu, 29 May 2014 15:03:54 +0800
+
+deepin-notifications (0.3-20140508100241~fc6d8b7507) trusty; urgency=low
+
+  * Build from git fc6d8b7507b14ce64f0c18c2178159d689b1ae19
+
+ -- Yueqian Zhang <zhangyueqian@linuxdeepin.com>  Thu, 08 May 2014 10:02:41 +0800
+
+deepin-notifications (0.2-1+git20140504111555~f3a82fb766~2014) trusty; urgency=low
+
+  * Build from git revision f3a82fb766bebafc91382d284d4702fe415fab88
+
+ -- Deepin Packages Builder <packages@linuxdeepin.com>  Sun, 04 May 2014 11:15:55 +0800
+
+deepin-notifications (0.2-1+git20140422144418~ea373a237f~2014) trusty; urgency=low
+
+  * Build from git revision ea373a237f78d953892aa5761438f943b1c0df2b
+
+ -- Deepin Packages Builder <packages@linuxdeepin.com>  Tue, 22 Apr 2014 14:44:18 +0800
+
+deepin-notifications (0.2-1+git20140422115820~ea373a237f~2014) trusty; urgency=low
+
+  * Build from git revision ea373a237f78d953892aa5761438f943b1c0df2b
+
+ -- Deepin Packages Builder <packages@linuxdeepin.com>  Tue, 22 Apr 2014 11:58:20 +0800
+
+deepin-notifications (0.2-1+git20140421145454~221b10d0d4~2014) trusty; urgency=low
+
+  * Build from git revision 221b10d0d46739485fc3410696601cad5d16b84b
+
+ -- Deepin Packages Builder <packages@linuxdeepin.com>  Mon, 21 Apr 2014 14:54:54 +0800
+
+deepin-notifications (0.2-1+git20140421100302~221b10d0d4~2014) trusty; urgency=low
+
+  * Build from git revision 221b10d0d46739485fc3410696601cad5d16b84b
+
+ -- Deepin Packages Builder <packages@linuxdeepin.com>  Mon, 21 Apr 2014 10:03:03 +0800
+
+deepin-notifications (0.2-1+git20140417174555~4446fde0aa~2014) trusty; urgency=low
+
+  * Build from git revision 4446fde0aad43b6472aa3cb66cb91febbdb71b2b
+
+ -- Deepin Packages Builder <packages@linuxdeepin.com>  Thu, 17 Apr 2014 17:45:57 +0800
+
+deepin-notifications (0.2-1+git20140403163317~dfa236589f~2014) trusty; urgency=low
+
+  * Build from git revision dfa236589f6a1bcc35d0fbc360d5db24f3c490d0
+
+ -- Deepin Packages Builder <packages@linuxdeepin.com>  Thu, 03 Apr 2014 16:33:17 +0800
+
+deepin-notifications (0.2-1+git20140403152939~ef2214f27a~2014) trusty; urgency=low
+
+  * Build from git revision ef2214f27ab3a1edca0bd0f694129a44e91deff3
+
+ -- Deepin Packages Builder <packages@linuxdeepin.com>  Thu, 03 Apr 2014 15:29:40 +0800
+
+deepin-notifications (0.2-1+git20140403152116~ef2214f27a~2014) trusty; urgency=low
+
+  * Build from git revision ef2214f27ab3a1edca0bd0f694129a44e91deff3
+
+ -- Deepin Packages Builder <packages@linuxdeepin.com>  Thu, 03 Apr 2014 15:21:17 +0800
+
+deepin-notifications (0.2-1+git20140331104858~f04ac14bd9~2014) trusty; urgency=low
+
+  * Build from git revision f04ac14bd9709ad473b12b40adb641a7541b1193
+
+ -- Deepin Packages Builder <packages@linuxdeepin.com>  Mon, 31 Mar 2014 10:48:59 +0800
+
+deepin-notifications (0.2-1+git20140326142207~74d2da549a~2014) trusty; urgency=low
+
+  * Build from git revision 74d2da549a63df52cd8ec3218eab7141bd154b1a
+
+ -- Deepin Packages Builder <packages@linuxdeepin.com>  Wed, 26 Mar 2014 14:22:07 +0800
+
+deepin-notifications (0.2-1+git20140326100347~0081660e76~2014) trusty; urgency=low
+
+  * Build from git revision 0081660e7613c21f61a96037ca710e19b0e610d6
+
+ -- Deepin Packages Builder <packages@linuxdeepin.com>  Wed, 26 Mar 2014 10:03:47 +0800
+
+deepin-notifications (0.2-1+git20140321161512~2aa2a56463~2014) trusty; urgency=low
+
+  * Build from git revision 2aa2a56463dc87aa212f2b0a4ce163a2d5407a57
+
+ -- Deepin Packages Builder <packages@linuxdeepin.com>  Fri, 21 Mar 2014 16:15:12 +0800
+
+deepin-notifications (0.2-1+git20140321092234~2817a9fee3~2014) trusty; urgency=low
+
+  * Build from git revision 2817a9fee3f92d412030965fa53504b55876c2b0
+
+ -- Deepin Packages Builder <packages@linuxdeepin.com>  Fri, 21 Mar 2014 09:22:34 +0800
+
+deepin-notifications (0.2-1+git20140318161933~5a117c53f6~2014) trusty; urgency=low
+
+  * Build from git revision 5a117c53f640d5c68ff799a09a75d8858073a176
+
+ -- Deepin Packages Builder <packages@linuxdeepin.com>  Tue, 18 Mar 2014 16:19:33 +0800
+
+deepin-notifications (0.2-1+git20140314101908~00427ddf81~2014) trusty; urgency=low
+
+  * Build from git revision 00427ddf8192b4133b65a831f94d01967ef8d804
+
+ -- Deepin Packages Builder <packages@linuxdeepin.com>  Fri, 14 Mar 2014 10:19:08 +0800
+
+deepin-notifications (0.2-1+git20140312152442~c541d1623f~2014) trusty; urgency=low
+
+  * Build from git revision c541d1623fe153f870f84611b2afd4bb9d41962e
+
+ -- Deepin Packages Builder <packages@linuxdeepin.com>  Wed, 12 Mar 2014 15:24:43 +0800
+
+deepin-notifications (0.2-1+git20140305085013~3a3780faa7~2014) saucy; urgency=low
+
+  * Build from git revision 3a3780faa7a3fd9a66b6e810a9de4708a4102b6b
+
+ -- Deepin Packages Builder <packages@linuxdeepin.com>  Wed, 05 Mar 2014 08:50:14 +0800
+
+deepin-notifications (0.2-1+git20140211100241~de006387f6~2014) saucy; urgency=low
+
+  * Build from git revision de006387f6d6dec0731f977276b71dc022a0fd0a
+
+ -- Deepin Packages Builder <packages@linuxdeepin.com>  Tue, 11 Feb 2014 10:02:41 +0800
+
+deepin-notifications (0.2-1+git20140210103901~50b9d50cdc~2014) saucy; urgency=low
+
+  * Build from git revision 50b9d50cdc708426218a7545d1afb8c0fc7735d0
+
+ -- Deepin Packages Builder <packages@linuxdeepin.com>  Mon, 10 Feb 2014 10:39:01 +0800
+
+deepin-notifications (0.2-1+git20140210103017~95f5155713~2014) saucy; urgency=low
+
+  * Build from git revision 95f51557139e8e01fd0419d8e020e141e093dbdd
+
+ -- Deepin Packages Builder <packages@linuxdeepin.com>  Mon, 10 Feb 2014 10:30:17 +0800
+
+deepin-notifications (0.2-1+git20140209134507~cbff3bee98~2014) saucy; urgency=low
+
+  * Build from git revision cbff3bee984911365b27ec366fa8e149781076fc
+
+ -- Deepin Packages Builder <packages@linuxdeepin.com>  Sun, 09 Feb 2014 13:45:07 +0800
+
+deepin-notifications (0.2-1+git20140209132011~cbff3bee98~2014) saucy; urgency=low
+
+  * Build from git revision cbff3bee984911365b27ec366fa8e149781076fc
+
+ -- Deepin Packages Builder <packages@linuxdeepin.com>  Sun, 09 Feb 2014 13:20:11 +0800
+
+deepin-notifications (0.2-1+git20140209104555~ee8ece5abe~2014) saucy; urgency=low
+
+  * Build from git revision ee8ece5abe284ffe94f7bebbb0f2f080d6b5c318
+
+ -- Deepin Packages Builder <packages@linuxdeepin.com>  Sun, 09 Feb 2014 10:45:55 +0800
+
+deepin-notifications (0.2-1+git20140209104346~ee8ece5abe~2014) saucy; urgency=low
+
+  * Build from git revision ee8ece5abe284ffe94f7bebbb0f2f080d6b5c318.
+  * Port to go lang.
+
+ -- Deepin Packages Builder <packages@linuxdeepin.com>  Sun, 09 Feb 2014 10:43:46 +0800
