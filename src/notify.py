@@ -3,20 +3,20 @@
 
 # Copyright (C) 2011 ~ 2014 Deepin, Inc.
 #               2011 ~ 2014 Wang YaoHua
-# 
+#
 # Author:     Wang YaoHua <mr.asianwang@gmail.com>
 # Maintainer: Wang YaoHua <mr.asianwang@gmail.com>
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -46,10 +46,10 @@ def checkQueueToQuit(func):
     def wapper(self):
         func(self)
 
-        if len(self._contents) > 0: 
+        if len(self._contents) > 0:
             self.showBubble()
         else:
-            app.exit() 
+            app.exit()
     functools.update_wrapper(wapper, func)
     return wapper
 
@@ -58,9 +58,9 @@ class BubbleService(QObject):
         super(BubbleService, self).__init__()
         self.__dbusAdaptor = BubbleServiceAdaptor(self)
         self._sessionBus = QDBusConnection.sessionBus()
-        
+
         self._bubble = bubble
-        
+
     def updateContent(self, content):
         self._bubble.appendContent(content)
 
@@ -88,9 +88,9 @@ class Bubble(QQuickView):
         QQuickView.__init__(self)
         self._contents = deque()
         self._contents.appendleft(content)
-        
+
         self.setFormat(SURFACE_FORMAT)
-        self.setFlags(QtCore.Qt.FramelessWindowHint 
+        self.setFlags(QtCore.Qt.FramelessWindowHint
                       |QtCore.Qt.Tool
                       |QtCore.Qt.BypassWindowManagerHint)
 
@@ -103,74 +103,77 @@ class Bubble(QQuickView):
         self.setSource(QtCore.QUrl.fromLocalFile(
             os.path.join(os.path.dirname(__file__), 'ui/bubble.qml')
         ))
-        
+
     @pyqtProperty(int)
     def id(self):
         return json.loads(self._content)["id"]
-        
+
     @pyqtProperty(str)
     def content(self):
         return self._content
-        
+
     @pyqtSlot()
     def openSenderProgram(self):
         self.resumeTimer()
         app_name = json.loads(self._content)["app_name"]
         subprocess.Popen(app_name)
-        
+
     @pyqtSlot(int, str)
     def sendActionInvokedSignal(self, notify_id, action_id):
-        msg = QDBusMessage.createSignal('/org/freedesktop/Notifications', 
-                                        'org.freedesktop.Notifications', 
+        msg = QDBusMessage.createSignal('/org/freedesktop/Notifications',
+                                        'org.freedesktop.Notifications',
                                         'ActionInvoked')
         msg << notify_id << action_id
         QDBusConnection.sessionBus().send(msg)
-        
+
     def appendContent(self, content):
         self._contents.appendleft(content)
-        if not self.rootObject().isAnimating(): 
+        if not self.rootObject().isAnimating():
             self.expire()
             self.showBubble()
-        
+
     def showBubble(self):
         if len(self._contents) > 0:
             self._content = self._contents.pop()
             self.rootObject().updateContent(self._content)
             self.setX(SCREEN_WIDTH - self.width())
-            self.setY(24)
+            self.setY(SCREEN_Y + 24)
             self.show()
-        
+
     @pyqtSlot()
     @checkQueueToQuit
     def expire(self):
         sendNotificationClosed(self.id, _CLOSED_REASON_.EXPIRED)
-        
+
     @pyqtSlot()
     @checkQueueToQuit
     def dismiss(self):
         sendNotificationClosed(self.id, _CLOSED_REASON_.DISMISSED)
-        
+
 def sendNotificationClosed(id, reason):
-    msg = QDBusMessage.createSignal('/org/freedesktop/Notifications', 
-                                    'org.freedesktop.Notifications', 
+    msg = QDBusMessage.createSignal('/org/freedesktop/Notifications',
+                                    'org.freedesktop.Notifications',
                                     'NotificationClosed')
     msg << id << reason
     QDBusConnection.sessionBus().send(msg)
-        
+
 @pyqtSlot(str)
 def serviceReplacedByOtherSlot(name):
     os._exit(0)
-    
-    
+
+
 SCREEN_WIDTH = 0
+SCREEN_Y = 0
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    geo = app.desktop().screenGeometry()
-    SCREEN_WIDTH = geo.width()
-    
+    desktop = app.desktop()
+    geo = desktop.screenGeometry(desktop.primaryScreen())
+    SCREEN_WIDTH = geo.x() + geo.width()
+    SCREEN_Y = geo.y()
+
     bubble = Bubble(sys.argv[1])
     bubble.showBubble()
-    
+
     bubbleService = BubbleService(bubble)
     bus = QDBusConnection.sessionBus()
     bus.interface().registerService('com.deepin.Bubble',
@@ -178,6 +181,6 @@ if __name__ == "__main__":
                                     QDBusConnectionInterface.AllowReplacement)
     bus.registerObject('/com/deepin/Bubble', bubbleService)
     bus.interface().serviceUnregistered.connect(serviceReplacedByOtherSlot)
-    
+
     signal.signal(signal.SIGINT, signal.SIG_DFL)
     sys.exit(app.exec_())
