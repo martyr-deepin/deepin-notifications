@@ -13,8 +13,5 @@ override_dh_auto_install:
 	install -m755 src/deepin-notifications debian/deepin-notifications/usr/share/deepin-notifications
 	cp src/*.py debian/deepin-notifications/usr/share/deepin-notifications
 	cp -r src/ui debian/deepin-notifications/usr/share/deepin-notifications/
-	#mkdir -p  debian/deepin-notifications/etc/xdg/autostart/
-	#install -m755 debian/deepin-notifications.desktop debian/deepin-notifications/etc/xdg/autostart/
 	mkdir -p debian/deepin-notifications/usr/share/dbus-1/services/
-	#install -m644 src/com.deepin.Bubble.service debian/deepin-notifications/usr/share/dbus-1/services/
 	install -m644 src/org.freedesktop.Notifications.service debian/deepin-notifications/usr/share/dbus-1/services/

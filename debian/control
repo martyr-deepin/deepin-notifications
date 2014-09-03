@@ -2,12 +2,12 @@ Source: deepin-notifications
 Section: misc
 Priority: extra
 Maintainer: Li Longyu (Ai Kotoba) <leaeasy@gmail.com>
-Build-Depends: debhelper (>= 8.0.0), golang, go-dlib, dde-go-dbus-factory, libglib2.0-dev
+Build-Depends: debhelper (>= 8.0.0), golang-go, golang-dlib-dev, dde-go-dbus-factory, libglib2.0-dev
 Standards-Version: 3.9.2
 Homepage: http://www.linuxdeepin.com
 
 Package: deepin-notifications
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, go-dlib, dde-go-dbus-factory
+Depends: ${shlibs:Depends}, ${misc:Depends},  dde-go-dbus-factory
 Description: system notifications for linuxdeepin desktop environment
  Deepin notification is a notfiy app for linuxdeepin new desktop environment.
