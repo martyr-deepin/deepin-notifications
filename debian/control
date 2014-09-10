@@ -8,6 +8,6 @@ Homepage: http://www.linuxdeepin.com
 
 Package: deepin-notifications
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},  dde-go-dbus-factory
+Depends: ${shlibs:Depends}, ${misc:Depends}, python, python-pyqt5, deepin-qml-widgets
 Description: system notifications for linuxdeepin desktop environment
  Deepin notification is a notfiy app for linuxdeepin new desktop environment.
