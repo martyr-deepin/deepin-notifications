@@ -1,11 +1,19 @@
 #!/usr/bin/make -f
 # -*- makefile -*-
 
+ifndef USE_GCCGO
+    GOBUILD = go build
+else
+    LDFLAGS = $(shell pkg-config --libs gio-2.0)
+    GOBUILD = go build -compiler gccgo -gccgoflags "${LDFLAGS}"
+endif
+
+
 %:
 	dh $@ 
 
 override_dh_auto_build: 
-	cd $(CURDIR)/src && GOPATH=/usr/share/gocode go build && mv src deepin-notifications 
+	cd $(CURDIR)/src && GOPATH=/usr/share/gocode ${GOBUILD} && mv src deepin-notifications 
 
 override_dh_auto_install:
 	dh_auto_install --destdir=debian/deepin-notifications
