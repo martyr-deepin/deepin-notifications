@@ -1,7 +1,7 @@
 import QtQuick 2.1
 import QtGraphicalEffects 1.0
 import Deepin.Widgets 1.0
-/* import DBus.Com.Deepin.Daemon.Themes 1.0 */
+import DBus.Com.Deepin.Dde.ControlCenter 1.0
 
 Item {
     id: bubble
@@ -14,14 +14,17 @@ Item {
     property int rightPadding: (content.height - 48) / 2
     property var notificationObj
 
-    /* ThemeManager { id: dbus_theme_manager } */
-    /* Theme {  */
-    /*     id: dbus_theme  */
-    /*     path: { */
-    /*         var result = dbus_theme_manager.GetThemeByName(dbus_theme_manager.currentTheme)  */
-    /*         return result[0] */
-    /*     } */
-    /* } */
+    Component {
+        id: control_center_component
+
+        ControlCenter {
+            onXChanged: _notify.updatePosWithControlCenterX(x)
+
+            Component.onCompleted: _notify.updatePosWithControlCenterX(x)
+        }
+    }
+
+    function createControlCenter() { control_center_component.createObject(parent, {}) }
 
     function isAnimating() {
         return out_animation.running
@@ -82,12 +85,12 @@ Item {
             out_animation.start()
         }
     }
-    
+
     function _processContentBody(body) {
         var result = body
-        
+
         result = result.replace("\n", "<br>")
-        
+
         return result
     }
 

@@ -33,9 +33,9 @@ from PyQt5 import QtCore
 from PyQt5.QtQuick import QQuickView
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtGui import QSurfaceFormat, QColor
-from PyQt5.QtCore import (QObject, Q_CLASSINFO, pyqtSlot, pyqtProperty)
-from PyQt5.QtDBus import (QDBusConnection, QDBusAbstractAdaptor,
-                          QDBusConnectionInterface, QDBusMessage)
+from PyQt5.QtCore import (QObject, Q_CLASSINFO, pyqtSlot, pyqtSignal, pyqtProperty)
+from PyQt5.QtDBus import (QDBusConnection, QDBusAbstractAdaptor, QDBusReply,
+    QDBusAbstractInterface, QDBusConnectionInterface, QDBusMessage)
 
 from image_provider import imageProvider
 
@@ -52,6 +52,29 @@ def checkQueueToQuit(func):
             app.exit()
     functools.update_wrapper(wapper, func)
     return wapper
+
+DBUS_DAEMON_SERVICE = "org.freedesktop.DBus"
+DBUS_DAEMON_PATH = "/org/freedesktop/DBus"
+DBUS_DAEMON_INTERFACE = "org.freedesktop.DBus"
+CONTROL_CENTER_SERVICE = "com.deepin.dde.ControlCenter"
+class DBusDaemonInterface(QDBusAbstractInterface):
+    NameOwnerChanged = pyqtSignal(str,str,str)
+    controlCentersUp = pyqtSignal()
+
+    def __init__(self):
+        super(DBusDaemonInterface, self).__init__(DBUS_DAEMON_SERVICE,
+                                                DBUS_DAEMON_PATH,
+                                                DBUS_DAEMON_INTERFACE,
+                                                QDBusConnection.sessionBus(),
+                                                None)
+        self.NameOwnerChanged.connect(self.nameOwnerChangedSlot)
+
+    def nameHasOwner(self, name):
+        msg = self.call("NameHasOwner", name)
+        return QDBusReply(msg).value()
+
+    def nameOwnerChangedSlot(self, name, useless1, useless2):
+        if name == CONTROL_CENTER_SERVICE: self.controlCentersUp.emit()
 
 class BubbleService(QObject):
     def __init__(self, bubble):
@@ -136,8 +159,6 @@ class Bubble(QQuickView):
         if len(self._contents) > 0:
             self._content = self._contents.pop()
             self.rootObject().updateContent(self._content)
-            self.setX(SCREEN_WIDTH - self.width())
-            self.setY(SCREEN_Y + 24)
             self.show()
 
     @pyqtSlot()
@@ -149,6 +170,10 @@ class Bubble(QQuickView):
     @checkQueueToQuit
     def dismiss(self):
         sendNotificationClosed(self.id, _CLOSED_REASON_.DISMISSED)
+
+    @pyqtSlot(int)
+    def updatePosWithControlCenterX(self, x):
+        self.setX(x - self.width())
 
 def sendNotificationClosed(id, reason):
     msg = QDBusMessage.createSignal('/org/freedesktop/Notifications',
@@ -166,12 +191,19 @@ SCREEN_WIDTH = 0
 SCREEN_Y = 0
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+
     desktop = app.desktop()
     geo = desktop.screenGeometry(desktop.primaryScreen())
     SCREEN_WIDTH = geo.x() + geo.width()
     SCREEN_Y = geo.y()
 
     bubble = Bubble(sys.argv[1])
+    bubble.setX(SCREEN_WIDTH - bubble.width())
+    bubble.setY(SCREEN_Y + 24)
+    dBusDaemonInterface = DBusDaemonInterface()
+    dBusDaemonInterface.controlCentersUp.connect(bubble.rootObject().createControlCenter)
+    controlCentersUp = dBusDaemonInterface.nameHasOwner(CONTROL_CENTER_SERVICE)
+    if controlCentersUp: bubble.rootObject().createControlCenter()
     bubble.showBubble()
 
     bubbleService = BubbleService(bubble)
