@@ -1,25 +1,5 @@
 #!/usr/bin/make -f
 # -*- makefile -*-
 
-ifndef USE_GCCGO
-    GOBUILD = go build
-else
-    LDFLAGS = $(shell pkg-config --libs gio-2.0)
-    GOBUILD = go build -compiler gccgo -gccgoflags "${LDFLAGS}"
-endif
-
-
 %:
 	dh $@ 
-
-override_dh_auto_build: 
-	cd $(CURDIR)/src && GOPATH=/usr/share/gocode ${GOBUILD} && mv src deepin-notifications 
-
-override_dh_auto_install:
-	dh_auto_install --destdir=debian/deepin-notifications
-	mkdir -p debian/deepin-notifications/usr/share/deepin-notifications/
-	install -m755 src/deepin-notifications debian/deepin-notifications/usr/share/deepin-notifications
-	cp src/*.py debian/deepin-notifications/usr/share/deepin-notifications
-	cp -r src/ui debian/deepin-notifications/usr/share/deepin-notifications/
-	mkdir -p debian/deepin-notifications/usr/share/dbus-1/services/
-	install -m644 src/org.freedesktop.Notifications.service debian/deepin-notifications/usr/share/dbus-1/services/
