@@ -1,7 +1,5 @@
 #!/usr/bin/make -f
+# -*- makefile -*-
 
 %:
-	dh $@
-
-override_dh_auto_install:
-	dh_auto_install -- INSTALL_ROOT=$(CURDIR)/debian/deepin-notifications
+	dh $@ 

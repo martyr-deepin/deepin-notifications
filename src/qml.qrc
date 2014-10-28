@@ -1,9 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>ui/ActionButton.qml</file>
-        <file>ui/bubble.qml</file>
-        <file>ui/CloseButton.qml</file>
-        <file>ui/RectangularRing.qml</file>
-        <file>ui/ActionImageButton.qml</file>
-    </qresource>
-</RCC>
