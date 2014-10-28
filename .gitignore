@@ -1,5 +1,3 @@
 .#*
 *.pyc
 *.test
-*.pro.user*
-build/*
