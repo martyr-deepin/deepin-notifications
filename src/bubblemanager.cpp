@@ -3,7 +3,6 @@
 #include <QVariantMap>
 #include <QQuickItem>
 #include <QTimer>
-#include <QApplication>
 #include "bubble.h"
 #include "properties_dbus_interface.h"
 #include "dbus_daemon_interface.h"
@@ -19,7 +18,6 @@ BubbleManager::BubbleManager(QObject *parent) :
     m_quitTimer = new QTimer(this);
     m_quitTimer->setSingleShot(false);
     m_quitTimer->setInterval(1000 * 10);
-    connect(m_quitTimer, SIGNAL(timeout()), QApplication::instance(), SLOT(quit()));
     m_dbusDaemonInterface = new DBusDaemonInterface(DBusDaemonDBusService,
                                                     DBusDaemonDBusPath,
                                                     QDBusConnection::sessionBus(),
