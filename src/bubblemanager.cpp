@@ -20,6 +20,7 @@ BubbleManager::BubbleManager(QObject *parent) :
     m_quitTimer = new QTimer(this);
     m_quitTimer->setSingleShot(false);
     m_quitTimer->setInterval(1000 * 10);
+    m_quitTimer->start();
     connect(m_quitTimer, SIGNAL(timeout()), QApplication::instance(), SLOT(quit()));
 
     m_dbusDaemonInterface = new DBusDaemonInterface(DBusDaemonDBusService,

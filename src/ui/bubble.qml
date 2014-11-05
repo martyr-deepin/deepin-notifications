@@ -10,12 +10,16 @@ Item {
     layer.enabled: true
 
     property var notificationObj
+    property int textRigthMargin: 10
 
     signal actionInvoked(int id, string action_id)
     signal dismissed(int id)
     signal expired(int id)
     signal replacedByOther(int id)
     signal aboutToQuit()
+
+    onDismissed: out_timer.stop()
+    onReplacedByOther: out_timer.stop()
 
     function containsMouse() {
         var pos = _bubble.getCursorPos()
@@ -100,7 +104,6 @@ Item {
     }
 
     function updateContent(content) {
-        print(content)
         if (y == -height) {
             in_animation.start()
         } else if (x != 0 || opacity != 1) {
@@ -121,10 +124,8 @@ Item {
         summary.text = notificationObj.summary
         body.text = _processContentBody(notificationObj.body)
 
-        action_button_area.actionOne = ""
-        action_button_area.actionTwo = ""
-        action_button_area.idOne = ""
-        action_button_area.idTwo = ""
+        action_button_area.reset()
+        action_image_button.reset()
 
         var count = 0
         for (var i = 0; i < notificationObj.actions.length; i += 2) {
@@ -238,6 +239,10 @@ Item {
 
                 Text {
                     id: body_flickable_place_holder
+                    width: action_button_area.visible ? action_button_area.x - x - bubble.textRigthMargin:
+                                                        action_image_button.visible ? action_image_button.x - x - bubble.textRigthMargin:
+                                                                                      parent.width - x - bubble.textRigthMargin
+                    height: implicitHeight
                     text: "something text which are able to  inflat the two lines of this place holder"
                     visible: false
                     wrapMode: body.wrapMode
@@ -246,8 +251,6 @@ Item {
                     maximumLineCount: 2
 
                     anchors.left: summary.left
-                    anchors.right: parent.right
-                    anchors.rightMargin: 30
                     anchors.top: summary.bottom
                     anchors.topMargin: 3
                 }
@@ -273,29 +276,6 @@ Item {
                 }
             }
 
-            LinearGradient {
-                id: bubble_bg_mask
-                visible: false
-                anchors.fill: bubble_bg
-
-                start: action_button_area.visible ? Qt.point(action_button_area.x - 30, 0)
-                                                  : Qt.point(action_image_button.x - 15, 0)
-                end: action_button_area.visible ? Qt.point(action_button_area.x, 0)
-                                                : Qt.point(action_image_button.x + 10, 0)
-                gradient: Gradient {
-                    GradientStop { position: 0.0; color: Qt.rgba(0, 0, 0, 1)}
-                    GradientStop { position: 1.0; color: Qt.rgba(0, 0, 0, 0)}
-                }
-            }
-
-            OpacityMask {
-                id: opacity_mask
-                visible: action_button_area.visible || action_image_button.visible
-                anchors.fill: bubble_bg
-                source: ShaderEffectSource { sourceItem: bubble_bg; hideSource: opacity_mask.visible }
-                maskSource: ShaderEffectSource { sourceItem: bubble_bg_mask; hideSource: opacity_mask.visible }
-            }
-
             MouseArea {
                 hoverEnabled: true
                 anchors.fill: bubble_bg
@@ -307,7 +287,6 @@ Item {
                             default_action_id = notificationObj.actions[i]
                         }
                     }
-                    print(default_action_id)
                     if (default_action_id) { bubble.actionInvoked(notificationObj.id, default_action_id) }
                     bubble.dismissed(notificationObj.id)
                 }
@@ -319,6 +298,8 @@ Item {
                 onAction: {
                     bubble.actionInvoked(notificationObj.id, actionId)
                     bubble.dismissed(notificationObj.id)
+                    // force the in_animation to run next time
+                    bubble.x += 1
                 }
 
                 anchors.right: parent.right
@@ -331,6 +312,8 @@ Item {
                 onAction: {
                     bubble.actionInvoked(notificationObj.id, actionId)
                     bubble.dismissed(notificationObj.id)
+                    // force the in_animation to run next time
+                    bubble.x += 1
                 }
 
                 anchors.right: parent.right

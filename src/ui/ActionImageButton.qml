@@ -41,6 +41,19 @@ Item {
         }
     ]
 
+    function reset() {
+        state = ""
+    }
+
+    Rectangle {
+        width: 1
+        height: parent.height - 4
+        color: Qt.rgba(1, 1, 1, 0.1)
+
+        anchors.left: parent.left
+        anchors.verticalCenter: parent.verticalCenter
+    }
+
     DImageButton {
         id: ico
         anchors.centerIn: parent
