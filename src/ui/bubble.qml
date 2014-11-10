@@ -243,16 +243,16 @@ Item {
                                                         action_image_button.visible ? action_image_button.x - x - bubble.textRigthMargin:
                                                                                       parent.width - x - bubble.textRigthMargin
                     height: implicitHeight
-                    text: "something text which are able to  inflat the two lines of this place holder"
+                    text: body.text
                     visible: false
                     wrapMode: body.wrapMode
                     textFormat: body.textFormat
                     font.pixelSize: body.font.pixelSize
-                    maximumLineCount: 2
+                    maximumLineCount: summary.text ?  2 : 4
 
                     anchors.left: summary.left
-                    anchors.top: summary.bottom
-                    anchors.topMargin: 3
+                    anchors.top: summary.text ? summary.bottom : undefined
+                    anchors.verticalCenter: summary.text ? undefined :  parent.verticalCenter
                 }
 
                 Flickable {
