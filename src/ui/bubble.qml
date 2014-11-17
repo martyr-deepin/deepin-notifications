@@ -130,7 +130,7 @@ Item {
         var count = 0
         for (var i = 0; i < notificationObj.actions.length; i += 2) {
             if (i + 1 < notificationObj.actions.length
-                && notificationObj.actions[i + 1] != "default") {
+                && notificationObj.actions[i] != "default") {
                 if (count == 0) {
                     // there's image action that we support
                     if (action_image_button.supportedTypes.indexOf(notificationObj.actions[i]) != -1) {
