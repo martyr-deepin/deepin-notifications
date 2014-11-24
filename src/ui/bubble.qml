@@ -269,7 +269,7 @@ Item {
                         wrapMode: Text.WrapAnywhere
                         linkColor: "#19A9F9"
                         textFormat: Text.StyledText
-                        font.pixelSize: 11
+                        font.pixelSize: 12
 
                         onLinkActivated: Qt.openUrlExternally(link)
                     }
