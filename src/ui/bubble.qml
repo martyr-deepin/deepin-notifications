@@ -229,7 +229,7 @@ Item {
                     width: 200
                     elide: Text.ElideRight
                     font.pixelSize: 11
-                    textFormat: Text.StyledText
+                    textFormat: Text.RichText
                     color: Qt.rgba(1, 1, 1, 0.5)
 
                     anchors.left: icon_place_holder.right
@@ -268,7 +268,7 @@ Item {
                         color: "white"
                         wrapMode: Text.WrapAnywhere
                         linkColor: "#19A9F9"
-                        textFormat: Text.StyledText
+                        textFormat: Text.RichText
                         font.pixelSize: 12
 
                         onLinkActivated: Qt.openUrlExternally(link)
