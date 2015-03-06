@@ -226,10 +226,10 @@ Item {
 
                 Text {
                     id: summary
-                    width: 200
+                    width: 160
                     elide: Text.ElideRight
                     font.pixelSize: 11
-                    textFormat: Text.RichText
+                    textFormat: Text.StyledText
                     color: Qt.rgba(1, 1, 1, 0.5)
 
                     anchors.left: icon_place_holder.right
@@ -237,29 +237,18 @@ Item {
                     anchors.topMargin: (icon_place_holder.height - icon.height) / 2
                 }
 
-                Text {
-                    id: body_flickable_place_holder
+                Flickable {
+                    clip: true
                     width: action_button_area.visible ? action_button_area.x - x - bubble.textRigthMargin:
                                                         action_image_button.visible ? action_image_button.x - x - bubble.textRigthMargin:
-                                                                                      parent.width - x - bubble.textRigthMargin
-                    height: implicitHeight
-                    text: body.text
-                    visible: false
-                    wrapMode: body.wrapMode
-                    textFormat: body.textFormat
-                    font.pixelSize: body.font.pixelSize
-                    maximumLineCount: summary.text ?  2 : 4
+                                                                                      close_button.x - x - bubble.textRigthMargin
+                    height: (summary.text ? 2 : 4) * body.lineHeight
+                    contentWidth: width
+                    contentHeight: body.implicitHeight
 
                     anchors.left: summary.left
                     anchors.top: summary.text ? summary.bottom : undefined
                     anchors.verticalCenter: summary.text ? undefined :  parent.verticalCenter
-                }
-
-                Flickable {
-                    clip: true
-                    anchors.fill: body_flickable_place_holder
-                    contentWidth: width
-                    contentHeight: body.implicitHeight
 
                     Text {
                         id: body
@@ -268,6 +257,8 @@ Item {
                         color: "white"
                         wrapMode: Text.WrapAnywhere
                         linkColor: "#19A9F9"
+                        lineHeight: 14
+                        lineHeightMode: Text.FixedHeight
                         textFormat: Text.RichText
                         font.pixelSize: 12
 
