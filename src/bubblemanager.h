@@ -24,10 +24,10 @@ public:
     ~BubbleManager();
 
     enum ClosedReason {
-        Expired,
-        Dismissed,
-        Closed,
-        Unknown
+        Expired = 1,
+        Dismissed = 2,
+        Closed = 3,
+        Unknown = 4
     };
 
 signals:

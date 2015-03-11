@@ -93,6 +93,7 @@ void BubbleManager::bubbleExpired(int id)
     qDebug() << "bubbleExpired";
     m_quitTimer->start();
     m_bubble->setVisible(false);
+    m_bubble->rootObject()->disconnect();
     emit NotificationClosed(id, BubbleManager::Expired);
 
     consumeEntities();
@@ -103,6 +104,7 @@ void BubbleManager::bubbleDismissed(int id)
     qDebug() << "bubbleDismissed";
     m_quitTimer->start();
     m_bubble->setVisible(false);
+    m_bubble->rootObject()->disconnect();
     emit NotificationClosed(id, BubbleManager::Dismissed);
 
     consumeEntities();
@@ -115,7 +117,12 @@ void BubbleManager::bubbleReplacedByOther(int id)
 
 void BubbleManager::bubbleActionInvoked(int id, QString actionId)
 {
+    m_quitTimer->start();
+    m_bubble->setVisible(false);
+    m_bubble->rootObject()->disconnect();
     emit ActionInvoked(id, actionId);
+
+    consumeEntities();
 }
 
 void BubbleManager::bubbleAboutToQuit()

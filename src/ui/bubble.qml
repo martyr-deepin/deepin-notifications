@@ -288,7 +288,6 @@ Item {
 
                 onAction: {
                     bubble.actionInvoked(notificationObj.id, actionId)
-                    bubble.dismissed(notificationObj.id)
                     // force the in_animation to run next time
                     bubble.x += 1
                 }
@@ -302,7 +301,6 @@ Item {
 
                 onAction: {
                     bubble.actionInvoked(notificationObj.id, actionId)
-                    bubble.dismissed(notificationObj.id)
                     // force the in_animation to run next time
                     bubble.x += 1
                 }
