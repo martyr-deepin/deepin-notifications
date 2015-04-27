@@ -13,7 +13,7 @@ Bubble::Bubble(NotificationEntity *entity):
     QQuickView(),
     m_entity(entity)
 {
-    this->setFlags(Qt::X11BypassWindowManagerHint);
+    this->setFlags(Qt::FramelessWindowHint | Qt::Tool);
     this->setColor(Qt::transparent);
     this->rootContext()->setContextProperty("_bubble", this);
     this->setSource(QUrl("qrc:///ui/bubble.qml"));
@@ -49,6 +49,11 @@ void Bubble::setupPosition()
 QPoint Bubble::getCursorPos()
 {
     return QCursor::pos();
+}
+
+void Bubble::setMask(int x, int y, int width, int height)
+{
+    QQuickView::setMask(QRegion(x, y, width, height));
 }
 
 void Bubble::updateContent()
