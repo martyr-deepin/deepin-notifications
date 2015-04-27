@@ -18,7 +18,6 @@ public:
 
 public slots:
     QPoint getCursorPos();
-    void setMask(int, int, int, int);
 
 private:
     NotificationEntity *m_entity;
