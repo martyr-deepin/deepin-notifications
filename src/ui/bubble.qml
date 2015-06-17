@@ -5,8 +5,8 @@ import Deepin.Widgets 1.0
 Item {
     id: bubble
     y: - height
-    width: content.width + 20 + 24 * 2
-    height: content.height + 20
+    width: content.width + 28 * 2
+    height: content.height + 24 * 2
     layer.enabled: true
 
     property var notificationObj
@@ -21,11 +21,33 @@ Item {
     onDismissed: out_timer.stop()
     onReplacedByOther: out_timer.stop()
 
+    function contentSize() {
+        // the size of ring unfortunately doesn't count the shadow's,
+        // so I just approximate the content size here.
+        return Qt.rect(ring.x, ring.y, ring.width + 5, ring.height + 5)
+    }
+
     function containsMouse() {
         var pos = _bubble.getCursorPos()
         var x = pos.x - _bubble.x
         var y = pos.y - _bubble.y
-        return 0 <= x && x <= width && 0 <= y && y <= height
+        var rect = contentSize()
+        return rect.x <= x
+                && x <= rect.x + rect.width
+                && rect.y <= y
+                && y <= rect.y + rect.height
+    }
+
+    // set a mask in order to let part of the mouse events go
+    // through this window.
+    function setMask() {
+        var rect = contentSize()
+        _bubble.setMask(rect.x, rect.y, rect.width, rect.height)
+    }
+
+    // clear the masks set before.
+    function clearMask() {
+        _bubble.setMask(0, 0, 0, 0)
     }
 
     PropertyAnimation {
@@ -92,7 +114,10 @@ Item {
 
         running: out_timer.running
         interval: out_timer.interval - 1000
-        onTriggered: bubble.aboutToQuit()
+        onTriggered: {
+            bubble.clearMask()
+            bubble.aboutToQuit()
+        }
     }
 
     function _processContentBody(body) {
@@ -147,6 +172,8 @@ Item {
                 count++
             }
         }
+
+        bubble.setMask()
     }
 
     RectangularRing {

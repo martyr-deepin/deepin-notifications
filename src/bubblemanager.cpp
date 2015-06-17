@@ -182,8 +182,10 @@ void BubbleManager::consumeEntities()
         bindControlCenterX();
         m_bubble->setXBasePosition(getControlCenterX());
     }
-    m_bubble->setEntity(notification);
-    m_bubble->show();
+    // [1] should go first, because [2] set a mask to the bubble window which will
+    // fail if the bubble window isn't visible.
+    m_bubble->show(); // [1]
+    m_bubble->setEntity(notification); // [2]
 
     m_bubble->rootObject()->disconnect();
     connect(m_bubble->rootObject(), SIGNAL(expired(int)), this, SLOT(bubbleExpired(int)));
