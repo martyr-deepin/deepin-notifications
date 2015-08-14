@@ -37,9 +37,13 @@ BubbleManager::~BubbleManager()
     m_bubble->deleteLater();
 }
 
-void BubbleManager::CloseNotification(uint)
+void BubbleManager::CloseNotification(uint id)
 {
-    m_quitTimer->start();
+    if (id != (uint)(m_counter - 1 )) {
+        return;
+    }
+
+    bubbleDismissed(id);
 
     return;
 }
