@@ -1,30 +1,58 @@
 # Deepin Notifications
 
-**Description**:  An desktop notifications implementation that constraints to the [Gnome Desktop Notifications Specification](https://developer.gnome.org/notification-spec/).
+**Description**:  An implementation of [Gnome Desktop Notifications Specification](https://developer.gnome.org/notification-spec/)
 
 
 ## Dependencies
-This program just needs Qt5 to work properly, but modules like gui, widgets, dbus, qml and qtquick must be provided.
+
+### Build Dependencies
+
+- Qt5.3 or above.
+- Qt modules
+    - gui
+    - widgets
+    - dbus
+    - qml
+    - quick
+
+### Runtime Dependencies
+
+- DBus
 
 ## Installation
 
 Normal build process will work fine:
-> mkdir build; cd build
-> qmake ..
-> make
-> make INSTALL_ROOT=/usr install
+```
+mkdir build; cd build
+qmake ..
+make
+make INSTALL_ROOT=/usr install
+```
 
 ## Usage
 
 **Basic Usage**
-> notify-send hello world
+```
+notify-send hello world
+```
 
-For more details on how to directly interact with this program via DBus, please see [Gnome Desktop Notifications Specification](https://developer.gnome.org/notification-spec/).
+For more detailed information on how to communicate with this program via DBus, please see [Gnome Desktop Notifications Specification](https://developer.gnome.org/notification-spec/).
+
+## Getting help
+
+Any usage issues can ask for help via
+
+* [Gitter](https://gitter.im/orgs/linuxdeepin/rooms)
+* [IRC channel](https://webchat.freenode.net/?channels=deepin)
+* [Forum](https://bbs.deepin.org)
+* [WiKi](http://wiki.deepin.org/)
 
 ## Getting involved
 
-We encourage you to report issues and contribute changes. Please check out the [Contribution Guidelines](http://wiki.deepin.org/index.php?title=Contribution_Guidelines) about how to proceed.
+We encourage you to report issues and contribute changes
+[Contirubtion guide for users](http://wiki.deepin.org/index.php?title=Contribution_Guidelines_for_Users)
+[Contribution guide for developers](http://wiki.deepin.org/index.php?title=Contribution_Guidelines_for_Developers).
 
 ## License
 
-GNU General Public License, Version 3.0
+Deepin Notifications is licensed under [GPLv3](LICENSE).
