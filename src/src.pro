@@ -25,5 +25,5 @@ RESOURCES += qml.qrc images.qrc
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
 
-target.path = $${PREFIX}/share/deepin-notifications
+target.path = $${PREFIX}/lib/deepin-notifications
 INSTALLS += target
