@@ -41,9 +41,9 @@ void Bubble::setXBasePosition(int x)
 void Bubble::setupPosition()
 {
     QDesktopWidget *desktop = QApplication::desktop();
-    QRect primaryScreenRect = desktop->availableGeometry(desktop->primaryScreen());
-    this->setXBasePosition(primaryScreenRect.x() + primaryScreenRect.width());
-    this->setY(primaryScreenRect.y());
+    QRect pointerScreenRect = desktop->screen(desktop->screenNumber(QCursor::pos()))->geometry();
+    this->setXBasePosition(pointerScreenRect.x() + pointerScreenRect.width());
+    this->setY(pointerScreenRect.y());
 }
 
 QPoint Bubble::getCursorPos()

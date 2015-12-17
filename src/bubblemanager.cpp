@@ -3,6 +3,7 @@
 #include <QVariantMap>
 #include <QQuickItem>
 #include <QTimer>
+#include <QDesktopWidget>
 #include <QApplication>
 #include "bubble.h"
 #include "properties_dbus_interface.h"
@@ -155,7 +156,10 @@ void BubbleManager::controlCenterXChangedSlot(QString interfaceName, QVariantMap
 
 void BubbleManager::dbusNameOwnerChangedSlot(QString name, QString, QString newName)
 {
-    if (name == ControlCenterDBusService) {
+    QDesktopWidget * desktop = QApplication::desktop();
+    int currentScreen = desktop->screenNumber(m_bubble->position());
+    int primaryScreen = desktop->primaryScreen();
+    if (name == ControlCenterDBusService && currentScreen == primaryScreen) {
         if (!newName.isEmpty()) {
             bindControlCenterX();
         }
@@ -182,7 +186,11 @@ void BubbleManager::consumeEntities()
     NotificationEntity *notification = m_entities.dequeue();
     m_bubble->setupPosition();
 
-    if (checkControlCenterExistence()) {
+    QDesktopWidget * desktop = QApplication::desktop();
+    int pointerScreen = desktop->screenNumber(QCursor::pos());
+    int primaryScreen = desktop->primaryScreen();
+
+    if (checkControlCenterExistence() && pointerScreen == primaryScreen) {
         bindControlCenterX();
         m_bubble->setXBasePosition(getControlCenterX());
     }
