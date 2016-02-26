@@ -1,8 +1,18 @@
+/**
+ * Copyright (C) 2014 Deepin Technology Co., Ltd.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ **/
+
 #include "bubblemanager.h"
 #include <QStringList>
 #include <QVariantMap>
 #include <QQuickItem>
 #include <QTimer>
+#include <QDesktopWidget>
 #include <QApplication>
 #include "bubble.h"
 #include "properties_dbus_interface.h"
@@ -37,9 +47,13 @@ BubbleManager::~BubbleManager()
     m_bubble->deleteLater();
 }
 
-void BubbleManager::CloseNotification(uint)
+void BubbleManager::CloseNotification(uint id)
 {
-    m_quitTimer->start();
+    if (id != (uint)(m_counter - 1 )) {
+        return;
+    }
+
+    bubbleDismissed(id);
 
     return;
 }
@@ -151,7 +165,10 @@ void BubbleManager::controlCenterXChangedSlot(QString interfaceName, QVariantMap
 
 void BubbleManager::dbusNameOwnerChangedSlot(QString name, QString, QString newName)
 {
-    if (name == ControlCenterDBusService) {
+    QDesktopWidget * desktop = QApplication::desktop();
+    int currentScreen = desktop->screenNumber(m_bubble->position());
+    int primaryScreen = desktop->primaryScreen();
+    if (name == ControlCenterDBusService && currentScreen == primaryScreen) {
         if (!newName.isEmpty()) {
             bindControlCenterX();
         }
@@ -178,12 +195,18 @@ void BubbleManager::consumeEntities()
     NotificationEntity *notification = m_entities.dequeue();
     m_bubble->setupPosition();
 
-    if (checkControlCenterExistence()) {
+    QDesktopWidget * desktop = QApplication::desktop();
+    int pointerScreen = desktop->screenNumber(QCursor::pos());
+    int primaryScreen = desktop->primaryScreen();
+
+    if (checkControlCenterExistence() && pointerScreen == primaryScreen) {
         bindControlCenterX();
         m_bubble->setXBasePosition(getControlCenterX());
     }
-    m_bubble->setEntity(notification);
-    m_bubble->show();
+    // [1] should go first, because [2] set a mask to the bubble window which will
+    // fail if the bubble window isn't visible.
+    m_bubble->show(); // [1]
+    m_bubble->setEntity(notification); // [2]
 
     m_bubble->rootObject()->disconnect();
     connect(m_bubble->rootObject(), SIGNAL(expired(int)), this, SLOT(bubbleExpired(int)));

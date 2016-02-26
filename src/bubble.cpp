@@ -1,3 +1,12 @@
+/**
+ * Copyright (C) 2014 Deepin Technology Co., Ltd.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ **/
+
 #include "bubble.h"
 #include <QJsonObject>
 #include <QJsonArray>
@@ -13,7 +22,7 @@ Bubble::Bubble(NotificationEntity *entity):
     QQuickView(),
     m_entity(entity)
 {
-    this->setFlags(Qt::X11BypassWindowManagerHint);
+    this->setFlags(Qt::X11BypassWindowManagerHint | Qt::WindowStaysOnTopHint);
     this->setColor(Qt::transparent);
     this->rootContext()->setContextProperty("_bubble", this);
     this->setSource(QUrl("qrc:///ui/bubble.qml"));
@@ -41,14 +50,19 @@ void Bubble::setXBasePosition(int x)
 void Bubble::setupPosition()
 {
     QDesktopWidget *desktop = QApplication::desktop();
-    QRect primaryScreenRect = desktop->availableGeometry(desktop->primaryScreen());
-    this->setXBasePosition(primaryScreenRect.x() + primaryScreenRect.width());
-    this->setY(primaryScreenRect.y());
+    QRect pointerScreenRect = desktop->screen(desktop->screenNumber(QCursor::pos()))->geometry();
+    this->setXBasePosition(pointerScreenRect.x() + pointerScreenRect.width());
+    this->setY(pointerScreenRect.y());
 }
 
 QPoint Bubble::getCursorPos()
 {
     return QCursor::pos();
+}
+
+void Bubble::setMask(int x, int y, int width, int height)
+{
+    QQuickView::setMask(QRegion(x, y, width, height));
 }
 
 void Bubble::updateContent()
