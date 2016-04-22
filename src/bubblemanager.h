@@ -22,9 +22,12 @@ static const QString DBusDaemonDBusService = "org.freedesktop.DBus";
 static const QString DBusDaemonDBusPath = "/org/freedesktop/DBus";
 static const QString NotificationsDBusService = "org.freedesktop.Notifications";
 static const QString NotificationsDBusPath = "/org/freedesktop/Notifications";
+static const QString Login1DBusService = "org.freedesktop.login1";
+static const QString Login1DBusPath = "/org/freedesktop/login1";
 
 class PropertiesInterface;
 class DBusDaemonInterface;
+class Login1ManagerInterface;
 class BubbleManager : public QObject
 {
     Q_OBJECT
@@ -61,6 +64,8 @@ public slots:
     void bubbleActionInvoked(int, QString);
     void bubbleAboutToQuit();
 
+    void onPrepareForSleep(bool);
+
 private:
     int m_counter;
     QTimer *m_quitTimer;
@@ -68,6 +73,7 @@ private:
     QQueue<NotificationEntity*> m_entities;
     PropertiesInterface *m_propertiesInterface;
     DBusDaemonInterface *m_dbusDaemonInterface;
+    Login1ManagerInterface *m_login1ManagerInterface;
 
     bool checkControlCenterExistence();
     int getControlCenterX();

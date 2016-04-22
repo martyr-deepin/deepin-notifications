@@ -17,6 +17,7 @@
 #include "bubble.h"
 #include "properties_dbus_interface.h"
 #include "dbus_daemon_interface.h"
+#include "dbuslogin1manager.h"
 #include "notificationentity.h"
 #include <QDebug>
 
@@ -29,16 +30,20 @@ BubbleManager::BubbleManager(QObject *parent) :
 
     m_quitTimer = new QTimer(this);
     m_quitTimer->setSingleShot(false);
-    m_quitTimer->setInterval(1000 * 10);
+    m_quitTimer->setInterval(1000 * 100);
     m_quitTimer->start();
     connect(m_quitTimer, SIGNAL(timeout()), QApplication::instance(), SLOT(quit()));
 
-    m_dbusDaemonInterface = new DBusDaemonInterface(DBusDaemonDBusService,
-                                                    DBusDaemonDBusPath,
-                                                    QDBusConnection::sessionBus(),
-                                                    this);
+    m_dbusDaemonInterface = new DBusDaemonInterface(DBusDaemonDBusService, DBusDaemonDBusPath,
+                                                    QDBusConnection::sessionBus(), this);
+    m_login1ManagerInterface = new Login1ManagerInterface(Login1DBusService, Login1DBusPath,
+                                                          QDBusConnection::systemBus(), this),
+
     connect(m_dbusDaemonInterface, SIGNAL(NameOwnerChanged(QString,QString,QString)),
             this, SLOT(dbusNameOwnerChangedSlot(QString,QString,QString)));
+
+    connect(m_login1ManagerInterface, SIGNAL(PrepareForSleep(bool)),
+            this, SLOT(onPrepareForSleep(bool)));
 }
 
 BubbleManager::~BubbleManager()
@@ -142,6 +147,16 @@ void BubbleManager::bubbleActionInvoked(int id, QString actionId)
 void BubbleManager::bubbleAboutToQuit()
 {
     consumeEntities();
+}
+
+void BubbleManager::onPrepareForSleep(bool sleep)
+{
+    // workaround to avoid the "About to suspend..." notifications still
+    // hanging there on restoring from sleep confusing users.
+    if (!sleep) {
+        qDebug() << "Quit on restoring from sleep.";
+        qApp->quit();
+    }
 }
 
 bool BubbleManager::checkControlCenterExistence()
