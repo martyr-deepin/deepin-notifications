@@ -4,7 +4,8 @@ TEMPLATE = app
 TARGET = deepin-notifications
 
 QT += qml quick dbus widgets
-CONFIG += c++11
+CONFIG += c++11 link_pkgconfig
+PKGCONFIG += dtkbase dtkwidget
 
 SOURCES += src/main.cpp
 

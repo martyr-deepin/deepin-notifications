@@ -22,6 +22,8 @@
 #include <QParallelAnimationGroup>
 #include "notificationentity.h"
 
+DWIDGET_USE_NAMESPACE
+
 static const QString BubbleStyleSheet = "QFrame#Background { "
                                         "background-color: rgba(0, 0, 0, 200);"
                                         "border-radius: 4px;"
@@ -42,7 +44,8 @@ Bubble::Bubble(NotificationEntity *entity):
     m_background(new QFrame(this)),
     m_icon(new QLabel(m_background)),
     m_title(new QLabel(m_background)),
-    m_body(new QLabel(m_background))
+    m_body(new QLabel(m_background)),
+    m_closeButton(new DImageButton(":/images/close.png", ":/images/close.png", ":/images/close.png", m_background))
 {
     setWindowFlags(Qt::X11BypassWindowManagerHint | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_TranslucentBackground);
@@ -91,6 +94,14 @@ QPoint Bubble::getCursorPos()
 void Bubble::setMask(int x, int y, int width, int height)
 {
 
+}
+
+void Bubble::closeButtonClicked()
+{
+    emit dismissed(int(m_entity->id()));
+
+    m_outTimer->stop();
+    m_aboutToOutTimer->stop();
 }
 
 void Bubble::mousePressEvent(QMouseEvent *)
@@ -167,7 +178,12 @@ void Bubble::initUI()
     m_body->move(70, 22);
     m_body->setWordWrap(true);
 
+    m_closeButton->setFixedSize(10, 10);
+    m_closeButton->move(width() - m_closeButton->width() - 4, 4);
+
     setStyleSheet(BubbleStyleSheet);
+
+    connect(m_closeButton, &DImageButton::clicked, this, &Bubble::closeButtonClicked);
 }
 
 void Bubble::initAnimations()

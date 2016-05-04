@@ -11,6 +11,9 @@
 #define BUBBLE_H
 
 #include <QFrame>
+#include <dimagebutton.h>
+
+DWIDGET_USE_NAMESPACE
 
 class QLabel;
 class QPropertyAnimation;
@@ -38,6 +41,7 @@ signals:
 public slots:
     QPoint getCursorPos();
     void setMask(int, int, int, int);
+    void closeButtonClicked();
 
 protected:
     void mousePressEvent(QMouseEvent *) Q_DECL_OVERRIDE;
@@ -49,6 +53,7 @@ private:
     QLabel *m_icon = nullptr;
     QLabel *m_title = nullptr;
     QLabel *m_body = nullptr;
+    DImageButton *m_closeButton = nullptr;
     QPropertyAnimation *m_inAnimation = nullptr;
     QParallelAnimationGroup *m_outAnimation = nullptr;
 
