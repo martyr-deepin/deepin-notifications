@@ -10,10 +10,13 @@
 #ifndef BUBBLE_H
 #define BUBBLE_H
 
-#include <QQuickView>
+#include <QFrame>
 
+class QLabel;
+class QPropertyAnimation;
+class QParallelAnimationGroup;
 class NotificationEntity;
-class Bubble : public QQuickView
+class Bubble : public QFrame
 {
     Q_OBJECT
 public:
@@ -25,13 +28,38 @@ public:
     NotificationEntity *entity() const;
     void setEntity(NotificationEntity *entity);
 
+signals:
+    void expired(int);
+    void dismissed(int);
+    void replacedByOther(int);
+    void actionInvoked(int, QString);
+    void aboutToQuit();
+
 public slots:
     QPoint getCursorPos();
     void setMask(int, int, int, int);
 
+protected:
+    void mousePressEvent(QMouseEvent *) Q_DECL_OVERRIDE;
+
 private:
     NotificationEntity *m_entity;
+
+    QFrame *m_background = nullptr;
+    QLabel *m_icon = nullptr;
+    QLabel *m_title = nullptr;
+    QLabel *m_body = nullptr;
+    QPropertyAnimation *m_inAnimation = nullptr;
+    QParallelAnimationGroup *m_outAnimation = nullptr;
+
+    QTimer *m_outTimer = nullptr;
+    QTimer *m_aboutToOutTimer = nullptr;
+
     void updateContent();
+    void initUI();
+    void initAnimations();
+    void initTimers();
+    bool containsMouse() const;
 };
 
 #endif // BUBBLE_H

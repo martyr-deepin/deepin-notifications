@@ -2,6 +2,7 @@ TEMPLATE = app
 TARGET = deepin-notifications
 
 QT += qml quick dbus widgets
+CONFIG += c++11
 
 HEADERS += \
     bubble.h \

@@ -48,8 +48,7 @@ BubbleManager::BubbleManager(QObject *parent) :
 
 BubbleManager::~BubbleManager()
 {
-    m_bubble->rootObject()->disconnect();
-    m_bubble->deleteLater();
+
 }
 
 void BubbleManager::CloseNotification(uint id)
@@ -112,7 +111,6 @@ void BubbleManager::bubbleExpired(int id)
     qDebug() << "bubbleExpired";
     m_quitTimer->start();
     m_bubble->setVisible(false);
-    m_bubble->rootObject()->disconnect();
     emit NotificationClosed(id, BubbleManager::Expired);
 
     consumeEntities();
@@ -123,7 +121,6 @@ void BubbleManager::bubbleDismissed(int id)
     qDebug() << "bubbleDismissed";
     m_quitTimer->start();
     m_bubble->setVisible(false);
-    m_bubble->rootObject()->disconnect();
     emit NotificationClosed(id, BubbleManager::Dismissed);
 
     consumeEntities();
@@ -138,7 +135,6 @@ void BubbleManager::bubbleActionInvoked(int id, QString actionId)
 {
     m_quitTimer->start();
     m_bubble->setVisible(false);
-    m_bubble->rootObject()->disconnect();
     emit ActionInvoked(id, actionId);
 
     consumeEntities();
@@ -146,6 +142,7 @@ void BubbleManager::bubbleActionInvoked(int id, QString actionId)
 
 void BubbleManager::bubbleAboutToQuit()
 {
+    qDebug() << "bubble is about to quit";
     consumeEntities();
 }
 
@@ -181,7 +178,7 @@ void BubbleManager::controlCenterXChangedSlot(QString interfaceName, QVariantMap
 void BubbleManager::dbusNameOwnerChangedSlot(QString name, QString, QString newName)
 {
     QDesktopWidget * desktop = QApplication::desktop();
-    int currentScreen = desktop->screenNumber(m_bubble->position());
+    int currentScreen = desktop->screenNumber(m_bubble->pos());
     int primaryScreen = desktop->primaryScreen();
     if (name == ControlCenterDBusService && currentScreen == primaryScreen) {
         if (!newName.isEmpty()) {
@@ -204,6 +201,8 @@ void BubbleManager::bindControlCenterX()
 
 void BubbleManager::consumeEntities()
 {
+    qDebug() << "consumeEntities, entity length: " << m_entities.length();
+
     if (m_entities.isEmpty()) return;
     m_quitTimer->stop();
 
@@ -218,15 +217,12 @@ void BubbleManager::consumeEntities()
         bindControlCenterX();
         m_bubble->setXBasePosition(getControlCenterX());
     }
-    // [1] should go first, because [2] set a mask to the bubble window which will
-    // fail if the bubble window isn't visible.
-    m_bubble->show(); // [1]
-    m_bubble->setEntity(notification); // [2]
+    m_bubble->setEntity(notification);
 
-    m_bubble->rootObject()->disconnect();
-    connect(m_bubble->rootObject(), SIGNAL(expired(int)), this, SLOT(bubbleExpired(int)));
-    connect(m_bubble->rootObject(), SIGNAL(dismissed(int)), this, SLOT(bubbleDismissed(int)));
-    connect(m_bubble->rootObject(), SIGNAL(replacedByOther(int)), this, SLOT(bubbleReplacedByOther(int)));
-    connect(m_bubble->rootObject(), SIGNAL(actionInvoked(int, QString)), this, SLOT(bubbleActionInvoked(int,QString)));
-    connect(m_bubble->rootObject(), SIGNAL(aboutToQuit()), this, SLOT(bubbleAboutToQuit()));
+    m_bubble->disconnect();
+    connect(m_bubble, SIGNAL(expired(int)), this, SLOT(bubbleExpired(int)));
+    connect(m_bubble, SIGNAL(dismissed(int)), this, SLOT(bubbleDismissed(int)));
+    connect(m_bubble, SIGNAL(replacedByOther(int)), this, SLOT(bubbleReplacedByOther(int)));
+    connect(m_bubble, SIGNAL(actionInvoked(int, QString)), this, SLOT(bubbleActionInvoked(int,QString)));
+    connect(m_bubble, SIGNAL(aboutToQuit()), this, SLOT(bubbleAboutToQuit()));
 }
