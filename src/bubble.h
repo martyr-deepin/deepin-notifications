@@ -49,6 +49,7 @@ protected:
 private:
     NotificationEntity *m_entity;
 
+    QFrame *m_bgContainer = nullptr;
     QFrame *m_background = nullptr;
     QLabel *m_icon = nullptr;
     QLabel *m_title = nullptr;

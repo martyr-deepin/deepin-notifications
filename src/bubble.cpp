@@ -18,6 +18,7 @@
 #include <QIcon>
 #include <QTimer>
 #include <QDebug>
+#include <QGraphicsDropShadowEffect>
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
 #include "notificationentity.h"
@@ -25,7 +26,7 @@
 DWIDGET_USE_NAMESPACE
 
 static const QString BubbleStyleSheet = "QFrame#Background { "
-                                        "background-color: rgba(0, 0, 0, 200);"
+                                        "background-color: rgba(0, 0, 0, 180);"
                                         "border-radius: 4px;"
                                         "border: solid 1px white;"
                                         "}"
@@ -37,11 +38,15 @@ static const QString BubbleStyleSheet = "QFrame#Background { "
                                         "font-size: 12px;"
                                         "color: white;"
                                         "}";
+static const int ShadowWidth = 20;
+static const int BubbleWidth = 300;
+static const int BubbleHeight = 70;
 
 Bubble::Bubble(NotificationEntity *entity):
     QFrame(),
     m_entity(entity),
-    m_background(new QFrame(this)),
+    m_bgContainer(new QFrame(this)),
+    m_background(new QFrame(m_bgContainer)),
     m_icon(new QLabel(m_background)),
     m_title(new QLabel(m_background)),
     m_body(new QLabel(m_background)),
@@ -72,8 +77,7 @@ void Bubble::setEntity(NotificationEntity *entity)
 
 void Bubble::setXBasePosition(int x)
 {
-    // TODO: remove the work-around paddings
-    move(x - width() - 20, pos().y());
+    move(x - width(), pos().y());
 }
 
 void Bubble::setupPosition()
@@ -81,9 +85,7 @@ void Bubble::setupPosition()
     QDesktopWidget *desktop = QApplication::desktop();
     QRect pointerScreenRect = desktop->screen(desktop->screenNumber(QCursor::pos()))->geometry();
     setXBasePosition(pointerScreenRect.x() + pointerScreenRect.width());
-
-    // TODO: remove the work-around paddings
-    move(pos().x(), pointerScreenRect.y() + 20);
+    move(pos().x(), pointerScreenRect.y());
 }
 
 QPoint Bubble::getCursorPos()
@@ -149,7 +151,7 @@ void Bubble::updateContent()
         setVisible(true);
         m_inAnimation->start();
     } else {
-        m_background->move(m_inAnimation->endValue().toPoint());
+        m_bgContainer->move(m_inAnimation->endValue().toPoint());
     }
     m_aboutToOutTimer->start();
     m_outTimer->start();
@@ -157,12 +159,22 @@ void Bubble::updateContent()
 
 void Bubble::initUI()
 {
-    setFixedSize(300, 70);
+    setFixedSize(BubbleWidth + ShadowWidth * 2, BubbleHeight + ShadowWidth * 2);
     setVisible(false);
 
+    m_bgContainer->setAttribute(Qt::WA_TranslucentBackground);
+    m_bgContainer->setFixedSize(size());
+    m_bgContainer->move(QPoint(0, -height()));
+
     m_background->setObjectName("Background");
-    m_background->setFixedSize(size());
-    m_background->move(QPoint(0, -height()));
+    m_background->setFixedSize(BubbleWidth, BubbleHeight);
+    m_background->move(ShadowWidth, ShadowWidth);
+
+    QGraphicsDropShadowEffect *dropShadow = new QGraphicsDropShadowEffect;
+    dropShadow->setColor(QColor::fromRgbF(0, 0, 0, 0.9));
+    dropShadow->setBlurRadius(20);
+    dropShadow->setOffset(2);
+    m_bgContainer->setGraphicsEffect(dropShadow);
 
     m_icon->setFixedSize(48, 48);
     m_icon->move(11, 11);
@@ -188,19 +200,19 @@ void Bubble::initUI()
 
 void Bubble::initAnimations()
 {
-    m_inAnimation = new QPropertyAnimation(m_background, "pos", this);
+    m_inAnimation = new QPropertyAnimation(m_bgContainer, "pos", this);
     m_inAnimation->setDuration(300);
     m_inAnimation->setStartValue(QPoint(0, -height()));
     m_inAnimation->setEndValue(QPoint(0, 0));
     m_inAnimation->setEasingCurve(QEasingCurve::OutCubic);
 
     m_outAnimation = new QParallelAnimationGroup(this);
-    QPropertyAnimation *outPosAnimation = new QPropertyAnimation(m_background, "pos", this);
+    QPropertyAnimation *outPosAnimation = new QPropertyAnimation(m_bgContainer, "pos", this);
     outPosAnimation->setDuration(300);
     outPosAnimation->setStartValue(m_inAnimation->endValue());
     outPosAnimation->setEndValue(QPoint(width(), 0));
     outPosAnimation->setEasingCurve(QEasingCurve::OutCubic);
-    QPropertyAnimation *outOpacityAnimation = new QPropertyAnimation(m_background, "opacity", this);
+    QPropertyAnimation *outOpacityAnimation = new QPropertyAnimation(m_bgContainer, "opacity", this);
     outOpacityAnimation->setDuration(300);
     outOpacityAnimation->setStartValue(1.0);
     outOpacityAnimation->setEndValue(0);
