@@ -19,6 +19,7 @@ class QLabel;
 class QPropertyAnimation;
 class QParallelAnimationGroup;
 class NotificationEntity;
+class ActionButton;
 class Bubble : public QFrame
 {
     Q_OBJECT
@@ -54,6 +55,7 @@ private:
     QLabel *m_icon = nullptr;
     QLabel *m_title = nullptr;
     QLabel *m_body = nullptr;
+    ActionButton *m_actionButton = nullptr;
     DImageButton *m_closeButton = nullptr;
     QPropertyAnimation *m_inAnimation = nullptr;
     QParallelAnimationGroup *m_outAnimation = nullptr;
@@ -66,6 +68,7 @@ private:
     void initAnimations();
     void initTimers();
     bool containsMouse() const;
+    void processActions();
 };
 
 #endif // BUBBLE_H

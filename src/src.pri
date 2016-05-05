@@ -5,7 +5,8 @@ HEADERS += \
     $$PWD/properties_dbus_interface.h \
     $$PWD/dbus_daemon_interface.h \
     $$PWD/notificationentity.h \
-    $$PWD/dbuslogin1manager.h
+    $$PWD/dbuslogin1manager.h \
+    $$PWD/actionbutton.h
 
 SOURCES += \
     $$PWD/bubble.cpp \
@@ -14,4 +15,5 @@ SOURCES += \
     $$PWD/properties_dbus_interface.cpp \
     $$PWD/dbus_daemon_interface.cpp \
     $$PWD/notificationentity.cpp \
-    $$PWD/dbuslogin1manager.cpp
+    $$PWD/dbuslogin1manager.cpp \
+    $$PWD/actionbutton.cpp

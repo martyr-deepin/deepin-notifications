@@ -22,6 +22,7 @@
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
 #include "notificationentity.h"
+#include "actionbutton.h"
 
 DWIDGET_USE_NAMESPACE
 
@@ -50,6 +51,7 @@ Bubble::Bubble(NotificationEntity *entity):
     m_icon(new QLabel(m_background)),
     m_title(new QLabel(m_background)),
     m_body(new QLabel(m_background)),
+    m_actionButton(new ActionButton(m_background)),
     m_closeButton(new DImageButton(":/images/close.png", ":/images/close.png", ":/images/close.png", m_background))
 {
     setWindowFlags(Qt::X11BypassWindowManagerHint | Qt::WindowStaysOnTopHint);
@@ -147,6 +149,8 @@ void Bubble::updateContent()
     m_title->setText(m_entity->summary());
     m_body->setText(m_entity->body());
 
+    processActions();
+
     if (!isVisible()) {
         setVisible(true);
         m_inAnimation->start();
@@ -181,21 +185,24 @@ void Bubble::initUI()
 
     m_title->setObjectName("Title");
     m_title->setAlignment(Qt::AlignTop | Qt::AlignLeft);
-    m_title->setFixedSize(230, 20);
     m_title->move(70, 6);
 
     m_body->setObjectName("Body");
     m_body->setAlignment(Qt::AlignTop | Qt::AlignLeft);
-    m_body->setFixedSize(230, 40);
     m_body->move(70, 22);
     m_body->setWordWrap(true);
 
+    m_actionButton->move(m_background->width() - m_actionButton->width(), 0);
+
     m_closeButton->setFixedSize(10, 10);
-    m_closeButton->move(width() - m_closeButton->width() - 4, 4);
+    m_closeButton->move(m_background->width() - m_closeButton->width() - 4, 4);
 
     setStyleSheet(BubbleStyleSheet);
 
     connect(m_closeButton, &DImageButton::clicked, this, &Bubble::closeButtonClicked);
+    connect(m_actionButton, &ActionButton::buttonClicked, [this](QString actionId){
+        emit actionInvoked(m_entity->id(), actionId);
+    });
 }
 
 void Bubble::initAnimations()
@@ -251,4 +258,32 @@ bool Bubble::containsMouse() const
     QRect rectToGlobal = QRect(mapToGlobal(rect().topLeft()),
                                 mapToGlobal(rect().bottomRight()));
     return rectToGlobal.contains(QCursor::pos());
+}
+
+void Bubble::processActions()
+{
+    m_actionButton->clear();
+
+    QString id;
+    QString text;
+    QStringList actions = m_entity->actions();
+    for (int i = 0; i < actions.length(); i++) {
+        if (i % 2 == 0) {
+            id = actions.at(i);
+            if (id == "default") {
+                i++; continue;
+            }
+        } else {
+            text = actions.at(i);
+            m_actionButton->addButton(id, text);
+        }
+    }
+
+    if (m_actionButton->isEmpty()) {
+        m_title->setFixedSize(230, 20);
+        m_body->setFixedSize(230, 40);
+    } else {
+        m_title->setFixedSize(160, 20);
+        m_body->setFixedSize(160, 40);
+    }
 }
