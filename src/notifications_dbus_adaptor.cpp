@@ -68,9 +68,7 @@ uint NotificationsDBusAdaptor::Notify(const QString &in0, uint in1, const QStrin
                          "/com/deepin/daemon/SoundEffect",
                          "com.deepin.daemon.SoundEffect",
                          QDBusConnection::sessionBus(), this);
-    if (iface.isValid()) {
-        iface.asyncCall("PlaySystemSound", "message-out");
-    }
+    iface.asyncCall("PlaySystemSound", "message-out");
 
     // handle method call org.freedesktop.Notifications.Notify
     uint out0;
