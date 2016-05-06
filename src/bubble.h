@@ -16,6 +16,7 @@
 DWIDGET_USE_NAMESPACE
 
 class QLabel;
+class AppIcon;
 class QPropertyAnimation;
 class QParallelAnimationGroup;
 class NotificationEntity;
@@ -52,7 +53,7 @@ private:
 
     QFrame *m_bgContainer = nullptr;
     QFrame *m_background = nullptr;
-    QLabel *m_icon = nullptr;
+    AppIcon *m_icon = nullptr;
     QLabel *m_title = nullptr;
     QLabel *m_body = nullptr;
     ActionButton *m_actionButton = nullptr;
