@@ -21,6 +21,7 @@
 #include <QGraphicsDropShadowEffect>
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
+#include "appicon.h"
 #include "notificationentity.h"
 #include "actionbutton.h"
 
@@ -48,7 +49,7 @@ Bubble::Bubble(NotificationEntity *entity):
     m_entity(entity),
     m_bgContainer(new QFrame(this)),
     m_background(new QFrame(m_bgContainer)),
-    m_icon(new QLabel(m_background)),
+    m_icon(new AppIcon(m_background)),
     m_title(new QLabel(m_background)),
     m_body(new QLabel(m_background)),
     m_actionButton(new ActionButton(m_background)),
@@ -142,9 +143,9 @@ void Bubble::updateContent()
 
     if (imagePath.isEmpty()) {
         // TODO: use gtk methods instead of QIcon.
-        m_icon->setPixmap(QIcon::fromTheme(m_entity->appIcon()).pixmap(m_icon->size()));
+        m_icon->setIcon(m_entity->appIcon());
     } else {
-        m_icon->setPixmap(QPixmap(imagePath));
+        m_icon->setIcon(imagePath);
     }
     m_title->setText(m_entity->summary());
     m_body->setText(m_entity->body());
