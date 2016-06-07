@@ -168,9 +168,23 @@ int BubbleManager::getControlCenterX()
 
 void BubbleManager::controlCenterXChangedSlot(QString interfaceName, QVariantMap changedProperties, QStringList)
 {
+    static const int ControlCenterWidth = 400;
+
     if (interfaceName == ControlCenterDBusService) {
         if (changedProperties.contains("X")) {
-            m_bubble->setXBasePosition(changedProperties["X"].toInt());
+            int dccX = changedProperties["X"].toInt();
+
+            QDesktopWidget * desktop = QApplication::desktop();
+            QRect primaryRect = desktop->availableGeometry(desktop->primaryScreen());
+
+            // DCC is supposed to provide the correct x,
+            // but actually it didn't do its job well for several times.
+            // So we should check if the position is valid first.
+            if (primaryRect.x() + primaryRect.width() - ControlCenterWidth < dccX
+                    && dccX <primaryRect.x() + primaryRect.width())
+            {
+                m_bubble->setXBasePosition(dccX);
+            }
         }
     }
 }
