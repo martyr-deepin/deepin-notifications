@@ -142,7 +142,6 @@ void Bubble::updateContent()
     m_aboutToOutTimer->stop();
 
     if (imagePath.isEmpty()) {
-        // TODO: use gtk methods instead of QIcon.
         m_icon->setIcon(m_entity->appIcon());
     } else {
         m_icon->setIcon(imagePath);
@@ -184,10 +183,12 @@ void Bubble::initUI()
     m_icon->setFixedSize(48, 48);
     m_icon->move(11, 11);
 
+    m_title->setTextFormat(Qt::RichText);
     m_title->setObjectName("Title");
     m_title->setAlignment(Qt::AlignTop | Qt::AlignLeft);
     m_title->move(70, 6);
 
+    m_body->setTextFormat(Qt::RichText);
     m_body->setObjectName("Body");
     m_body->setAlignment(Qt::AlignTop | Qt::AlignLeft);
     m_body->move(70, 22);
