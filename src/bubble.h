@@ -13,6 +13,7 @@
 #include <QFrame>
 #include <dimagebutton.h>
 
+
 DWIDGET_USE_NAMESPACE
 
 class QLabel;
@@ -21,17 +22,19 @@ class QPropertyAnimation;
 class QParallelAnimationGroup;
 class NotificationEntity;
 class ActionButton;
+
 class Bubble : public QFrame
 {
     Q_OBJECT
 public:
     Bubble(NotificationEntity *entity=0);
 
-    void setXBasePosition(int);
+    void setBasePosition(int,int);
     void setupPosition();
 
     NotificationEntity *entity() const;
     void setEntity(NotificationEntity *entity);
+
 
 signals:
     void expired(int);
@@ -44,6 +47,7 @@ public slots:
     QPoint getCursorPos();
     void setMask(int, int, int, int);
     void closeButtonClicked();
+
 
 protected:
     void mousePressEvent(QMouseEvent *) Q_DECL_OVERRIDE;
@@ -60,7 +64,6 @@ private:
     DImageButton *m_closeButton = nullptr;
     QPropertyAnimation *m_inAnimation = nullptr;
     QParallelAnimationGroup *m_outAnimation = nullptr;
-
     QTimer *m_outTimer = nullptr;
     QTimer *m_aboutToOutTimer = nullptr;
 

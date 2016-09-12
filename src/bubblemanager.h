@@ -14,20 +14,27 @@
 #include <QStringList>
 #include <QVariantMap>
 #include <QQueue>
+#include <QDesktopWidget>
+#include <QApplication>
+#include <QGuiApplication>
 #include "bubble.h"
+#include "dbusdock_interface.h"
 
 static const QString ControlCenterDBusService = "com.deepin.dde.ControlCenter";
 static const QString ControlCenterDBusPath = "/com/deepin/dde/ControlCenter";
+static const QString DBbsDockDBusServer = "com.deepin.dde.Dock";
+static const QString DBusDockDBusPath = "/com/deepin/dde/Dock";
 static const QString DBusDaemonDBusService = "org.freedesktop.DBus";
 static const QString DBusDaemonDBusPath = "/org/freedesktop/DBus";
 static const QString NotificationsDBusService = "org.freedesktop.Notifications";
 static const QString NotificationsDBusPath = "/org/freedesktop/Notifications";
 static const QString Login1DBusService = "org.freedesktop.login1";
 static const QString Login1DBusPath = "/org/freedesktop/login1";
-
+static const int ControlCenterWidth = 400;
 class PropertiesInterface;
 class DBusDaemonInterface;
 class Login1ManagerInterface;
+class DBusDockInterface;
 class BubbleManager : public QObject
 {
     Q_OBJECT
@@ -56,6 +63,7 @@ public slots:
     void registerAsService();
 
     void controlCenterXChangedSlot(QString, QVariantMap, QStringList);
+    void dockchangedSlot(const QRect &geometry);
     void dbusNameOwnerChangedSlot(QString, QString, QString);
 
     void bubbleExpired(int);
@@ -66,6 +74,7 @@ public slots:
 
     void onPrepareForSleep(bool);
 
+
 private:
     int m_counter;
     QTimer *m_quitTimer;
@@ -74,11 +83,17 @@ private:
     PropertiesInterface *m_propertiesInterface;
     DBusDaemonInterface *m_dbusDaemonInterface;
     Login1ManagerInterface *m_login1ManagerInterface;
-
+    DBusDockInterface *m_dbusdockinterface;
+    int   m_DccXpos;
+    QRect m_Dock;
     bool checkControlCenterExistence();
+    int getX(const QRect &dock, const int dccx);
+    int getY(const QRect &dock);
     int getControlCenterX();
+
     void bindControlCenterX();
     void consumeEntities();
+
 };
 
 #endif // BUBBLEMANAGER_H

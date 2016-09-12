@@ -12,14 +12,14 @@
 #include <QVariantMap>
 #include <QQuickItem>
 #include <QTimer>
-#include <QDesktopWidget>
-#include <QApplication>
 #include "bubble.h"
 #include "properties_dbus_interface.h"
 #include "dbus_daemon_interface.h"
 #include "dbuslogin1manager.h"
 #include "notificationentity.h"
+
 #include <QDebug>
+
 
 BubbleManager::BubbleManager(QObject *parent) :
     QObject(parent),
@@ -36,14 +36,30 @@ BubbleManager::BubbleManager(QObject *parent) :
 
     m_dbusDaemonInterface = new DBusDaemonInterface(DBusDaemonDBusService, DBusDaemonDBusPath,
                                                     QDBusConnection::sessionBus(), this);
-    m_login1ManagerInterface = new Login1ManagerInterface(Login1DBusService, Login1DBusPath,
-                                                          QDBusConnection::systemBus(), this),
 
-    connect(m_dbusDaemonInterface, SIGNAL(NameOwnerChanged(QString,QString,QString)),
-            this, SLOT(dbusNameOwnerChangedSlot(QString,QString,QString)));
+    m_dbusdockinterface = new DBusDockInterface(DBbsDockDBusServer, DBusDockDBusPath,
+                                                QDBusConnection::sessionBus(), this);
+
+    m_login1ManagerInterface = new Login1ManagerInterface(Login1DBusService, Login1DBusPath,
+                                                          QDBusConnection::systemBus(), this);
+
+    m_propertiesInterface = new PropertiesInterface(ControlCenterDBusService,
+                                                    ControlCenterDBusPath,
+                                                    QDBusConnection::sessionBus(),
+                                                    this);
+
+    connect(m_dbusDaemonInterface, SIGNAL(NameOwnerChanged(QString, QString, QString)),
+            this, SLOT(dbusNameOwnerChangedSlot(QString, QString, QString)));
 
     connect(m_login1ManagerInterface, SIGNAL(PrepareForSleep(bool)),
             this, SLOT(onPrepareForSleep(bool)));
+
+    connect(m_dbusdockinterface, &DBusDockInterface::geometryChanged, this, &BubbleManager::dockchangedSlot);
+
+    m_Dock = m_dbusdockinterface->geometry();
+    QDesktopWidget *desktop = QApplication::desktop();
+    QRect pointerScreenRect = desktop->screen(desktop->screenNumber(QCursor::pos()))->geometry();
+    m_DccXpos = pointerScreenRect.width();
 }
 
 BubbleManager::~BubbleManager()
@@ -53,7 +69,7 @@ BubbleManager::~BubbleManager()
 
 void BubbleManager::CloseNotification(uint id)
 {
-    if (id != (uint)(m_counter - 1 )) {
+    if (id != (uint)(m_counter - 1)) {
         return;
     }
 
@@ -95,7 +111,7 @@ uint BubbleManager::Notify(const QString &appName, uint,
     NotificationEntity *notification = new NotificationEntity(appName, count, appIcon, summary,
                                                               body, actions, hints, expireTimeout, this);
     m_entities.enqueue(notification);
-    if (!m_bubble->isVisible()) consumeEntities();
+    if (!m_bubble->isVisible()) { consumeEntities(); }
 
     return count;
 }
@@ -136,7 +152,6 @@ void BubbleManager::bubbleActionInvoked(int id, QString actionId)
     m_quitTimer->start();
     m_bubble->setVisible(false);
     emit ActionInvoked(id, actionId);
-
     consumeEntities();
 }
 
@@ -161,37 +176,90 @@ bool BubbleManager::checkControlCenterExistence()
     return m_dbusDaemonInterface->NameHasOwner(ControlCenterDBusService).value();
 }
 
+int BubbleManager::getX(const QRect &dock, const int dccx)
+{
+    QDesktopWidget *desktop = QApplication::desktop();
+    QRect primaryRect = desktop->screenGeometry(desktop->primaryScreen());
+    bool LeftOrTop = (dock.width() > dock.height());
+    if(!LeftOrTop) {
+        //判断右边
+        if(dock.x() > 0) {
+            if((primaryRect.height() - dock.height()) / 2 > m_bubble->height()) {
+                return dccx;
+            } else {
+                if(dccx < dock.x() || dock.x() > primaryRect.width() + primaryRect.x()) {
+                    //判断和dcc的关系
+                    return dccx;
+                } else {
+                    return dock.x();
+                }
+            }
+
+        } else {
+            return dock.x();
+        }
+    }
+    return dccx;
+}
+
+int BubbleManager::getY(const QRect &dock)
+{
+    QDesktopWidget *desktop = QApplication::desktop();
+    QRect primaryRect = desktop->screenGeometry(desktop->primaryScreen());
+    bool LeftOrTop = (dock.width() > dock.height());
+
+    if(LeftOrTop) {
+        if(dock.y() < 1) {
+            if((primaryRect.width() - dock.width())/2 > m_bubble->width()) {
+                return dock.y();
+            } else {
+                if(dock.y() == 0) {
+                    return dock.height();
+                } else {
+                    return dock.y() + dock.height();
+                }
+            }
+        } else {
+            return primaryRect.y();
+        }
+    }
+    return 0;
+}
+
 int BubbleManager::getControlCenterX()
 {
-     return m_propertiesInterface->Get(ControlCenterDBusService, "X").value().variant().toInt();
+    return m_propertiesInterface->Get(ControlCenterDBusService, "X").value().variant().toInt();
 }
 
 void BubbleManager::controlCenterXChangedSlot(QString interfaceName, QVariantMap changedProperties, QStringList)
 {
-    static const int ControlCenterWidth = 400;
 
     if (interfaceName == ControlCenterDBusService) {
         if (changedProperties.contains("X")) {
-            int dccX = changedProperties["X"].toInt();
-
-            QDesktopWidget * desktop = QApplication::desktop();
-            QRect primaryRect = desktop->availableGeometry(desktop->primaryScreen());
+            m_DccXpos = changedProperties["X"].toInt();
+            QDesktopWidget *m_desktop = QApplication::desktop();
+            QRect primaryRect = m_desktop->availableGeometry(m_desktop->primaryScreen());
 
             // DCC is supposed to provide the correct x,
             // but actually it didn't do its job well for several times.
             // So we should check if the position is valid first.
-            if (primaryRect.x() + primaryRect.width() - ControlCenterWidth < dccX
-                    && dccX <primaryRect.x() + primaryRect.width())
-            {
-                m_bubble->setXBasePosition(dccX);
+            if (primaryRect.x() + primaryRect.width() - ControlCenterWidth < m_DccXpos
+                    && m_DccXpos < primaryRect.x() + primaryRect.width()) {
+                m_bubble->setBasePosition(getX(m_Dock, m_DccXpos), getY(m_Dock));
             }
         }
     }
 }
 
+void BubbleManager::dockchangedSlot(const QRect &geometry)
+{
+    m_Dock = geometry;
+    m_bubble->setBasePosition(getX(geometry, m_DccXpos), getY(geometry));
+}
+
 void BubbleManager::dbusNameOwnerChangedSlot(QString name, QString, QString newName)
 {
-    QDesktopWidget * desktop = QApplication::desktop();
+    QDesktopWidget *desktop = QApplication::desktop();
     int currentScreen = desktop->screenNumber(m_bubble->pos());
     int primaryScreen = desktop->primaryScreen();
     if (name == ControlCenterDBusService && currentScreen == primaryScreen) {
@@ -209,27 +277,28 @@ void BubbleManager::bindControlCenterX()
                                                         QDBusConnection::sessionBus(),
                                                         this);
     }
-    connect(m_propertiesInterface, SIGNAL(PropertiesChanged(QString,QVariantMap,QStringList)),
-            this, SLOT(controlCenterXChangedSlot(QString,QVariantMap,QStringList)));
+    connect(m_propertiesInterface, SIGNAL(PropertiesChanged(QString, QVariantMap, QStringList)),
+            this, SLOT(controlCenterXChangedSlot(QString, QVariantMap, QStringList)));
+    m_DccXpos = getControlCenterX();
 }
 
 void BubbleManager::consumeEntities()
 {
     qDebug() << "consumeEntities, entity length: " << m_entities.length();
 
-    if (m_entities.isEmpty()) return;
+    if (m_entities.isEmpty()) { return; }
     m_quitTimer->stop();
 
     NotificationEntity *notification = m_entities.dequeue();
     m_bubble->setupPosition();
-
-    QDesktopWidget * desktop = QApplication::desktop();
+    QDesktopWidget *desktop = QApplication::desktop();
     int pointerScreen = desktop->screenNumber(QCursor::pos());
     int primaryScreen = desktop->primaryScreen();
 
     if (checkControlCenterExistence() && pointerScreen == primaryScreen) {
         bindControlCenterX();
-        m_bubble->setXBasePosition(getControlCenterX());
+        m_bubble->setBasePosition(getX(m_Dock, m_DccXpos), getY(m_Dock));
+        qDebug() << getX(m_Dock, m_DccXpos) << getY(m_Dock) ;
     }
     m_bubble->setEntity(notification);
 
@@ -237,6 +306,7 @@ void BubbleManager::consumeEntities()
     connect(m_bubble, SIGNAL(expired(int)), this, SLOT(bubbleExpired(int)));
     connect(m_bubble, SIGNAL(dismissed(int)), this, SLOT(bubbleDismissed(int)));
     connect(m_bubble, SIGNAL(replacedByOther(int)), this, SLOT(bubbleReplacedByOther(int)));
-    connect(m_bubble, SIGNAL(actionInvoked(int, QString)), this, SLOT(bubbleActionInvoked(int,QString)));
+    connect(m_bubble, SIGNAL(actionInvoked(int, QString)), this, SLOT(bubbleActionInvoked(int, QString)));
     connect(m_bubble, SIGNAL(aboutToQuit()), this, SLOT(bubbleAboutToQuit()));
+
 }

@@ -7,7 +7,8 @@ HEADERS += \
     $$PWD/notificationentity.h \
     $$PWD/dbuslogin1manager.h \
     $$PWD/actionbutton.h \
-    $$PWD/appicon.h
+    $$PWD/appicon.h\
+    $$PWD/dbusdock_interface.h
 
 SOURCES += \
     $$PWD/bubble.cpp \
@@ -18,4 +19,5 @@ SOURCES += \
     $$PWD/notificationentity.cpp \
     $$PWD/dbuslogin1manager.cpp \
     $$PWD/actionbutton.cpp \
-    $$PWD/appicon.cpp
+    $$PWD/appicon.cpp\
+    $$PWD/dbusdock_interface.cpp

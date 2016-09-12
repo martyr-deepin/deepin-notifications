@@ -63,8 +63,8 @@ Bubble::Bubble(NotificationEntity *entity):
     initTimers();
 
     setupPosition();
-
     if(entity) this->updateContent();
+
 }
 
 NotificationEntity *Bubble::entity() const
@@ -78,17 +78,17 @@ void Bubble::setEntity(NotificationEntity *entity)
     this->updateContent();
 }
 
-void Bubble::setXBasePosition(int x)
+
+void Bubble::setBasePosition(int x,int y)
 {
-    move(x - width(), pos().y());
+    move(x - width(), y);
 }
 
 void Bubble::setupPosition()
 {
     QDesktopWidget *desktop = QApplication::desktop();
     QRect pointerScreenRect = desktop->screen(desktop->screenNumber(QCursor::pos()))->geometry();
-    setXBasePosition(pointerScreenRect.x() + pointerScreenRect.width());
-    move(pos().x(), pointerScreenRect.y());
+    setBasePosition(pointerScreenRect.x() + pointerScreenRect.width(), pointerScreenRect.y());
 }
 
 QPoint Bubble::getCursorPos()
@@ -96,7 +96,7 @@ QPoint Bubble::getCursorPos()
     return QCursor::pos();
 }
 
-void Bubble::setMask(int x, int y, int width, int height)
+void Bubble::setMask(int, int, int, int)
 {
 
 }
@@ -128,14 +128,14 @@ void Bubble::updateContent()
         actions.append(action);
     }
 
-//    QJsonObject object;
-//    object["id"] = int(m_entity->id());
-//    object["app_name"] = m_entity->appName();
-//    object["app_icon"] = m_entity->appIcon();
-//    object["summary"] = m_entity->summary();
-//    object["body"] = m_entity->body();
-//    object["actions"] = actions;
-//    object["image_path"] = imagePath;
+    //    QJsonObject object;
+    //    object["id"] = int(m_entity->id());
+    //    object["app_name"] = m_entity->appName();
+    //    object["app_icon"] = m_entity->appIcon();
+    //    object["summary"] = m_entity->summary();
+    //    object["body"] = m_entity->body();
+    //    object["actions"] = actions;
+    //    object["image_path"] = imagePath;
 
     // TODO: all stuff in bubble.qml:updateContent
     m_outTimer->stop();
@@ -228,7 +228,7 @@ void Bubble::initAnimations()
     outOpacityAnimation->setEasingCurve(QEasingCurve::OutCubic);
     m_outAnimation->addAnimation(outPosAnimation);
     // TODO: opacity is not supported, use QGraphicsOpacityEffect
-//    m_outAnimation->addAnimation(outOpacityAnimation);
+    //    m_outAnimation->addAnimation(outOpacityAnimation);
 
     connect(m_outAnimation, &QParallelAnimationGroup::finished, [this]{
         emit expired(int(m_entity->id()));
@@ -258,7 +258,7 @@ void Bubble::initTimers()
 bool Bubble::containsMouse() const
 {
     QRect rectToGlobal = QRect(mapToGlobal(rect().topLeft()),
-                                mapToGlobal(rect().bottomRight()));
+                               mapToGlobal(rect().bottomRight()));
     return rectToGlobal.contains(QCursor::pos());
 }
 
