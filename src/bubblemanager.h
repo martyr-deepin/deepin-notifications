@@ -84,11 +84,16 @@ private:
     DBusDaemonInterface *m_dbusDaemonInterface;
     Login1ManagerInterface *m_login1ManagerInterface;
     DBusDockInterface *m_dbusdockinterface;
-    int   m_DccXpos;
-    QRect m_Dock;
+
+    int   m_dccX;
+    QRect m_dockGeometry;
+
+    bool checkDockExistence();
     bool checkControlCenterExistence();
-    int getX(const QRect &dock, const int dccx);
-    int getY(const QRect &dock);
+
+    int getX();
+    int getY();
+
     int getControlCenterX();
 
     void bindControlCenterX();
