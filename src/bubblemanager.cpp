@@ -99,7 +99,9 @@ uint BubbleManager::Notify(const QString &appName, uint,
                            const QString &body, const QStringList &actions,
                            const QVariantMap hints, int expireTimeout)
 {
+#ifdef QT_DEBUG
     qDebug() << "Notify" << appName << appIcon << summary << body << actions << hints << expireTimeout;
+#endif
 
     quint32 count = m_counter++;
 
