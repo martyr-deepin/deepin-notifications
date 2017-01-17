@@ -13,7 +13,7 @@
 #include <QQuickItem>
 #include <QTimer>
 #include "bubble.h"
-#include "properties_dbus_interface.h"
+#include "dbuscontrol.h"
 #include "dbus_daemon_interface.h"
 #include "dbuslogin1manager.h"
 #include "notificationentity.h"
@@ -24,7 +24,7 @@
 BubbleManager::BubbleManager(QObject *parent) :
     QObject(parent),
     m_counter(0),
-    m_propertiesInterface(0)
+    m_dbusControlCenter(0)
 {
     m_bubble = new Bubble();
 
@@ -43,7 +43,7 @@ BubbleManager::BubbleManager(QObject *parent) :
     m_login1ManagerInterface = new Login1ManagerInterface(Login1DBusService, Login1DBusPath,
                                                           QDBusConnection::systemBus(), this);
 
-    m_propertiesInterface = new PropertiesInterface(ControlCenterDBusService,
+    m_dbusControlCenter = new DBusControlCenter(ControlCenterDBusService,
                                                     ControlCenterDBusPath,
                                                     QDBusConnection::sessionBus(),
                                                     this);
@@ -117,6 +117,19 @@ void BubbleManager::registerAsService()
 {
     QDBusConnection::sessionBus().registerService(NotificationsDBusService);
     QDBusConnection::sessionBus().registerObject(NotificationsDBusPath, this);
+}
+
+void BubbleManager::controlCenterRectChangedSlot(const QRect &rect)
+{
+    m_dccX = rect.x();
+    QDesktopWidget *m_desktop = QApplication::desktop();
+    QRect primaryRect = m_desktop->availableGeometry(m_desktop->primaryScreen());
+
+    if (primaryRect.x() + primaryRect.width() - ControlCenterWidth < m_dccX
+            && m_dccX < primaryRect.x() + primaryRect.width())
+    {
+        m_bubble->setBasePosition(getX(), getY());
+    }
 }
 
 void BubbleManager::bubbleExpired(int id)
@@ -240,27 +253,7 @@ int BubbleManager::getY()
 
 int BubbleManager::getControlCenterX()
 {
-    return m_propertiesInterface->Get(ControlCenterDBusService, "X").value().variant().toInt();
-}
-
-void BubbleManager::controlCenterXChangedSlot(QString interfaceName, QVariantMap changedProperties, QStringList)
-{
-    if (interfaceName == ControlCenterDBusService) {
-        if (changedProperties.contains("X")) {
-            m_dccX = changedProperties["X"].toInt();
-            QDesktopWidget *m_desktop = QApplication::desktop();
-            QRect primaryRect = m_desktop->availableGeometry(m_desktop->primaryScreen());
-
-            // DCC is supposed to provide the correct x,
-            // but actually it didn't do its job well for several times.
-            // So we should check if the position is valid first.
-            if (primaryRect.x() + primaryRect.width() - ControlCenterWidth < m_dccX
-                    && m_dccX < primaryRect.x() + primaryRect.width())
-            {
-                m_bubble->setBasePosition(getX(), getY());
-            }
-        }
-    }
+    return m_dbusControlCenter->rect().x();
 }
 
 void BubbleManager::dockchangedSlot(const QRect &geometry)
@@ -283,14 +276,13 @@ void BubbleManager::dbusNameOwnerChangedSlot(QString name, QString, QString newN
 
 void BubbleManager::bindControlCenterX()
 {
-    if (!m_propertiesInterface) {
-        m_propertiesInterface = new PropertiesInterface(ControlCenterDBusService,
+    if (!m_dbusControlCenter) {
+        m_dbusControlCenter = new DBusControlCenter(ControlCenterDBusService,
                                                         ControlCenterDBusPath,
                                                         QDBusConnection::sessionBus(),
                                                         this);
     }
-    connect(m_propertiesInterface, SIGNAL(PropertiesChanged(QString, QVariantMap, QStringList)),
-            this, SLOT(controlCenterXChangedSlot(QString, QVariantMap, QStringList)));
+    connect(m_dbusControlCenter, &DBusControlCenter::rectChanged, this, &BubbleManager::controlCenterRectChangedSlot);
 
     m_dccX = getControlCenterX();
 }

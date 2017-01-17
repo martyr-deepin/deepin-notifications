@@ -31,7 +31,7 @@ static const QString NotificationsDBusPath = "/org/freedesktop/Notifications";
 static const QString Login1DBusService = "org.freedesktop.login1";
 static const QString Login1DBusPath = "/org/freedesktop/login1";
 static const int ControlCenterWidth = 400;
-class PropertiesInterface;
+class DBusControlCenter;
 class DBusDaemonInterface;
 class Login1ManagerInterface;
 class DBusDockInterface;
@@ -62,7 +62,7 @@ public slots:
 
     void registerAsService();
 
-    void controlCenterXChangedSlot(QString, QVariantMap, QStringList);
+    void controlCenterRectChangedSlot(const QRect &rect);
     void dockchangedSlot(const QRect &geometry);
     void dbusNameOwnerChangedSlot(QString, QString, QString);
 
@@ -80,7 +80,7 @@ private:
     QTimer *m_quitTimer;
     Bubble *m_bubble;
     QQueue<NotificationEntity*> m_entities;
-    PropertiesInterface *m_propertiesInterface;
+    DBusControlCenter *m_dbusControlCenter;
     DBusDaemonInterface *m_dbusDaemonInterface;
     Login1ManagerInterface *m_login1ManagerInterface;
     DBusDockInterface *m_dbusdockinterface;
