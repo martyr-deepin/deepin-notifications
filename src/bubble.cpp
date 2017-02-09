@@ -18,6 +18,7 @@
 #include <QIcon>
 #include <QTimer>
 #include <QDebug>
+#include <QProcess>
 #include <QGraphicsDropShadowEffect>
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
@@ -203,6 +204,19 @@ void Bubble::initUI()
 
     connect(m_closeButton, &DImageButton::clicked, this, &Bubble::closeButtonClicked);
     connect(m_actionButton, &ActionButton::buttonClicked, [this](QString actionId){
+        QMap<QString, QVariant> hints = m_entity->hints();
+        QMap<QString, QVariant>::const_iterator i = hints.constBegin();
+        while (i != hints.constEnd()) {
+            QStringList args = i.value().toString().split(",");
+            if (args.length()) {
+                QString cmd = args.first();
+                args.removeFirst();
+                if (i.key() == "x-deepin-action-" + actionId) {
+                    QProcess::startDetached(cmd, args);
+                }
+            }
+            ++i;
+        }
         emit actionInvoked(m_entity->id(), actionId);
     });
 }
@@ -269,6 +283,7 @@ void Bubble::processActions()
     QString id;
     QString text;
     QStringList actions = m_entity->actions();
+
     for (int i = 0; i < actions.length(); i++) {
         if (i % 2 == 0) {
             id = actions.at(i);
