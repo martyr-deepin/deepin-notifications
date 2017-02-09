@@ -1,0 +1,41 @@
+deepin-notifications (2.3.7-1) stable; urgency=low
+
+  * Autobuild Tag 2.3.7 
+
+ -- TagBuilder <tagbuilder@deepin.com>  Thu, 21 Jul 2016 02:50:49 +0000
+
+deepin-notifications (2.3.6-1) stable; urgency=low
+
+  * Autobuild Tag 2.3.6 
+
+ -- TagBuilder <tagbuilder@linuxdeepin.com>  Mon, 23 May 2016 14:18:10 +0000
+
+deepin-notifications (2.3.5-1) stable; urgency=low
+
+  * Autobuild Tag 2.3.5 
+
+ -- TagBuilder <tabbuilder@linuxdeepin.com>  Sat, 19 Dec 2015 13:09:19 +0000
+
+deepin-notifications (2.3.4-1) stable; urgency=low
+
+  * Autobuild Tag 2.3.4 
+
+ -- TagBuilder <tabbuilder@linuxdeepin.com>  Wed, 09 Dec 2015 22:06:06 +0000
+
+deepin-notifications (2.3.3-1) stable; urgency=low
+
+  * Autobuild Tag 2.3.3 
+
+ -- TagBuilder <tabbuilder@linuxdeepin.com>  Thu, 19 Nov 2015 19:58:19 +0000
+
+deepin-notifications (2.3.1-1) stable; urgency=low
+
+  * Autobuild Tag 2.3.1 
+
+ -- TagBuilder <tabbuilder@linuxdeepin.com>  Wed, 01 Jul 2015 15:11:50 +0000
+
+deepin-notifications (0.0.0) unstable; urgency=medium
+
+  * Unstable release.
+
+ -- 宋文武 <songwenwu@linuxdeepin.com>  Thu, 18 Dec 2014 16:33:20 +0800
