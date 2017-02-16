@@ -12,7 +12,7 @@
 
 #include <QFrame>
 #include <dimagebutton.h>
-
+#include <DBlurEffectWidget>
 
 DWIDGET_USE_NAMESPACE
 
@@ -56,7 +56,7 @@ private:
     NotificationEntity *m_entity;
 
     QFrame *m_bgContainer = nullptr;
-    QFrame *m_background = nullptr;
+    DBlurEffectWidget *m_background = nullptr;
     AppIcon *m_icon = nullptr;
     QLabel *m_title = nullptr;
     QLabel *m_body = nullptr;

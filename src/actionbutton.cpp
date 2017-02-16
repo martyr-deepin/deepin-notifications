@@ -7,9 +7,10 @@
 
 #include "actionbutton.h"
 
-static const QColor BorderColor = QColor::fromRgbF(1, 1, 1, 0.2);
-static const QColor HoverColor = QColor::fromRgbF(1, 1, 1, 0.1);
-static const QColor TextColor = Qt::white;
+static const QColor BorderColor = QColor::fromRgbF(0, 0, 0, 0.2);
+static const QColor HoverColor = QColor(75, 184, 255);
+static const QColor TextColor = QColor(0, 135, 255);
+static const QColor TextHover = Qt::white;
 
 ActionButton::ActionButton(QWidget *parent) :
     QFrame(parent)
@@ -72,7 +73,11 @@ void ActionButton::paintEvent(QPaintEvent *)
         painter.drawLine(QPoint(0, height() / 2), QPoint(width(), height() / 2));
 
         // draw text
-        painter.setPen(TextColor);
+        if (m_mouseHover) {
+            painter.setPen(TextHover);
+        } else {
+            painter.setPen(TextColor);
+        }
         painter.drawText(QRectF(rect().topLeft(), QSize(width(), height() / 2)),
                          Qt::AlignHCenter | Qt::AlignVCenter,
                          m_buttons.at(0).text);
@@ -94,7 +99,11 @@ void ActionButton::paintEvent(QPaintEvent *)
         }
 
         // draw text
-        painter.setPen(TextColor);
+        if (m_mouseHover) {
+            painter.setPen(TextHover);
+        } else {
+            painter.setPen(TextColor);
+        }
         painter.drawText(rect(),
                          Qt::AlignHCenter | Qt::AlignVCenter,
                          m_buttons.at(0).text);
@@ -114,7 +123,7 @@ void ActionButton::mouseMoveEvent(QMouseEvent * event)
         m_mouseInButtonTwo = true;
     }
     event->accept();
-
+    m_mouseHover = true;
     update();
 }
 
@@ -139,4 +148,7 @@ void ActionButton::leaveEvent(QEvent * event)
     m_mouseInButtonOne = false;
     m_mouseInButtonTwo = false;
     event->accept();
+    m_mouseHover = false;
+
+    update();
 }

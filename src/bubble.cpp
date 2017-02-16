@@ -25,20 +25,24 @@
 #include "notificationentity.h"
 #include "actionbutton.h"
 
+#include <dplatformwindowhandle.h>
+#include <anchors.h>
+#include <denhancedwidget.h>
+
 DWIDGET_USE_NAMESPACE
 
 static const QString BubbleStyleSheet = "QFrame#Background { "
                                         "background-color: rgba(0, 0, 0, 180);"
-                                        "border-radius: 4px;"
+                                        "border-radius: 6px;"
                                         "border: solid 1px white;"
                                         "}"
                                         "QLabel#Title {"
                                         "font-size: 11px;"
-                                        "color: rgba(255, 255, 255, 0.6);"
+                                        "color: black;"
                                         "}"
                                         "QLabel#Body {"
                                         "font-size: 12px;"
-                                        "color: white;"
+                                        "color: black;"
                                         "}";
 static const int ShadowWidth = 20;
 static const int BubbleWidth = 300;
@@ -48,7 +52,7 @@ Bubble::Bubble(NotificationEntity *entity):
     QFrame(),
     m_entity(entity),
     m_bgContainer(new QFrame(this)),
-    m_background(new QFrame(m_bgContainer)),
+    m_background(new DBlurEffectWidget(this)),
     m_icon(new AppIcon(m_background)),
     m_title(new QLabel(m_background)),
     m_body(new QLabel(m_background)),
@@ -57,6 +61,14 @@ Bubble::Bubble(NotificationEntity *entity):
 {
     setWindowFlags(Qt::X11BypassWindowManagerHint | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_TranslucentBackground);
+
+    m_background->setBlendMode(DBlurEffectWidget::BehindWindowBlend);
+    m_background->setBlurRectXRadius(4);
+    m_background->setBlurRectYRadius(4);
+    m_background->setMaskColor(QColor(245, 245, 245));
+
+    Anchors<DBlurEffectWidget> anchors_background(m_background);
+    anchors_background.setCenterIn(m_bgContainer);
 
     initUI();
     initAnimations();
@@ -170,9 +182,12 @@ void Bubble::initUI()
     m_bgContainer->setFixedSize(size());
     m_bgContainer->move(QPoint(0, -height()));
 
-    m_background->setObjectName("Background");
     m_background->setFixedSize(BubbleWidth, BubbleHeight);
-    m_background->move(ShadowWidth, ShadowWidth);
+
+    QFrame *bgShadow = new QFrame(m_bgContainer);
+    bgShadow->setObjectName("Background");
+    bgShadow->move(ShadowWidth, ShadowWidth);
+    bgShadow->setFixedSize(m_background->size());
 
     QGraphicsDropShadowEffect *dropShadow = new QGraphicsDropShadowEffect;
     dropShadow->setColor(QColor::fromRgbF(0, 0, 0, 0.9));

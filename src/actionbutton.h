@@ -29,11 +29,12 @@ protected:
     void leaveEvent(QEvent *) Q_DECL_OVERRIDE;
 
 private:
-    int m_radius = 10;
+    int m_radius = 4;
     QList<Button> m_buttons;
     bool m_mouseInButtonOne = false;
     bool m_mouseInButtonTwo = false;
     bool m_mousePressed = false;
+    bool m_mouseHover = false;
 };
 
 #endif // ACTIONBUTTON_H
