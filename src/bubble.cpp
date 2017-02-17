@@ -32,9 +32,8 @@
 DWIDGET_USE_NAMESPACE
 
 static const QString BubbleStyleSheet = "QFrame#Background { "
-                                        "background-color: rgba(0, 0, 0, 180);"
-                                        "border-radius: 6px;"
-                                        "border: solid 1px white;"
+                                        "background-color: rgba(0, 0, 0, 60);"
+                                        "border-radius: 8px;"
                                         "}"
                                         "QLabel#Title {"
                                         "font-size: 11px;"
@@ -63,8 +62,8 @@ Bubble::Bubble(NotificationEntity *entity):
     setAttribute(Qt::WA_TranslucentBackground);
 
     m_background->setBlendMode(DBlurEffectWidget::BehindWindowBlend);
-    m_background->setBlurRectXRadius(4);
-    m_background->setBlurRectYRadius(4);
+    m_background->setBlurRectXRadius(6);
+    m_background->setBlurRectYRadius(6);
     m_background->setMaskColor(QColor(245, 245, 245));
 
     Anchors<DBlurEffectWidget> anchors_background(m_background);
@@ -188,6 +187,12 @@ void Bubble::initUI()
     bgShadow->setObjectName("Background");
     bgShadow->move(ShadowWidth, ShadowWidth);
     bgShadow->setFixedSize(m_background->size());
+
+    QWidget *borderWidget = new QWidget(m_bgContainer);
+    borderWidget->move(ShadowWidth -1, ShadowWidth -1);
+    borderWidget->setFixedSize(QSize(m_background->size().width() + 2, m_background->size().height() + 2));
+    borderWidget->setStyleSheet("border: 1px solid rgba(0, 0, 0, 25); border-radius: 6px;");
+
 
     QGraphicsDropShadowEffect *dropShadow = new QGraphicsDropShadowEffect;
     dropShadow->setColor(QColor::fromRgbF(0, 0, 0, 0.9));

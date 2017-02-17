@@ -7,7 +7,7 @@
 
 #include "actionbutton.h"
 
-static const QColor BorderColor = QColor::fromRgbF(0, 0, 0, 0.2);
+static const QColor BorderColor = QColor::fromRgbF(0, 0, 0, 0.1);
 static const QColor HoverColor = QColor(75, 184, 255);
 static const QColor TextColor = QColor(0, 135, 255);
 static const QColor TextHover = Qt::white;
