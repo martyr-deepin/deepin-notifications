@@ -55,8 +55,7 @@ Bubble::Bubble(NotificationEntity *entity):
     m_icon(new AppIcon(m_background)),
     m_title(new QLabel(m_background)),
     m_body(new QLabel(m_background)),
-    m_actionButton(new ActionButton(m_background)),
-    m_closeButton(new DImageButton(":/images/close.png", ":/images/close.png", ":/images/close.png", m_background))
+    m_actionButton(new ActionButton(m_background))
 {
     setWindowFlags(Qt::X11BypassWindowManagerHint | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_TranslucentBackground);
@@ -216,12 +215,8 @@ void Bubble::initUI()
 
     m_actionButton->move(m_background->width() - m_actionButton->width(), 0);
 
-    m_closeButton->setFixedSize(10, 10);
-    m_closeButton->move(m_background->width() - m_closeButton->width() - 4, 4);
-
     setStyleSheet(BubbleStyleSheet);
 
-    connect(m_closeButton, &DImageButton::clicked, this, &Bubble::closeButtonClicked);
     connect(m_actionButton, &ActionButton::buttonClicked, [this](QString actionId){
         emit actionInvoked(m_entity->id(), actionId);
     });

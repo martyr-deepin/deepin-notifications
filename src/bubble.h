@@ -11,7 +11,6 @@
 #define BUBBLE_H
 
 #include <QFrame>
-#include <dimagebutton.h>
 #include <DBlurEffectWidget>
 
 DWIDGET_USE_NAMESPACE
@@ -61,7 +60,6 @@ private:
     QLabel *m_title = nullptr;
     QLabel *m_body = nullptr;
     ActionButton *m_actionButton = nullptr;
-    DImageButton *m_closeButton = nullptr;
     QPropertyAnimation *m_inAnimation = nullptr;
     QParallelAnimationGroup *m_outAnimation = nullptr;
     QTimer *m_outTimer = nullptr;

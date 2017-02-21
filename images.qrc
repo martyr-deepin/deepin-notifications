@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>images/close.png</file>
         <file>images/default.png</file>
         <file>images/locate_hover.png</file>
         <file>images/locate_normal.png</file>
