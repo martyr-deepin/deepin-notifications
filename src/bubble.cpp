@@ -21,6 +21,7 @@
 #include <QGraphicsDropShadowEffect>
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
+#include <QProcess>
 #include "appicon.h"
 #include "notificationentity.h"
 #include "actionbutton.h"
@@ -218,6 +219,19 @@ void Bubble::initUI()
     setStyleSheet(BubbleStyleSheet);
 
     connect(m_actionButton, &ActionButton::buttonClicked, [this](QString actionId){
+        QMap<QString, QVariant> hints = m_entity->hints();
+        QMap<QString, QVariant>::const_iterator i = hints.constBegin();
+        while (i != hints.constEnd()) {
+            QStringList args = i.value().toString().split(",");
+            if (args.length()) {
+                QString cmd = args.first();
+                args.removeFirst();
+                if (i.key() == "x-deepin-action-" + actionId) {
+                    QProcess::startDetached(cmd, args);
+                }
+            }
+            ++i;
+        }
         emit actionInvoked(m_entity->id(), actionId);
     });
 }
