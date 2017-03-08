@@ -78,3 +78,20 @@ uint NotificationsDBusAdaptor::Notify(const QString &in0, uint in1, const QStrin
     return out0;
 }
 
+QString NotificationsDBusAdaptor::GetAllRecords()
+{
+    QString out0;
+    QMetaObject::invokeMethod(parent(), "GetAllRecords", Q_RETURN_ARG(QString, out0));
+    return out0;
+}
+
+void NotificationsDBusAdaptor::RemoveRecord(const QString &id)
+{
+    QMetaObject::invokeMethod(parent(), "RemoveRecord", Q_ARG(QString, id));
+}
+
+void NotificationsDBusAdaptor::ClearRecords()
+{
+    QMetaObject::invokeMethod(parent(), "ClearRecords");
+}
+

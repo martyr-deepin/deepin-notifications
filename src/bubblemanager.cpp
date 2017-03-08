@@ -18,13 +18,15 @@
 #include "dbuslogin1manager.h"
 #include "notificationentity.h"
 
+#include "persistence.h"
+
 #include <QDebug>
 
 
 BubbleManager::BubbleManager(QObject *parent) :
     QObject(parent),
-    m_counter(0),
-    m_dbusControlCenter(0)
+    m_dbusControlCenter(0),
+    m_persistence(new Persistence)
 {
     m_bubble = new Bubble();
 
@@ -55,6 +57,7 @@ BubbleManager::BubbleManager(QObject *parent) :
             this, SLOT(onPrepareForSleep(bool)));
 
     connect(m_dbusdockinterface, &DBusDockInterface::geometryChanged, this, &BubbleManager::dockchangedSlot);
+    connect(m_persistence, &Persistence::RecordAdded, this, &BubbleManager::AddOneRecord);
 }
 
 BubbleManager::~BubbleManager()
@@ -64,10 +67,6 @@ BubbleManager::~BubbleManager()
 
 void BubbleManager::CloseNotification(uint id)
 {
-    if (id != (uint)(m_counter - 1)) {
-        return;
-    }
-
     bubbleDismissed(id);
 
     return;
@@ -103,14 +102,64 @@ uint BubbleManager::Notify(const QString &appName, uint,
     qDebug() << "Notify" << appName << appIcon << summary << body << actions << hints << expireTimeout;
 #endif
 
-    quint32 count = m_counter++;
-
-    NotificationEntity *notification = new NotificationEntity(appName, count, appIcon, summary,
-                                                              body, actions, hints, expireTimeout, this);
+    // timestamp as id;
+    const qint64 id = QDateTime::currentMSecsSinceEpoch();
+    NotificationEntity *notification = new NotificationEntity(appName, QString::number(id), appIcon, summary,
+                                                              body, actions, hints, this);
+    m_persistence->addOne(notification);
     m_entities.enqueue(notification);
     if (!m_bubble->isVisible()) { consumeEntities(); }
 
-    return count;
+    return id;
+}
+
+QString BubbleManager::GetAllRecords()
+{
+    QJsonArray array;
+
+    const QList<NotificationEntity> &value = m_persistence->getAll();
+    for (const NotificationEntity &entity : value) {
+        QJsonObject obj
+        {
+            {"name", entity.appName()},
+            {"icon", entity.appIcon()},
+            {"summary", entity.summary()},
+            {"body", entity.body()},
+            {"id", entity.id()}
+        };
+        array.append(obj);
+    }
+
+    QJsonDocument doc(array);
+    return doc.toJson();
+}
+
+void BubbleManager::RemoveRecord(const QString &id)
+{
+    m_persistence->removeOne(id);
+}
+
+void BubbleManager::ClearRecords()
+{
+    m_persistence->removeAll();
+}
+
+void BubbleManager::AddOneRecord(NotificationEntity *entity)
+{
+    QJsonObject notifyJson
+    {
+        {"name", entity->appName()},
+        {"icon", entity->appIcon()},
+        {"summary", entity->summary()},
+        {"body", entity->body()},
+        {"id", entity->id()}
+    };
+    QJsonDocument doc(notifyJson);
+    QString notify(doc.toJson(QJsonDocument::Compact));
+
+    qDebug() << notifyJson;
+
+    emit RecordAdded(notify);
 }
 
 void BubbleManager::registerAsService()

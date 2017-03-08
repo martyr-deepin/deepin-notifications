@@ -3,12 +3,12 @@ Section: misc
 Priority: extra
 Maintainer: Deepin Sysdev <sysdev@deepin.com>
 Build-Depends: debhelper (>= 9), pkg-config, libgtk2.0-dev, 
- qt5-default, qtdeclarative5-dev, libqt5svg5-dev, libdtkbase-dev, libdtkwidget-dev, 
+ qt5-default, qtdeclarative5-dev, libqt5svg5-dev, libdtkbase-dev, libdtkwidget-dev
 Standards-Version: 3.9.5
 Homepage: http://www.deepin.com
 
 Package: deepin-notifications
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, deepin-qml-widgets
+Depends: ${shlibs:Depends}, ${misc:Depends}, libqt5sql5-sqlite
 Description: system notifications for linuxdeepin desktop environment
  Deepin notification is a notfiy app for linuxdeepin new desktop environment.

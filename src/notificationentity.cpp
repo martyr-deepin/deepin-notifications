@@ -9,10 +9,10 @@
 
 #include "notificationentity.h"
 
-NotificationEntity::NotificationEntity(const QString &appName, uint id,
+NotificationEntity::NotificationEntity(const QString &appName, const QString &id,
                                        const QString &appIcon, const QString &summary,
                                        const QString &body, const QStringList &actions,
-                                       const QVariantMap hints, int expireTimeout, QObject *parent) :
+                                       const QVariantMap hints, QObject *parent) :
     QObject(parent),
     m_appName(appName),
     m_id(id),
@@ -20,10 +20,23 @@ NotificationEntity::NotificationEntity(const QString &appName, uint id,
     m_summary(summary),
     m_body(body),
     m_actions(actions),
-    m_hints(hints),
-    m_expireTimeout(expireTimeout)
+    m_hints(hints)
 {
 }
+
+NotificationEntity::NotificationEntity(const NotificationEntity &notify) :
+    NotificationEntity(notify.appName(), notify.id(), notify.appIcon(), notify.summary(),
+                       notify.body(), notify.actions(), notify.hints())
+{
+
+}
+
+NotificationEntity &NotificationEntity::operator=(const NotificationEntity &notify)
+{
+    NotificationEntity ent(notify);
+    return ent;
+}
+
 QString NotificationEntity::appName() const
 {
     return m_appName;
@@ -33,12 +46,13 @@ void NotificationEntity::setAppName(const QString &appName)
 {
     m_appName = appName;
 }
-quint32 NotificationEntity::id() const
+
+QString NotificationEntity::id() const
 {
     return m_id;
 }
 
-void NotificationEntity::setId(const quint32 &id)
+void NotificationEntity::setId(const QString &id)
 {
     m_id = id;
 }
@@ -87,16 +101,11 @@ void NotificationEntity::setHints(const QVariantMap &hints)
 {
     m_hints = hints;
 }
-int NotificationEntity::expireTimeout() const
-{
-    return m_expireTimeout;
-}
 
-void NotificationEntity::setExpireTimeout(int expireTimeout)
+QString NotificationEntity::ctime() const
 {
-    m_expireTimeout = expireTimeout;
+    return m_id;
 }
-
 
 
 

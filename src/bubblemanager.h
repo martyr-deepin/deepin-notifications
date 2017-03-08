@@ -35,6 +35,7 @@ class DBusControlCenter;
 class DBusDaemonInterface;
 class Login1ManagerInterface;
 class DBusDockInterface;
+class Persistence;
 class BubbleManager : public QObject
 {
     Q_OBJECT
@@ -53,12 +54,22 @@ signals:
     void ActionInvoked(uint, const QString &);
     void NotificationClosed(uint, uint);
 
+    // Extra DBus APIs
+signals:
+    void RecordAdded(const QString &);
+
 public slots:
     // Notifications dbus implementation
     void CloseNotification(uint);
     QStringList GetCapbilities();
     QString GetServerInformation(QString &, QString &, QString &);
     uint Notify(const QString &, uint, const QString &, const QString &, const QString &, const QStringList &, const QVariantMap, int);
+
+    // Extra DBus APIs
+    QString GetAllRecords();
+    void RemoveRecord(const QString &id);
+    void ClearRecords();
+    void AddOneRecord(NotificationEntity *entity);
 
     void registerAsService();
 
@@ -76,9 +87,9 @@ public slots:
 
 
 private:
-    int m_counter;
     QTimer *m_quitTimer;
     Bubble *m_bubble;
+    Persistence *m_persistence;
     QQueue<NotificationEntity*> m_entities;
     DBusControlCenter *m_dbusControlCenter;
     DBusDaemonInterface *m_dbusDaemonInterface;

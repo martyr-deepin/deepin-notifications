@@ -65,12 +65,23 @@ class NotificationsDBusAdaptor: public QDBusAbstractAdaptor
 "      <arg direction=\"in\" type=\"i\"/>\n"
 "      <arg direction=\"out\" type=\"u\"/>\n"
 "    </method>\n"
+"    <method name=\"GetAllRecords\">\n"
+"      <arg direction=\"out\" type=\"s\"/>\n"
+"    </method>\n"
+"    <method name=\"RemoveRecord\">\n"
+"      <arg direction=\"in\" type=\"s\"/>\n"
+"    </method>\n"
+"    <method name=\"ClearRecords\">\n"
+"    </method>\n"
 "    <signal name=\"NotificationClosed\">\n"
 "      <arg type=\"u\"/>\n"
 "      <arg type=\"u\"/>\n"
 "    </signal>\n"
 "    <signal name=\"ActionInvoked\">\n"
 "      <arg type=\"u\"/>\n"
+"      <arg type=\"s\"/>\n"
+"    </signal>\n"
+"    <signal name=\"RecordAdded\">\n"
 "      <arg type=\"s\"/>\n"
 "    </signal>\n"
 "  </interface>\n"
@@ -85,9 +96,13 @@ public Q_SLOTS: // METHODS
     QStringList GetCapbilities();
     QString GetServerInformation(QString &out1, QString &out2, QString &out3);
     uint Notify(const QString &in0, uint in1, const QString &in2, const QString &in3, const QString &in4, const QStringList &in5, const QVariantMap &in6, int in7);
+    QString GetAllRecords();
+    void RemoveRecord(const QString &id);
+    void ClearRecords();
 Q_SIGNALS: // SIGNALS
     void ActionInvoked(uint in0, const QString &in1);
     void NotificationClosed(uint in0, uint in1);
+    void RecordAdded(const QString &in1);
 };
 
 #endif

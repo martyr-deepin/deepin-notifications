@@ -18,16 +18,19 @@ class NotificationEntity : public QObject
 {
     Q_OBJECT
 public:
-    NotificationEntity(const QString &appName, uint id,
+    NotificationEntity(const QString &appName, const QString &id,
                        const QString &appIcon, const QString &summary,
                        const QString &body, const QStringList &actions,
-                       const QVariantMap hints, int expireTimeout, QObject *parent=0);
+                       const QVariantMap hints, QObject *parent=0);
+
+    NotificationEntity(const NotificationEntity &notify);
+    NotificationEntity& operator=(const NotificationEntity &notify);
 
     QString appName() const;
     void setAppName(const QString &appName);
 
-    quint32 id() const;
-    void setId(const quint32 &id);
+    QString id() const;
+    void setId(const QString &id);
 
     QString appIcon() const;
     void setAppIcon(const QString &appIcon);
@@ -44,18 +47,16 @@ public:
     QVariantMap hints() const;
     void setHints(const QVariantMap &hints);
 
-    int expireTimeout() const;
-    void setExpireTimeout(int expireTimeout);
+    QString ctime() const;
 
 private:
     QString m_appName;
-    quint32 m_id;
+    QString m_id;
     QString m_appIcon;
     QString m_summary;
     QString m_body;
     QStringList m_actions;
     QVariantMap m_hints;
-    int m_expireTimeout;
 };
 
 #endif // NOTIFICATIONENTITY_H

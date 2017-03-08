@@ -3,7 +3,7 @@ include(src/src.pri)
 TEMPLATE = app
 TARGET = deepin-notifications
 
-QT += qml quick dbus widgets svg
+QT += qml quick dbus widgets svg sql
 CONFIG += c++11 link_pkgconfig
 PKGCONFIG += dtkbase dtkwidget gtk+-2.0
 

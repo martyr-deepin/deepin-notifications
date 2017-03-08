@@ -114,7 +114,7 @@ void Bubble::setMask(int, int, int, int)
 
 void Bubble::closeButtonClicked()
 {
-    emit dismissed(int(m_entity->id()));
+    emit dismissed(m_entity->id().toInt());
 
     m_outTimer->stop();
     m_aboutToOutTimer->stop();
@@ -123,7 +123,7 @@ void Bubble::closeButtonClicked()
 void Bubble::mousePressEvent(QMouseEvent *)
 {
     // TODO: default action support
-    emit dismissed(int(m_entity->id()));
+    emit dismissed(m_entity->id().toInt());
 
     m_outTimer->stop();
     m_aboutToOutTimer->stop();
@@ -232,7 +232,7 @@ void Bubble::initUI()
             }
             ++i;
         }
-        emit actionInvoked(m_entity->id(), actionId);
+        emit actionInvoked(m_entity->id().toInt(), actionId);
     });
 }
 
@@ -260,7 +260,7 @@ void Bubble::initAnimations()
     //    m_outAnimation->addAnimation(outOpacityAnimation);
 
     connect(m_outAnimation, &QParallelAnimationGroup::finished, [this]{
-        emit expired(int(m_entity->id()));
+        emit expired(m_entity->id().toInt());
     });
 }
 
