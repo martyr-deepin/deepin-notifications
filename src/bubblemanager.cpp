@@ -25,16 +25,10 @@
 
 BubbleManager::BubbleManager(QObject *parent) :
     QObject(parent),
-    m_dbusControlCenter(0),
-    m_persistence(new Persistence)
+    m_persistence(new Persistence),
+    m_dbusControlCenter(0)
 {
     m_bubble = new Bubble();
-
-    m_quitTimer = new QTimer(this);
-    m_quitTimer->setSingleShot(false);
-    m_quitTimer->setInterval(1000 * 100);
-    m_quitTimer->start();
-    connect(m_quitTimer, SIGNAL(timeout()), QApplication::instance(), SLOT(quit()));
 
     m_dbusDaemonInterface = new DBusDaemonInterface(DBusDaemonDBusService, DBusDaemonDBusPath,
                                                     QDBusConnection::sessionBus(), this);
@@ -74,8 +68,6 @@ void BubbleManager::CloseNotification(uint id)
 
 QStringList BubbleManager::GetCapbilities()
 {
-    m_quitTimer->start();
-
     QStringList result;
     result << "action-icons" << "actions" << "body" << "body-hyperlinks" << "body-markup";
 
@@ -84,8 +76,6 @@ QStringList BubbleManager::GetCapbilities()
 
 QString BubbleManager::GetServerInformation(QString &name, QString &vender, QString &version)
 {
-    m_quitTimer->start();
-
     name = QString("DeepinNotifications");
     vender = QString("Deepin");
     version = QString("2.0");
@@ -184,7 +174,7 @@ void BubbleManager::controlCenterRectChangedSlot(const QRect &rect)
 void BubbleManager::bubbleExpired(int id)
 {
     qDebug() << "bubbleExpired";
-    m_quitTimer->start();
+
     m_bubble->setVisible(false);
     emit NotificationClosed(id, BubbleManager::Expired);
 
@@ -194,7 +184,7 @@ void BubbleManager::bubbleExpired(int id)
 void BubbleManager::bubbleDismissed(int id)
 {
     qDebug() << "bubbleDismissed";
-    m_quitTimer->start();
+
     m_bubble->setVisible(false);
     emit NotificationClosed(id, BubbleManager::Dismissed);
 
@@ -208,7 +198,6 @@ void BubbleManager::bubbleReplacedByOther(int id)
 
 void BubbleManager::bubbleActionInvoked(int id, QString actionId)
 {
-    m_quitTimer->start();
     m_bubble->setVisible(false);
     emit ActionInvoked(id, actionId);
     consumeEntities();
@@ -341,7 +330,6 @@ void BubbleManager::consumeEntities()
     qDebug() << "consumeEntities, entity length: " << m_entities.length();
 
     if (m_entities.isEmpty()) { return; }
-    m_quitTimer->stop();
 
     NotificationEntity *notification = m_entities.dequeue();
     m_bubble->setupPosition();

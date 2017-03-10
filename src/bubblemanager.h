@@ -87,7 +87,6 @@ public slots:
 
 
 private:
-    QTimer *m_quitTimer;
     Bubble *m_bubble;
     Persistence *m_persistence;
     QQueue<NotificationEntity*> m_entities;
