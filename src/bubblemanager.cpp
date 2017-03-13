@@ -10,7 +10,6 @@
 #include "bubblemanager.h"
 #include <QStringList>
 #include <QVariantMap>
-#include <QQuickItem>
 #include <QTimer>
 #include "bubble.h"
 #include "dbuscontrol.h"

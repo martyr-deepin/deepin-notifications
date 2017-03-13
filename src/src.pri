@@ -9,7 +9,8 @@ HEADERS += \
     $$PWD/appicon.h\
     $$PWD/dbusdock_interface.h \
     $$PWD/dbuscontrol.h \
-    $$PWD/persistence.h
+    $$PWD/persistence.h \
+    $$PWD/appbody.h
 
 SOURCES += \
     $$PWD/bubble.cpp \
@@ -22,4 +23,5 @@ SOURCES += \
     $$PWD/appicon.cpp\
     $$PWD/dbusdock_interface.cpp \
     $$PWD/dbuscontrol.cpp \
-    $$PWD/persistence.cpp
+    $$PWD/persistence.cpp \
+    $$PWD/appbody.cpp

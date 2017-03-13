@@ -21,6 +21,7 @@ class QPropertyAnimation;
 class QParallelAnimationGroup;
 class NotificationEntity;
 class ActionButton;
+class AppBody;
 
 class Bubble : public QFrame
 {
@@ -58,7 +59,7 @@ private:
     DBlurEffectWidget *m_background = nullptr;
     AppIcon *m_icon = nullptr;
     QLabel *m_title = nullptr;
-    QLabel *m_body = nullptr;
+    AppBody *m_body = nullptr;
     ActionButton *m_actionButton = nullptr;
     QPropertyAnimation *m_inAnimation = nullptr;
     QParallelAnimationGroup *m_outAnimation = nullptr;

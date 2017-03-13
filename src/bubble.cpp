@@ -25,7 +25,7 @@
 #include "appicon.h"
 #include "notificationentity.h"
 #include "actionbutton.h"
-
+#include "appbody.h"
 #include <dplatformwindowhandle.h>
 #include <anchors.h>
 #include <denhancedwidget.h>
@@ -39,10 +39,6 @@ static const QString BubbleStyleSheet = "QFrame#Background { "
                                         "QLabel#Title {"
                                         "font-size: 11px;"
                                         "color: black;"
-                                        "}"
-                                        "QLabel#Body {"
-                                        "font-size: 12px;"
-                                        "color: black;"
                                         "}";
 static const int ShadowWidth = 20;
 static const int BubbleWidth = 300;
@@ -55,7 +51,7 @@ Bubble::Bubble(NotificationEntity *entity):
     m_background(new DBlurEffectWidget(this)),
     m_icon(new AppIcon(m_background)),
     m_title(new QLabel(m_background)),
-    m_body(new QLabel(m_background)),
+    m_body(new AppBody(m_background)),
     m_actionButton(new ActionButton(m_background))
 {
     setWindowFlags(Qt::X11BypassWindowManagerHint | Qt::WindowStaysOnTopHint);
@@ -158,6 +154,7 @@ void Bubble::updateContent()
         m_icon->setIcon(imagePath);
     }
     m_title->setText(m_entity->summary());
+
     m_body->setText(m_entity->body());
 
     processActions();
@@ -208,11 +205,8 @@ void Bubble::initUI()
     m_title->setAlignment(Qt::AlignTop | Qt::AlignLeft);
     m_title->move(70, 6);
 
-    m_body->setTextFormat(Qt::RichText);
     m_body->setObjectName("Body");
-    m_body->setAlignment(Qt::AlignTop | Qt::AlignLeft);
     m_body->move(70, 22);
-    m_body->setWordWrap(true);
 
     m_actionButton->move(m_background->width() - m_actionButton->width(), 0);
 
