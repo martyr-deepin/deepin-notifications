@@ -20,10 +20,6 @@ public:
     explicit AppIcon(QWidget *parent = 0);
 
     void setIcon(const QString &iconPath);
-
-private:
-    QString getThemeIconPath(QString iconName);
-    void updateIcon();
 };
 
 #endif // APPICON_H
