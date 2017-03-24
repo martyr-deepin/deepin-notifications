@@ -10,6 +10,8 @@ AppBody::AppBody(QWidget *parent)
 void AppBody::setText(const QString &text)
 {
     m_bodyText = text;
+
+    update();
 }
 
 void AppBody::paintEvent(QPaintEvent *event)
