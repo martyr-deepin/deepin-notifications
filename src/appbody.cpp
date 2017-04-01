@@ -1,5 +1,6 @@
 #include "appbody.h"
 #include <QPainter>
+#include <QTextDocument>
 
 AppBody::AppBody(QWidget *parent)
     : QWidget(parent)
@@ -28,10 +29,16 @@ void AppBody::paintEvent(QPaintEvent *event)
 
     QString appBody = holdTextInRect(fm, m_bodyText, this->rect());
 
-    painter.setFont(appNamefont);
     painter.setBrush(QBrush(Qt::transparent));
     painter.setPen(Qt::black);
-    painter.drawText(this->rect(), appBody, appNameOption);
+
+    QTextDocument td;
+    td.setDefaultTextOption(appNameOption);
+    td.setDefaultFont(appNamefont);
+    td.setTextWidth(this->width());
+    td.setDocumentMargin(0);
+    td.setHtml(appBody);
+    td.drawContents(&painter);
 
     QWidget::paintEvent(event);
 }
