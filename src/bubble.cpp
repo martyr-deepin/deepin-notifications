@@ -26,9 +26,11 @@
 #include "notificationentity.h"
 #include "actionbutton.h"
 #include "appbody.h"
+#include "icondata.h"
 #include <dplatformwindowhandle.h>
 #include <anchors.h>
 #include <denhancedwidget.h>
+#include <QDBusArgument>
 
 DWIDGET_USE_NAMESPACE
 
@@ -149,7 +151,21 @@ void Bubble::updateContent()
     m_aboutToOutTimer->stop();
 
     if (imagePath.isEmpty()) {
-        m_icon->setIcon(m_entity->appIcon());
+        if (m_entity->hints()["icon_data"].canConvert<QDBusArgument>()) {
+            QDBusArgument argument = m_entity->hints()["icon_data"].value<QDBusArgument>();
+            IconData data = qdbus_cast<IconData>(argument);
+            if (data.cannel == 3) {
+                QImage img((const uchar *)data.array.data(), data.width, data.height, QImage::Format_RGB888);
+                saveImg(img);
+                m_icon->setPixmap(QPixmap::fromImage(img));
+            } else if (data.cannel == 4){
+                QImage img((const uchar *)data.array.data(), data.width, data.height, QImage::Format_ARGB32);
+                saveImg(img);
+                m_icon->setPixmap(QPixmap::fromImage(img));
+            }
+        } else {
+            m_icon->setIcon(m_entity->appIcon());
+        }
     } else {
         m_icon->setIcon(imagePath);
     }
@@ -311,4 +327,12 @@ void Bubble::processActions()
         m_title->setFixedSize(160, 20);
         m_body->setFixedSize(160, 40);
     }
+}
+
+void Bubble::saveImg(QImage &image)
+{
+    QDir dir;
+    dir.mkdir(CachePath);
+
+    image.save(CachePath + m_entity->id() + ".png");
 }

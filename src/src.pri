@@ -10,7 +10,8 @@ HEADERS += \
     $$PWD/dbusdock_interface.h \
     $$PWD/dbuscontrol.h \
     $$PWD/persistence.h \
-    $$PWD/appbody.h
+    $$PWD/appbody.h \
+    $$PWD/icondata.h
 
 SOURCES += \
     $$PWD/bubble.cpp \
@@ -24,4 +25,5 @@ SOURCES += \
     $$PWD/dbusdock_interface.cpp \
     $$PWD/dbuscontrol.cpp \
     $$PWD/persistence.cpp \
-    $$PWD/appbody.cpp
+    $$PWD/appbody.cpp \
+    $$PWD/icondata.cpp

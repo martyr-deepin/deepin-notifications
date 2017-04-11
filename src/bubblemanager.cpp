@@ -126,11 +126,17 @@ QString BubbleManager::GetAllRecords()
 void BubbleManager::RemoveRecord(const QString &id)
 {
     m_persistence->removeOne(id);
+
+    QFile file(CachePath + id + ".png");
+    file.remove();
 }
 
 void BubbleManager::ClearRecords()
 {
     m_persistence->removeAll();
+
+    QDir dir;
+    dir.rmdir(CachePath);
 }
 
 void BubbleManager::AddOneRecord(NotificationEntity *entity)

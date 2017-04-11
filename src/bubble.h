@@ -12,6 +12,8 @@
 
 #include <QFrame>
 #include <DBlurEffectWidget>
+#include <QStandardPaths>
+#include <QDir>
 
 DWIDGET_USE_NAMESPACE
 
@@ -22,6 +24,9 @@ class QParallelAnimationGroup;
 class NotificationEntity;
 class ActionButton;
 class AppBody;
+
+static const QStringList Directory = QStandardPaths::standardLocations(QStandardPaths::HomeLocation);
+static const QString CachePath = Directory.first() + "/.cache/deepin/deepin-notifications/";
 
 class Bubble : public QFrame
 {
@@ -72,6 +77,7 @@ private:
     void initTimers();
     bool containsMouse() const;
     void processActions();
+    void saveImg(QImage &image);
 };
 
 #endif // BUBBLE_H
