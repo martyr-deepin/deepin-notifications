@@ -321,11 +321,11 @@ void Bubble::processActions()
     }
 
     if (m_actionButton->isEmpty()) {
-        m_title->setFixedSize(230, 20);
-        m_body->setFixedSize(230, 40);
+        m_title->setFixedSize(220, 20);
+        m_body->setFixedSize(220, 40);
     } else {
-        m_title->setFixedSize(160, 20);
-        m_body->setFixedSize(160, 40);
+        m_title->setFixedSize(150, 20);
+        m_body->setFixedSize(150, 40);
     }
 }
 
