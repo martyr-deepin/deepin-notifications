@@ -173,6 +173,12 @@ void Bubble::updateContent()
 
     m_body->setText(m_entity->body());
 
+    if (m_entity->body().isEmpty()) {
+        m_title->move(70, (BubbleHeight - ShadowWidth) / 2);
+    } else {
+        m_title->move(70, 6);
+    }
+
     processActions();
 
     if (!isVisible()) {
