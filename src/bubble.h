@@ -24,15 +24,17 @@ class QParallelAnimationGroup;
 class NotificationEntity;
 class ActionButton;
 class AppBody;
+class QGraphicsDropShadowEffect;
 
 static const QStringList Directory = QStandardPaths::standardLocations(QStandardPaths::HomeLocation);
 static const QString CachePath = Directory.first() + "/.cache/deepin/deepin-notifications/";
 
-class Bubble : public QFrame
+class Bubble : public DBlurEffectWidget
 {
     Q_OBJECT
 public:
     Bubble(NotificationEntity *entity=0);
+    ~Bubble();
 
     void setBasePosition(int,int);
     void setupPosition();
@@ -60,23 +62,27 @@ protected:
 private:
     NotificationEntity *m_entity;
 
-    QFrame *m_bgContainer = nullptr;
-    DBlurEffectWidget *m_background = nullptr;
     AppIcon *m_icon = nullptr;
     QLabel *m_title = nullptr;
     AppBody *m_body = nullptr;
     ActionButton *m_actionButton = nullptr;
+
     QPropertyAnimation *m_inAnimation = nullptr;
-    QParallelAnimationGroup *m_outAnimation = nullptr;
+    QPropertyAnimation *m_outAnimation = nullptr;
     QTimer *m_outTimer = nullptr;
     QTimer *m_aboutToOutTimer = nullptr;
+
+    bool m_offScreen = true;
 
     void updateContent();
     void initUI();
     void initAnimations();
     void initTimers();
     bool containsMouse() const;
+
     void processActions();
+    void processIconData();
+
     void saveImg(QImage &image);
 };
 

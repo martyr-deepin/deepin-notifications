@@ -8,29 +8,26 @@
  **/
 
 #include "bubble.h"
-#include <QJsonObject>
-#include <QJsonArray>
-#include <QJsonDocument>
-#include <QDesktopWidget>
-#include <QApplication>
-#include <QCursor>
+
 #include <QLabel>
-#include <QIcon>
-#include <QTimer>
 #include <QDebug>
-#include <QGraphicsDropShadowEffect>
+#include <QTimer>
 #include <QPropertyAnimation>
-#include <QParallelAnimationGroup>
+#include <QDesktopWidget>
+#include <QJsonArray>
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QApplication>
 #include <QProcess>
-#include "appicon.h"
-#include "notificationentity.h"
-#include "actionbutton.h"
-#include "appbody.h"
-#include "icondata.h"
-#include <dplatformwindowhandle.h>
-#include <anchors.h>
-#include <denhancedwidget.h>
 #include <QDBusArgument>
+
+#include <DPlatformWindowHandle>
+
+#include "notificationentity.h"
+#include "appicon.h"
+#include "appbody.h"
+#include "actionbutton.h"
+#include "icondata.h"
 
 DWIDGET_USE_NAMESPACE
 
@@ -42,38 +39,38 @@ static const QString BubbleStyleSheet = "QFrame#Background { "
                                         "font-size: 11px;"
                                         "color: black;"
                                         "}";
-static const int ShadowWidth = 20;
+static const int Padding = 20;
 static const int BubbleWidth = 300;
 static const int BubbleHeight = 70;
 
 Bubble::Bubble(NotificationEntity *entity):
-    QFrame(),
+    DBlurEffectWidget(),
     m_entity(entity),
-    m_bgContainer(new QFrame(this)),
-    m_background(new DBlurEffectWidget(this)),
-    m_icon(new AppIcon(m_background)),
-    m_title(new QLabel(m_background)),
-    m_body(new AppBody(m_background)),
-    m_actionButton(new ActionButton(m_background))
+    m_icon(new AppIcon(this)),
+    m_title(new QLabel(this)),
+    m_body(new AppBody(this)),
+    m_actionButton(new ActionButton(this))
 {
     setWindowFlags(Qt::X11BypassWindowManagerHint | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_TranslucentBackground);
 
-    m_background->setBlendMode(DBlurEffectWidget::BehindWindowBlend);
-    m_background->setBlurRectXRadius(6);
-    m_background->setBlurRectYRadius(6);
-    m_background->setMaskColor(QColor(245, 245, 245));
+    DPlatformWindowHandle handle(this);
+    handle.setTranslucentBackground(true);
 
-    Anchors<DBlurEffectWidget> anchors_background(m_background);
-    anchors_background.setCenterIn(m_bgContainer);
+    setBlendMode(DBlurEffectWidget::BehindWindowBlend);
+    setMaskColor(DBlurEffectWidget::LightColor);
 
     initUI();
     initAnimations();
     initTimers();
 
     setupPosition();
-    if(entity) this->updateContent();
+    setEntity(entity);
+}
 
+Bubble::~Bubble()
+{
+    qDebug() << "~Bubble";
 }
 
 NotificationEntity *Bubble::entity() const
@@ -83,14 +80,41 @@ NotificationEntity *Bubble::entity() const
 
 void Bubble::setEntity(NotificationEntity *entity)
 {
+    if (!entity) return;
+
     m_entity = entity;
-    this->updateContent();
+
+    m_outTimer->stop();
+    m_aboutToOutTimer->stop();
+
+    updateContent();
+
+    show();
+
+    if (m_offScreen) {
+        m_offScreen = false;
+        m_inAnimation->start();
+    }
+
+    m_aboutToOutTimer->start();
+    m_outTimer->start();
 }
 
 
 void Bubble::setBasePosition(int x,int y)
 {
+    qDebug() << "set base position to: " << x << y;
+
+    x -= Padding;
+    y += Padding;
+
     move(x - width(), y);
+
+    m_inAnimation->setStartValue(QPoint(x - width(), y - height()));
+    m_inAnimation->setEndValue(QPoint(x - width(), y));
+
+    m_outAnimation->setStartValue(m_inAnimation->endValue());
+    m_outAnimation->setEndValue(QPoint(x, y));
 }
 
 void Bubble::setupPosition()
@@ -130,94 +154,27 @@ void Bubble::mousePressEvent(QMouseEvent *)
 void Bubble::updateContent()
 {
     qDebug() << "updateContent";
-    QString imagePath = m_entity->hints().contains("image-path") ? m_entity->hints()["image-path"].toString() : "";
-
     QJsonArray actions;
     foreach (QString action, m_entity->actions()) {
         actions.append(action);
     }
 
-    //    QJsonObject object;
-    //    object["id"] = int(m_entity->id());
-    //    object["app_name"] = m_entity->appName();
-    //    object["app_icon"] = m_entity->appIcon();
-    //    object["summary"] = m_entity->summary();
-    //    object["body"] = m_entity->body();
-    //    object["actions"] = actions;
-    //    object["image_path"] = imagePath;
-
-    // TODO: all stuff in bubble.qml:updateContent
-    m_outTimer->stop();
-    m_aboutToOutTimer->stop();
-
-    if (imagePath.isEmpty()) {
-        if (m_entity->hints()["icon_data"].canConvert<QDBusArgument>()) {
-            QDBusArgument argument = m_entity->hints()["icon_data"].value<QDBusArgument>();
-            IconData data = qdbus_cast<IconData>(argument);
-            if (data.cannel == 3) {
-                QImage img((const uchar *)data.array.data(), data.width, data.height, QImage::Format_RGB888);
-                saveImg(img);
-                m_icon->setPixmap(QPixmap::fromImage(img));
-            } else if (data.cannel == 4){
-                QImage img((const uchar *)data.array.data(), data.width, data.height, QImage::Format_ARGB32);
-                saveImg(img);
-                m_icon->setPixmap(QPixmap::fromImage(img));
-            }
-        } else {
-            m_icon->setIcon(m_entity->appIcon());
-        }
-    } else {
-        m_icon->setIcon(imagePath);
-    }
     m_title->setText(m_entity->summary());
-
     m_body->setText(m_entity->body());
 
     if (m_entity->body().isEmpty()) {
-        m_title->move(70, (BubbleHeight - ShadowWidth) / 2);
+        m_title->move(70, 16);
     } else {
         m_title->move(70, 6);
     }
 
+    processIconData();
     processActions();
-
-    if (!isVisible()) {
-        setVisible(true);
-        m_inAnimation->start();
-    } else {
-        m_bgContainer->move(m_inAnimation->endValue().toPoint());
-    }
-    m_aboutToOutTimer->start();
-    m_outTimer->start();
 }
 
 void Bubble::initUI()
 {
-    setFixedSize(BubbleWidth + ShadowWidth * 2, BubbleHeight + ShadowWidth * 2);
-    setVisible(false);
-
-    m_bgContainer->setAttribute(Qt::WA_TranslucentBackground);
-    m_bgContainer->setFixedSize(size());
-    m_bgContainer->move(QPoint(0, -height()));
-
-    m_background->setFixedSize(BubbleWidth, BubbleHeight);
-
-    QFrame *bgShadow = new QFrame(m_bgContainer);
-    bgShadow->setObjectName("Background");
-    bgShadow->move(ShadowWidth, ShadowWidth);
-    bgShadow->setFixedSize(m_background->size());
-
-    QWidget *borderWidget = new QWidget(m_bgContainer);
-    borderWidget->move(ShadowWidth -1, ShadowWidth -1);
-    borderWidget->setFixedSize(QSize(m_background->size().width() + 2, m_background->size().height() + 2));
-    borderWidget->setStyleSheet("border: 1px solid rgba(0, 0, 0, 25); border-radius: 6px;");
-
-
-    QGraphicsDropShadowEffect *dropShadow = new QGraphicsDropShadowEffect;
-    dropShadow->setColor(QColor::fromRgbF(0, 0, 0, 0.9));
-    dropShadow->setBlurRadius(20);
-    dropShadow->setOffset(2);
-    m_bgContainer->setGraphicsEffect(dropShadow);
+    setFixedSize(BubbleWidth, BubbleHeight);
 
     m_icon->setFixedSize(48, 48);
     m_icon->move(11, 11);
@@ -230,7 +187,7 @@ void Bubble::initUI()
     m_body->setObjectName("Body");
     m_body->move(70, 22);
 
-    m_actionButton->move(m_background->width() - m_actionButton->width(), 0);
+    m_actionButton->move(width() - m_actionButton->width(), 0);
 
     setStyleSheet(BubbleStyleSheet);
 
@@ -254,28 +211,15 @@ void Bubble::initUI()
 
 void Bubble::initAnimations()
 {
-    m_inAnimation = new QPropertyAnimation(m_bgContainer, "pos", this);
+    m_inAnimation = new QPropertyAnimation(this, "pos", this);
     m_inAnimation->setDuration(300);
-    m_inAnimation->setStartValue(QPoint(0, -height()));
-    m_inAnimation->setEndValue(QPoint(0, 0));
     m_inAnimation->setEasingCurve(QEasingCurve::OutCubic);
 
-    m_outAnimation = new QParallelAnimationGroup(this);
-    QPropertyAnimation *outPosAnimation = new QPropertyAnimation(m_bgContainer, "pos", this);
-    outPosAnimation->setDuration(300);
-    outPosAnimation->setStartValue(m_inAnimation->endValue());
-    outPosAnimation->setEndValue(QPoint(width(), 0));
-    outPosAnimation->setEasingCurve(QEasingCurve::OutCubic);
-    QPropertyAnimation *outOpacityAnimation = new QPropertyAnimation(m_bgContainer, "opacity", this);
-    outOpacityAnimation->setDuration(300);
-    outOpacityAnimation->setStartValue(1.0);
-    outOpacityAnimation->setEndValue(0);
-    outOpacityAnimation->setEasingCurve(QEasingCurve::OutCubic);
-    m_outAnimation->addAnimation(outPosAnimation);
-    // TODO: opacity is not supported, use QGraphicsOpacityEffect
-    //    m_outAnimation->addAnimation(outOpacityAnimation);
+    m_outAnimation = new QPropertyAnimation(this, "pos", this);
+    m_outAnimation->setDuration(300);
+    m_outAnimation->setEasingCurve(QEasingCurve::OutCubic);
 
-    connect(m_outAnimation, &QParallelAnimationGroup::finished, [this]{
+    connect(m_outAnimation, &QPropertyAnimation::finished, [this]{
         emit expired(m_entity->id().toInt());
     });
 }
@@ -290,6 +234,7 @@ void Bubble::initTimers()
             m_outTimer->stop();
             m_outTimer->start();
         } else {
+            m_offScreen = true;
             m_outAnimation->start();
         }
     });
@@ -332,6 +277,31 @@ void Bubble::processActions()
     } else {
         m_title->setFixedSize(150, 20);
         m_body->setFixedSize(150, 40);
+    }
+}
+
+void Bubble::processIconData()
+{
+    const QString imagePath = m_entity->hints().contains("image-path") ? m_entity->hints()["image-path"].toString() : "";
+
+    if (imagePath.isEmpty()) {
+        if (m_entity->hints()["icon_data"].canConvert<QDBusArgument>()) {
+            QDBusArgument argument = m_entity->hints()["icon_data"].value<QDBusArgument>();
+            IconData data = qdbus_cast<IconData>(argument);
+            if (data.cannel == 3) {
+                QImage img((const uchar *)data.array.data(), data.width, data.height, QImage::Format_RGB888);
+                saveImg(img);
+                m_icon->setPixmap(QPixmap::fromImage(img));
+            } else if (data.cannel == 4){
+                QImage img((const uchar *)data.array.data(), data.width, data.height, QImage::Format_ARGB32);
+                saveImg(img);
+                m_icon->setPixmap(QPixmap::fromImage(img));
+            }
+        } else {
+            m_icon->setIcon(m_entity->appIcon());
+        }
+    } else {
+        m_icon->setIcon(imagePath);
     }
 }
 
