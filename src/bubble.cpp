@@ -21,7 +21,6 @@
 #include <QProcess>
 #include <QDBusArgument>
 
-#include <DPlatformWindowHandle>
 
 #include "notificationentity.h"
 #include "appicon.h"
@@ -54,8 +53,14 @@ Bubble::Bubble(NotificationEntity *entity):
     setWindowFlags(Qt::X11BypassWindowManagerHint | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_TranslucentBackground);
 
-    DPlatformWindowHandle handle(this);
-    handle.setTranslucentBackground(true);
+    m_wmHelper = DWindowManagerHelper::instance();
+
+    m_handle = new DPlatformWindowHandle(this);
+    m_handle->setTranslucentBackground(true);
+    m_handle->setShadowRadius(14);
+    m_handle->setShadowOffset(QPoint(0, 4));
+
+    compositeChanged();
 
     setBlendMode(DBlurEffectWidget::BehindWindowBlend);
     setMaskColor(DBlurEffectWidget::LightColor);
@@ -66,6 +71,8 @@ Bubble::Bubble(NotificationEntity *entity):
 
     setupPosition();
     setEntity(entity);
+
+    connect(m_wmHelper, &DWindowManagerHelper::hasCompositeChanged, this, &Bubble::compositeChanged);
 }
 
 Bubble::~Bubble()
@@ -140,6 +147,17 @@ void Bubble::closeButtonClicked()
 
     m_outTimer->stop();
     m_aboutToOutTimer->stop();
+}
+
+void Bubble::compositeChanged()
+{
+    if (!m_wmHelper->hasComposite()) {
+        m_handle->setWindowRadius(0);
+        m_handle->setShadowColor(QColor("#E5E5E5"));
+    } else {
+        m_handle->setWindowRadius(5);
+        m_handle->setShadowColor(QColor(0, 0, 0, 100));
+    }
 }
 
 void Bubble::mousePressEvent(QMouseEvent *)

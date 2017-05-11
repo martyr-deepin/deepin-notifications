@@ -14,6 +14,8 @@
 #include <DBlurEffectWidget>
 #include <QStandardPaths>
 #include <QDir>
+#include <DPlatformWindowHandle>
+#include <DWindowManagerHelper>
 
 DWIDGET_USE_NAMESPACE
 
@@ -54,6 +56,7 @@ public slots:
     QPoint getCursorPos();
     void setMask(int, int, int, int);
     void closeButtonClicked();
+    void compositeChanged();
 
 
 protected:
@@ -71,6 +74,8 @@ private:
     QPropertyAnimation *m_outAnimation = nullptr;
     QTimer *m_outTimer = nullptr;
     QTimer *m_aboutToOutTimer = nullptr;
+    DPlatformWindowHandle *m_handle;
+    DWindowManagerHelper *m_wmHelper;
 
     bool m_offScreen = true;
 
