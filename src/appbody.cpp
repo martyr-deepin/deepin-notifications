@@ -2,6 +2,9 @@
 #include <QPainter>
 #include <QTextDocument>
 
+static const QString DefaultCSS = "body { color: black; font-size: 11px; }";
+static const QString HTMLTemplate = "<body>%1</body>";
+
 AppBody::AppBody(QWidget *parent)
     : QWidget(parent)
 {
@@ -22,6 +25,7 @@ void AppBody::paintEvent(QPaintEvent *event)
     QTextOption appNameOption;
     appNameOption.setAlignment(Qt::AlignLeft | Qt::AlignTop);
     appNameOption.setWrapMode(QTextOption::WordWrap);
+
     QFont appNamefont(painter.font());
     appNamefont.setPixelSize(12);
 
@@ -29,15 +33,16 @@ void AppBody::paintEvent(QPaintEvent *event)
 
     QString appBody = holdTextInRect(fm, m_bodyText, this->rect());
 
-    painter.setBrush(QBrush(Qt::transparent));
+    painter.setBrush(Qt::transparent);
     painter.setPen(Qt::black);
 
     QTextDocument td;
     td.setDefaultTextOption(appNameOption);
     td.setDefaultFont(appNamefont);
+    td.setDefaultStyleSheet(DefaultCSS);
     td.setTextWidth(this->width());
     td.setDocumentMargin(0);
-    td.setHtml(appBody);
+    td.setHtml(HTMLTemplate.arg(appBody));
     td.drawContents(&painter);
 
     QWidget::paintEvent(event);
