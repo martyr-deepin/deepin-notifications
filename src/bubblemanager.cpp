@@ -152,8 +152,6 @@ void BubbleManager::AddOneRecord(NotificationEntity *entity)
     QJsonDocument doc(notifyJson);
     QString notify(doc.toJson(QJsonDocument::Compact));
 
-    qDebug() << notifyJson;
-
     emit RecordAdded(notify);
 }
 
@@ -178,8 +176,6 @@ void BubbleManager::controlCenterRectChangedSlot(const QRect &rect)
 
 void BubbleManager::bubbleExpired(int id)
 {
-    qDebug() << "bubbleExpired";
-
     m_bubble->setVisible(false);
     emit NotificationClosed(id, BubbleManager::Expired);
 
@@ -188,8 +184,6 @@ void BubbleManager::bubbleExpired(int id)
 
 void BubbleManager::bubbleDismissed(int id)
 {
-    qDebug() << "bubbleDismissed";
-
     m_bubble->setVisible(false);
     emit NotificationClosed(id, BubbleManager::Dismissed);
 
@@ -210,7 +204,6 @@ void BubbleManager::bubbleActionInvoked(int id, QString actionId)
 
 void BubbleManager::bubbleAboutToQuit()
 {
-    qDebug() << "bubble is about to quit";
     consumeEntities();
 }
 
@@ -332,12 +325,9 @@ void BubbleManager::bindControlCenterX()
 
 void BubbleManager::consumeEntities()
 {
-    qDebug() << "consumeEntities, entity length: " << m_entities.length();
-
     if (m_entities.isEmpty()) { return; }
 
     NotificationEntity *notification = m_entities.dequeue();
-    m_bubble->setupPosition();
 
     QDesktopWidget *desktop = QApplication::desktop();
     int pointerScreen = desktop->screenNumber(QCursor::pos());
@@ -354,7 +344,6 @@ void BubbleManager::consumeEntities()
         m_dccX = pScreenWidget->x() + pScreenWidget->width();
     }
 
-    qDebug() << m_dockGeometry << m_dccX << getX() << getY() ;
     m_bubble->setBasePosition(getX(), getY());
     m_bubble->setEntity(notification);
 

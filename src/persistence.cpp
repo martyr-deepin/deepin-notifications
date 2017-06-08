@@ -71,8 +71,6 @@ void Persistence::addOne(NotificationEntity *entity)
     query.bindValue(":appname", entity->appName());
     query.bindValue(":ctime", entity->id());
 
-    qDebug() << entity->id() << entity->appIcon() << entity->summary() << entity->body() << entity->appName() << entity->id();
-
     if (!query.exec()) {
         qWarning() << "insert value to database failed: " << query.lastError().text();
     } else {

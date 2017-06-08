@@ -36,10 +36,8 @@ class Bubble : public DBlurEffectWidget
     Q_OBJECT
 public:
     Bubble(NotificationEntity *entity=0);
-    ~Bubble();
 
     void setBasePosition(int,int);
-    void setupPosition();
 
     NotificationEntity *entity() const;
     void setEntity(NotificationEntity *entity);

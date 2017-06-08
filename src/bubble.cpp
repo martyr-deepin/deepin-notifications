@@ -69,15 +69,9 @@ Bubble::Bubble(NotificationEntity *entity):
     initAnimations();
     initTimers();
 
-    setupPosition();
     setEntity(entity);
 
     connect(m_wmHelper, &DWindowManagerHelper::hasCompositeChanged, this, &Bubble::compositeChanged);
-}
-
-Bubble::~Bubble()
-{
-    qDebug() << "~Bubble";
 }
 
 NotificationEntity *Bubble::entity() const
@@ -110,8 +104,6 @@ void Bubble::setEntity(NotificationEntity *entity)
 
 void Bubble::setBasePosition(int x,int y)
 {
-    qDebug() << "set base position to: " << x << y;
-
     x -= Padding;
     y += Padding;
 
@@ -122,13 +114,6 @@ void Bubble::setBasePosition(int x,int y)
 
     m_outAnimation->setStartValue(m_inAnimation->endValue());
     m_outAnimation->setEndValue(QPoint(x, y));
-}
-
-void Bubble::setupPosition()
-{
-    QDesktopWidget *desktop = QApplication::desktop();
-    QRect pointerScreenRect = desktop->screen(desktop->screenNumber(QCursor::pos()))->geometry();
-    setBasePosition(pointerScreenRect.x() + pointerScreenRect.width(), pointerScreenRect.y());
 }
 
 QPoint Bubble::getCursorPos()
@@ -171,7 +156,6 @@ void Bubble::mousePressEvent(QMouseEvent *)
 
 void Bubble::updateContent()
 {
-    qDebug() << "updateContent";
     QJsonArray actions;
     foreach (QString action, m_entity->actions()) {
         actions.append(action);
