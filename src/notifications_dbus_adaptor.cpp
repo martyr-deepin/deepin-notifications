@@ -64,11 +64,14 @@ QString NotificationsDBusAdaptor::GetServerInformation(QString &out1, QString &o
 
 uint NotificationsDBusAdaptor::Notify(const QString &in0, uint in1, const QString &in2, const QString &in3, const QString &in4, const QStringList &in5, const QVariantMap &in6, int in7)
 {
-    QDBusInterface iface("com.deepin.daemon.SoundEffect",
-                         "/com/deepin/daemon/SoundEffect",
-                         "com.deepin.daemon.SoundEffect",
-                         QDBusConnection::sessionBus(), this);
-    if (iface.isValid()) {
+    const char* session = getenv("XDG_CURRENT_DESKTOP");
+
+    // play sound effect only if the current session is deepin.
+    if (strcmp(session, "deepin")) {
+        QDBusInterface iface("com.deepin.daemon.SoundEffect",
+                             "/com/deepin/daemon/SoundEffect",
+                             "com.deepin.daemon.SoundEffect",
+                             QDBusConnection::sessionBus(), this);
         iface.asyncCall("PlaySystemSound", "message-out");
     }
 
