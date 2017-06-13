@@ -20,7 +20,7 @@
 #include <QApplication>
 #include <QProcess>
 #include <QDBusArgument>
-
+#include <QMoveEvent>
 
 #include "notificationentity.h"
 #include "appicon.h"
@@ -102,18 +102,28 @@ void Bubble::setEntity(NotificationEntity *entity)
 }
 
 
-void Bubble::setBasePosition(int x,int y)
+void Bubble::setBasePosition(int x, int y, QRect rect)
 {
     x -= Padding;
     y += Padding;
 
-    move(x - width(), y);
+    const QPoint dPos(x - BubbleWidth, y);
+    const QSize dSize(BubbleWidth, BubbleHeight);
+
+    move(dPos);
+    resize(dSize);
 
     m_inAnimation->setStartValue(QPoint(x - width(), y - height()));
     m_inAnimation->setEndValue(QPoint(x - width(), y));
 
-    m_outAnimation->setStartValue(m_inAnimation->endValue());
-    m_outAnimation->setEndValue(QPoint(x, y));
+    const QRect normalGeo( dPos, dSize );
+    QRect outGeo( normalGeo.right(), normalGeo.y(), 0, normalGeo.height());
+
+    m_outAnimation->setStartValue(normalGeo);
+    m_outAnimation->setEndValue(outGeo);
+
+    if (!rect.isEmpty())
+        m_screenGeometry = rect;
 }
 
 QPoint Bubble::getCursorPos()
@@ -154,6 +164,17 @@ void Bubble::mousePressEvent(QMouseEvent *)
     m_aboutToOutTimer->stop();
 }
 
+void Bubble::moveEvent(QMoveEvent *event)
+{
+    // don't show this bubble on unrelated screens while sliding in.
+    if (m_inAnimation->state() == QPropertyAnimation::Running) {
+        const bool visible = m_screenGeometry.contains(event->pos());
+        resize(visible ? QSize(BubbleWidth, BubbleHeight) : QSize(1, 1));
+    }
+
+    DBlurEffectWidget::moveEvent(event);
+}
+
 void Bubble::updateContent()
 {
     QJsonArray actions;
@@ -176,8 +197,6 @@ void Bubble::updateContent()
 
 void Bubble::initUI()
 {
-    setFixedSize(BubbleWidth, BubbleHeight);
-
     m_icon->setFixedSize(48, 48);
     m_icon->move(11, 11);
 
@@ -217,7 +236,7 @@ void Bubble::initAnimations()
     m_inAnimation->setDuration(300);
     m_inAnimation->setEasingCurve(QEasingCurve::OutCubic);
 
-    m_outAnimation = new QPropertyAnimation(this, "pos", this);
+    m_outAnimation = new QPropertyAnimation(this, "geometry", this);
     m_outAnimation->setDuration(300);
     m_outAnimation->setEasingCurve(QEasingCurve::OutCubic);
 

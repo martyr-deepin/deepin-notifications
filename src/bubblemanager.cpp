@@ -332,6 +332,7 @@ void BubbleManager::consumeEntities()
     QDesktopWidget *desktop = QApplication::desktop();
     int pointerScreen = desktop->screenNumber(QCursor::pos());
     int primaryScreen = desktop->primaryScreen();
+    QWidget *pScreenWidget = desktop->screen(primaryScreen);
 
     if (checkDockExistence()) {
         m_dockGeometry = m_dbusdockinterface->geometry();
@@ -340,11 +341,10 @@ void BubbleManager::consumeEntities()
     if (checkControlCenterExistence() && pointerScreen == primaryScreen) {
         bindControlCenterX();
     } else {
-        QWidget *pScreenWidget = desktop->screen(primaryScreen);
         m_dccX = pScreenWidget->x() + pScreenWidget->width();
     }
 
-    m_bubble->setBasePosition(getX(), getY());
+    m_bubble->setBasePosition(getX(), getY(), pScreenWidget->geometry());
     m_bubble->setEntity(notification);
 
     m_bubble->disconnect();

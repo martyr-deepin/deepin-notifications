@@ -37,7 +37,7 @@ class Bubble : public DBlurEffectWidget
 public:
     Bubble(NotificationEntity *entity=0);
 
-    void setBasePosition(int,int);
+    void setBasePosition(int,int, QRect = QRect());
 
     NotificationEntity *entity() const;
     void setEntity(NotificationEntity *entity);
@@ -59,6 +59,7 @@ public slots:
 
 protected:
     void mousePressEvent(QMouseEvent *) Q_DECL_OVERRIDE;
+    void moveEvent(QMoveEvent *) Q_DECL_OVERRIDE;
 
 private:
     NotificationEntity *m_entity;
@@ -76,6 +77,7 @@ private:
     DWindowManagerHelper *m_wmHelper;
 
     bool m_offScreen = true;
+    QRect m_screenGeometry;
 
     void updateContent();
     void initUI();
