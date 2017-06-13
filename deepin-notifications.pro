@@ -5,7 +5,7 @@ TARGET = deepin-notifications
 
 QT += dbus widgets svg sql
 CONFIG += c++11 link_pkgconfig
-PKGCONFIG += dtkbase dtkwidget
+PKGCONFIG += dtkbase dtkwidget dtkutil
 
 SOURCES += src/main.cpp
 

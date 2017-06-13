@@ -26,6 +26,11 @@
 #include <QtCore/QStringList>
 #include <QtCore/QVariant>
 #include "bubblemanager.h"
+
+#include <DDesktopServices>
+
+DUTIL_USE_NAMESPACE
+
 /*
  * Implementation of adaptor class NotificationsDBusAdaptor
  */
@@ -64,16 +69,7 @@ QString NotificationsDBusAdaptor::GetServerInformation(QString &out1, QString &o
 
 uint NotificationsDBusAdaptor::Notify(const QString &in0, uint in1, const QString &in2, const QString &in3, const QString &in4, const QStringList &in5, const QVariantMap &in6, int in7)
 {
-    const char* session = getenv("XDG_CURRENT_DESKTOP");
-
-    // play sound effect only if the current session is deepin.
-    if (strcmp(session, "deepin")) {
-        QDBusInterface iface("com.deepin.daemon.SoundEffect",
-                             "/com/deepin/daemon/SoundEffect",
-                             "com.deepin.daemon.SoundEffect",
-                             QDBusConnection::sessionBus(), this);
-        iface.asyncCall("PlaySystemSound", "message-out");
-    }
+    DDesktopServices::playSystemSoundEffect(DDesktopServices::SSE_Notifications);
 
     // handle method call org.freedesktop.Notifications.Notify
     uint out0;
