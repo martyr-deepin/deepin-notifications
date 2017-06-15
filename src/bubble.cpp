@@ -208,7 +208,7 @@ void Bubble::initUI()
     m_body->setObjectName("Body");
     m_body->move(70, 22);
 
-    m_actionButton->move(width() - m_actionButton->width(), 0);
+    m_actionButton->move(BubbleWidth - m_actionButton->width(), 0);
 
     setStyleSheet(BubbleStyleSheet);
 

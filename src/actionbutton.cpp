@@ -9,7 +9,7 @@
 
 static const QColor BorderColor = QColor::fromRgbF(0, 0, 0, 0.1);
 static const QColor TextColor = QColor(0, 135, 255);
-static const QColor TextHover = Qt::black;
+static const QColor TextHover = Qt::white;
 
 ActionButton::ActionButton(QWidget *parent) :
     QFrame(parent)
