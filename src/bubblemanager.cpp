@@ -276,8 +276,10 @@ int BubbleManager::getY()
         }
     } else { // horizontal
         if (m_dockGeometry.center().y() < rect.center().y()) { // top
-            if ((rect.width() - m_dockGeometry.width()) / 2.0 > m_bubble->width()) {
-                return rect.y() + m_dockGeometry.height();
+            if (getX() == rect.width() && (rect.width() - m_dockGeometry.width()) / 2.0 > m_bubble->width()) {
+                return rect.y();
+            } else {
+                return m_dockGeometry.height();
             }
         } else { // bottom
 
