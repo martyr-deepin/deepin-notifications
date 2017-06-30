@@ -104,8 +104,6 @@ private:
     int getX();
     int getY();
 
-    int getControlCenterX();
-
     void bindControlCenterX();
     void consumeEntities();
 

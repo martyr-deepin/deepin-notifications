@@ -289,11 +289,6 @@ int BubbleManager::getY()
     return rect.y();
 }
 
-int BubbleManager::getControlCenterX()
-{
-    return m_dbusControlCenter->rect().x();
-}
-
 void BubbleManager::dockchangedSlot(const QRect &geometry)
 {
     m_dockGeometry = geometry;
@@ -321,8 +316,6 @@ void BubbleManager::bindControlCenterX()
                                                         this);
     }
     connect(m_dbusControlCenter, &DBusControlCenter::rectChanged, this, &BubbleManager::controlCenterRectChangedSlot);
-
-    m_dccX = getControlCenterX();
 }
 
 void BubbleManager::consumeEntities()
@@ -340,11 +333,13 @@ void BubbleManager::consumeEntities()
         m_dockGeometry = m_dbusdockinterface->geometry();
     }
 
-    if (checkControlCenterExistence() && pointerScreen == primaryScreen) {
+    if (checkControlCenterExistence() && pointerScreen == primaryScreen)
         bindControlCenterX();
-    } else {
-        m_dccX = pScreenWidget->x() + pScreenWidget->width();
-    }
+
+    m_dccX = pScreenWidget->x() + pScreenWidget->width();
+
+    if (pointerScreen != primaryScreen)
+        pScreenWidget = desktop->screen(pointerScreen);
 
     m_bubble->setBasePosition(getX(), getY(), pScreenWidget->geometry());
     m_bubble->setEntity(notification);
