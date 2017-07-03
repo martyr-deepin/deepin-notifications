@@ -16,6 +16,7 @@
 #include <QDir>
 #include <DPlatformWindowHandle>
 #include <DWindowManagerHelper>
+#include <QDBusArgument>
 
 DWIDGET_USE_NAMESPACE
 
@@ -88,7 +89,8 @@ private:
     void processActions();
     void processIconData();
 
-    void saveImg(QImage &image);
+    void saveImg(const QImage &image);
+    const QPixmap converToPixmap(const QDBusArgument &value);
 };
 
 #endif // BUBBLE_H
