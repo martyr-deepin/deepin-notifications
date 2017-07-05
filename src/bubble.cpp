@@ -306,18 +306,12 @@ void Bubble::processIconData()
     const QString imagePath = m_entity->hints().contains("image-path") ? m_entity->hints()["image-path"].toString() : "";
 
     if (imagePath.isEmpty()) {
-        if (m_entity->hints()["icon_data"].canConvert<QDBusArgument>()) {
+        if (m_entity->hints()["image-data"].canConvert<QDBusArgument>()){
+            QDBusArgument argument = m_entity->hints()["image-data"].value<QDBusArgument>();
+            m_icon->setPixmap(converToPixmap(argument));
+        } else if (m_entity->hints()["icon_data"].canConvert<QDBusArgument>()) {
             QDBusArgument argument = m_entity->hints()["icon_data"].value<QDBusArgument>();
-            IconData data = qdbus_cast<IconData>(argument);
-            if (data.cannel == 3) {
-                QImage img((const uchar *)data.array.data(), data.width, data.height, QImage::Format_RGB888);
-                saveImg(img);
-                m_icon->setPixmap(QPixmap::fromImage(img));
-            } else if (data.cannel == 4){
-                QImage img((const uchar *)data.array.data(), data.width, data.height, QImage::Format_ARGB32);
-                saveImg(img);
-                m_icon->setPixmap(QPixmap::fromImage(img));
-            }
+            m_icon->setPixmap(converToPixmap(argument));
         } else {
             m_icon->setIcon(m_entity->appIcon());
         }
@@ -326,10 +320,92 @@ void Bubble::processIconData()
     }
 }
 
-void Bubble::saveImg(QImage &image)
+void Bubble::saveImg(const QImage &image)
 {
     QDir dir;
     dir.mkdir(CachePath);
 
     image.save(CachePath + m_entity->id() + ".png");
+}
+
+inline void copyLineRGB32(QRgb* dst, const char* src, int width)
+{
+    const char* end = src + width * 3;
+    for (; src != end; ++dst, src+=3) {
+        *dst = qRgb(src[0], src[1], src[2]);
+    }
+}
+
+inline void copyLineARGB32(QRgb* dst, const char* src, int width)
+{
+    const char* end = src + width * 4;
+    for (; src != end; ++dst, src+=4) {
+        *dst = qRgba(src[0], src[1], src[2], src[3]);
+    }
+}
+
+static QImage decodeNotificationSpecImageHint(const QDBusArgument& arg)
+{
+    int width, height, rowStride, hasAlpha, bitsPerSample, channels;
+    QByteArray pixels;
+    char* ptr;
+    char* end;
+
+    arg.beginStructure();
+    arg >> width >> height >> rowStride >> hasAlpha >> bitsPerSample >> channels >> pixels;
+    arg.endStructure();
+    //qDebug() << width << height << rowStride << hasAlpha << bitsPerSample << channels;
+
+    #define SANITY_CHECK(condition) \
+    if (!(condition)) { \
+        qWarning() << "Sanity check failed on" << #condition; \
+        return QImage(); \
+    }
+
+    SANITY_CHECK(width > 0);
+    SANITY_CHECK(width < 2048);
+    SANITY_CHECK(height > 0);
+    SANITY_CHECK(height < 2048);
+    SANITY_CHECK(rowStride > 0);
+
+    #undef SANITY_CHECK
+
+    QImage::Format format = QImage::Format_Invalid;
+    void (*fcn)(QRgb*, const char*, int) = 0;
+    if (bitsPerSample == 8) {
+        if (channels == 4) {
+            format = QImage::Format_ARGB32;
+            fcn = copyLineARGB32;
+        } else if (channels == 3) {
+            format = QImage::Format_RGB32;
+            fcn = copyLineRGB32;
+        }
+    }
+    if (format == QImage::Format_Invalid) {
+        qWarning() << "Unsupported image format (hasAlpha:" << hasAlpha << "bitsPerSample:" << bitsPerSample << "channels:" << channels << ")";
+        return QImage();
+    }
+
+    QImage image(width, height, format);
+    ptr = pixels.data();
+    end = ptr + pixels.length();
+    for (int y=0; y<height; ++y, ptr += rowStride) {
+        if (ptr + channels * width > end) {
+            qWarning() << "Image data is incomplete. y:" << y << "height:" << height;
+            break;
+        }
+        fcn((QRgb*)image.scanLine(y), ptr, width);
+    }
+
+    return image;
+}
+
+const QPixmap Bubble::converToPixmap(const QDBusArgument &value)
+{
+    // use plasma notify source code to conver photo, solving encoded question.
+    const QImage &img = decodeNotificationSpecImageHint(value);
+    saveImg(img);
+    return QPixmap::fromImage(img).scaled(m_icon->width(), m_icon->height(),
+                                          Qt::KeepAspectRatioByExpanding,
+                                          Qt::SmoothTransformation);
 }
