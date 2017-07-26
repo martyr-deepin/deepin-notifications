@@ -29,7 +29,7 @@
 
 #include <DDesktopServices>
 
-DUTIL_USE_NAMESPACE
+DCORE_USE_NAMESPACE
 
 /*
  * Implementation of adaptor class NotificationsDBusAdaptor
