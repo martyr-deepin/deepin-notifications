@@ -92,9 +92,10 @@ uint BubbleManager::Notify(const QString &appName, uint,
 #endif
 
     // timestamp as id;
+    // if body is empty, summary will be interchanged;
     const qint64 id = QDateTime::currentMSecsSinceEpoch();
-    NotificationEntity *notification = new NotificationEntity(appName, QString::number(id), appIcon, summary,
-                                                              body, actions, hints, this);
+    NotificationEntity *notification = new NotificationEntity(appName, QString::number(id), appIcon, body.isEmpty() ? body : summary,
+                                                              body.isEmpty() ? summary : body, actions, hints, this);
     m_persistence->addOne(notification);
     m_entities.enqueue(notification);
     if (!m_bubble->isVisible()) { consumeEntities(); }
