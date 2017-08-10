@@ -12,7 +12,8 @@
 #include <QPainter>
 #include <QSvgRenderer>
 #include <QIcon>
-
+#include <QApplication>
+#include <QScreen>
 #include "appicon.h"
 
 
@@ -25,8 +26,8 @@ AppIcon::AppIcon(QWidget *parent) :
 
 void AppIcon::setIcon(const QString &iconPath)
 {
-
-    QPixmap pixmap(48, 48);
+    const qreal pixelRatio = qApp->primaryScreen()->devicePixelRatio();
+    QPixmap pixmap;
 
     // iconPath is an absolute path of the system.
     if (QFile::exists(iconPath) && QFileInfo(iconPath).isAbsolute()) {
@@ -40,14 +41,13 @@ void AppIcon::setIcon(const QString &iconPath)
         }
     } else {
         const QIcon &icon = QIcon::fromTheme(iconPath, QIcon::fromTheme("application-x-desktop"));
-        pixmap = icon.pixmap(48, 48);
+        pixmap = icon.pixmap(48 * pixelRatio, 48 * pixelRatio);
     }
 
     if (!pixmap.isNull()) {
         pixmap = pixmap.scaled(width(), height(),
                                Qt::KeepAspectRatioByExpanding,
                                Qt::SmoothTransformation);
-
         setPixmap(pixmap);
     }
 }
