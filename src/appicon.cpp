@@ -41,13 +41,16 @@ void AppIcon::setIcon(const QString &iconPath)
         }
     } else {
         const QIcon &icon = QIcon::fromTheme(iconPath, QIcon::fromTheme("application-x-desktop"));
-        pixmap = icon.pixmap(48 * pixelRatio, 48 * pixelRatio);
+        pixmap = icon.pixmap(width() * pixelRatio, height() * pixelRatio);
     }
 
     if (!pixmap.isNull()) {
-        pixmap = pixmap.scaled(width(), height(),
+        pixmap = pixmap.scaled(width() * pixelRatio, height() * pixelRatio,
                                Qt::KeepAspectRatioByExpanding,
                                Qt::SmoothTransformation);
+
+        pixmap.setDevicePixelRatio(pixelRatio);
+
         setPixmap(pixmap);
     }
 }
