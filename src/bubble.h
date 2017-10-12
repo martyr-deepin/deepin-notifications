@@ -76,7 +76,6 @@ private:
     NotificationEntity *m_entity;
 
     AppIcon *m_icon = nullptr;
-    QLabel *m_title = nullptr;
     AppBody *m_body = nullptr;
     ActionButton *m_actionButton = nullptr;
 

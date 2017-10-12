@@ -56,7 +56,6 @@ Bubble::Bubble(NotificationEntity *entity):
     DBlurEffectWidget(),
     m_entity(entity),
     m_icon(new AppIcon(this)),
-    m_title(new QLabel(this)),
     m_body(new AppBody(this)),
     m_actionButton(new ActionButton(this))
 {
@@ -192,14 +191,8 @@ void Bubble::updateContent()
         actions.append(action);
     }
 
-    m_title->setText(m_entity->summary());
     m_body->setText(m_entity->body());
-
-    if (m_entity->body().isEmpty()) {
-        m_title->move(70, 16);
-    } else {
-        m_title->move(70, 6);
-    }
+    m_body->setTitle(m_entity->summary());
 
     processIconData();
     processActions();
@@ -210,13 +203,8 @@ void Bubble::initUI()
     m_icon->setFixedSize(48, 48);
     m_icon->move(11, 11);
 
-    m_title->setTextFormat(Qt::RichText);
-    m_title->setObjectName("Title");
-    m_title->setAlignment(Qt::AlignTop | Qt::AlignLeft);
-    m_title->move(70, 6);
-
     m_body->setObjectName("Body");
-    m_body->move(70, 22);
+    m_body->move(70, 0);
 
     m_actionButton->move(BubbleWidth - m_actionButton->width(), 0);
 
@@ -303,11 +291,9 @@ void Bubble::processActions()
     }
 
     if (m_actionButton->isEmpty()) {
-        m_title->setFixedSize(220, 20);
-        m_body->setFixedSize(220, 40);
+        m_body->setFixedSize(220, BubbleHeight);
     } else {
-        m_title->setFixedSize(150, 20);
-        m_body->setFixedSize(150, 40);
+        m_body->setFixedSize(150, BubbleHeight);
     }
 }
 

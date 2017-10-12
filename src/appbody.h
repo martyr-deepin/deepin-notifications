@@ -21,22 +21,28 @@
 #define APPBODY_H
 
 #include <QWidget>
+#include <QLabel>
 
 class AppBody : public QWidget
 {
     Q_OBJECT
 public:
     explicit AppBody(QWidget *parent = 0);
+    void setTitle(const QString &title);
     void setText(const QString & text);
 
 protected:
-    void paintEvent(QPaintEvent * event);
+    bool eventFilter(QObject *watched, QEvent *event) Q_DECL_OVERRIDE;
 
 private:
     const QString holdTextInRect(const QFontMetrics &fm, const QString &text, const QRect &rect) const;
 
 private:
+    QString m_title;
     QString m_bodyText;
+
+    QLabel *m_titleLbl;
+    QLabel *m_bodyLbl;
 };
 
 #endif // APPBODY_H

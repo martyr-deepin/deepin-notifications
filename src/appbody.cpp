@@ -20,6 +20,8 @@
 #include "appbody.h"
 #include <QPainter>
 #include <QTextDocument>
+#include <QVBoxLayout>
+#include <QEvent>
 
 static const QString DefaultCSS = "body { color: black; font-size: 11px; }";
 static const QString HTMLTemplate = "<body>%1</body>";
@@ -27,44 +29,72 @@ static const QString HTMLTemplate = "<body>%1</body>";
 AppBody::AppBody(QWidget *parent)
     : QWidget(parent)
 {
+    m_titleLbl = new QLabel;
+    m_bodyLbl = new QLabel;
 
+    m_bodyLbl->installEventFilter(this);
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->setMargin(0);
+    layout->setSpacing(2);
+
+    layout->addStretch();
+
+    layout->addWidget(m_titleLbl);
+    layout->addWidget(m_bodyLbl);
+
+    layout->addStretch();
+
+    setLayout(layout);
+}
+
+void AppBody::setTitle(const QString &title)
+{
+    m_title = title;
+
+    m_titleLbl->setVisible(!title.isEmpty());
+
+    m_titleLbl->setText(title);
 }
 
 void AppBody::setText(const QString &text)
 {
     m_bodyText = text;
 
-    update();
+    m_bodyLbl->resize(width(), height() - m_titleLbl->height());
+
+    m_bodyLbl->update();
 }
 
-void AppBody::paintEvent(QPaintEvent *event)
+bool AppBody::eventFilter(QObject *watched, QEvent *event)
 {
-    QPainter painter(this);
+    if (watched == m_bodyLbl && event->type() == QEvent::Paint) {
+        QPainter painter(m_bodyLbl);
+        QTextOption appNameOption;
+        appNameOption.setAlignment(Qt::AlignLeft | Qt::AlignTop);
+        appNameOption.setWrapMode(QTextOption::WordWrap);
 
-    QTextOption appNameOption;
-    appNameOption.setAlignment(Qt::AlignLeft | Qt::AlignTop);
-    appNameOption.setWrapMode(QTextOption::WordWrap);
+        QFont appNamefont(painter.font());
+        appNamefont.setPixelSize(12);
 
-    QFont appNamefont(painter.font());
-    appNamefont.setPixelSize(12);
+        const QFontMetrics fm(appNamefont);
 
-    const QFontMetrics fm(appNamefont);
+        QString appBody = holdTextInRect(fm, m_bodyText, m_bodyLbl->rect());
 
-    QString appBody = holdTextInRect(fm, m_bodyText, this->rect());
+        painter.setBrush(Qt::transparent);
+        painter.setPen(Qt::black);
 
-    painter.setBrush(Qt::transparent);
-    painter.setPen(Qt::black);
+        QTextDocument td;
+        td.setDefaultTextOption(appNameOption);
+        td.setDefaultFont(appNamefont);
+        td.setDefaultStyleSheet(DefaultCSS);
+        td.setTextWidth(width());
+        td.setDocumentMargin(0);
+        td.setHtml(HTMLTemplate.arg(appBody));
+        td.drawContents(&painter);
+    }
 
-    QTextDocument td;
-    td.setDefaultTextOption(appNameOption);
-    td.setDefaultFont(appNamefont);
-    td.setDefaultStyleSheet(DefaultCSS);
-    td.setTextWidth(this->width());
-    td.setDocumentMargin(0);
-    td.setHtml(HTMLTemplate.arg(appBody));
-    td.drawContents(&painter);
-
-    QWidget::paintEvent(event);
+    return false;
 }
 
 const QString AppBody::holdTextInRect(const QFontMetrics &fm, const QString &text, const QRect &rect) const
