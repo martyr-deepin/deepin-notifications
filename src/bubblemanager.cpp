@@ -251,7 +251,7 @@ int BubbleManager::getX()
 
     QRect rect( desktop->screenGeometry(primaryScreen) );
 
-    if (m_dbusControlCenter->rect().x() < rect.width())
+    if (m_dbusControlCenter->isValid() && m_dbusControlCenter->rect().x() < rect.width())
         return m_dbusControlCenter->rect().x();
 
     if (m_dockGeometry.width() < m_dockGeometry.height()) { // vertical
