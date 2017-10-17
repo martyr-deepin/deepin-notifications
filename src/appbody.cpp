@@ -61,7 +61,7 @@ void AppBody::setText(const QString &text)
 {
     m_bodyText = text;
 
-    m_bodyLbl->resize(width(), height() - m_titleLbl->height());
+    m_bodyLbl->resize(width(), height() - m_title.isEmpty() ? 0 : m_titleLbl->height());
 
     m_bodyLbl->update();
 }
