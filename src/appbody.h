@@ -20,8 +20,9 @@
 #ifndef APPBODY_H
 #define APPBODY_H
 
+#include "appbodylabel.h"
+
 #include <QWidget>
-#include <QLabel>
 
 class AppBody : public QWidget
 {
@@ -31,18 +32,12 @@ public:
     void setTitle(const QString &title);
     void setText(const QString & text);
 
-protected:
-    bool eventFilter(QObject *watched, QEvent *event) Q_DECL_OVERRIDE;
-
-private:
-    const QString holdTextInRect(const QFontMetrics &fm, const QString &text, const QRect &rect) const;
-
 private:
     QString m_title;
     QString m_bodyText;
 
     QLabel *m_titleLbl;
-    QLabel *m_bodyLbl;
+    appBodyLabel *m_bodyLbl;
 };
 
 #endif // APPBODY_H

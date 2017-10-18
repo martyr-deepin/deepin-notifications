@@ -11,7 +11,8 @@ HEADERS += \
     $$PWD/dbuscontrol.h \
     $$PWD/persistence.h \
     $$PWD/appbody.h \
-    $$PWD/icondata.h
+    $$PWD/icondata.h \
+    $$PWD/appbodylabel.h
 
 SOURCES += \
     $$PWD/bubble.cpp \
@@ -26,4 +27,5 @@ SOURCES += \
     $$PWD/dbuscontrol.cpp \
     $$PWD/persistence.cpp \
     $$PWD/appbody.cpp \
-    $$PWD/icondata.cpp
+    $$PWD/icondata.cpp \
+    $$PWD/appbodylabel.cpp

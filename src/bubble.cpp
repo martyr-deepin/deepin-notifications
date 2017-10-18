@@ -191,8 +191,8 @@ void Bubble::updateContent()
         actions.append(action);
     }
 
-    m_body->setText(m_entity->body());
     m_body->setTitle(m_entity->summary());
+    m_body->setText(m_entity->body());
 
     processIconData();
     processActions();

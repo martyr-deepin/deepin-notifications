@@ -2,7 +2,6 @@
  * Copyright (C) 2017 ~ 2017 Deepin Technology Co., Ltd.
  *
  * Author:     kirigaya <kirigaya@mkacg.com>
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,44 +16,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "appbody.h"
-#include <QPainter>
-#include <QVBoxLayout>
+#ifndef APPBODYLABEL_H
+#define APPBODYLABEL_H
 
-AppBody::AppBody(QWidget *parent)
-    : QWidget(parent)
+#include <QLabel>
+
+class appBodyLabel : public QLabel
 {
-    m_titleLbl = new QLabel;
-    m_bodyLbl = new appBodyLabel;
+    Q_OBJECT
+public:
+    explicit appBodyLabel(QWidget *parent = nullptr);
+    void setText(const QString &text);
 
-    m_bodyLbl->installEventFilter(this);
+protected:
+    void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
 
-    QVBoxLayout *layout = new QVBoxLayout;
-    layout->setMargin(0);
-    layout->setSpacing(2);
+private:
+    const QString holdTextInRect(const QFontMetrics &fm, const QString &text, const QRect &rect) const;
 
-    layout->addStretch();
+private:
+    QString m_text;
+};
 
-    layout->addWidget(m_titleLbl);
-    layout->addWidget(m_bodyLbl);
-
-    layout->addStretch();
-
-    setLayout(layout);
-}
-
-void AppBody::setTitle(const QString &title)
-{
-    m_title = title;
-
-    m_titleLbl->setVisible(!title.isEmpty());
-
-    m_titleLbl->setText(title);
-}
-
-void AppBody::setText(const QString &text)
-{
-    m_bodyLbl->setVisible(!text.isEmpty());
-
-    m_bodyLbl->setText(text);
-}
+#endif // APPBODYLABEL_H
