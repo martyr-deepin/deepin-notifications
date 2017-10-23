@@ -27,6 +27,8 @@ AppBody::AppBody(QWidget *parent)
     m_titleLbl = new QLabel;
     m_bodyLbl = new appBodyLabel;
 
+    m_titleLbl->setStyleSheet("font-weight: 460; color: #303030;");
+
     m_bodyLbl->installEventFilter(this);
 
     QVBoxLayout *layout = new QVBoxLayout;

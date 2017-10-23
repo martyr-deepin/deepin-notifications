@@ -23,7 +23,7 @@
 #include <QPainter>
 #include <QDebug>
 
-static const QString DefaultCSS = "body { color: black; font-size: 11px; }";
+static const QString DefaultCSS = "body { color: rgba(0,0,0,0.9);}";
 static const QString HTMLTemplate = "<body>%1</body>";
 
 appBodyLabel::appBodyLabel(QWidget *parent) : QLabel(parent)
@@ -47,7 +47,6 @@ void appBodyLabel::paintEvent(QPaintEvent *event)
     appNameOption.setWrapMode(QTextOption::WordWrap);
 
     QFont appNamefont(painter.font());
-    appNamefont.setPixelSize(12);
 
     const QFontMetrics fm(appNamefont);
 
