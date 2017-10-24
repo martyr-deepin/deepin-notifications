@@ -24,12 +24,12 @@
 AppBody::AppBody(QWidget *parent)
     : QWidget(parent)
 {
+    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+
     m_titleLbl = new QLabel;
     m_bodyLbl = new appBodyLabel;
 
     m_titleLbl->setStyleSheet("font-weight: 460; color: #303030;");
-
-    m_bodyLbl->installEventFilter(this);
 
     QVBoxLayout *layout = new QVBoxLayout;
     layout->setMargin(0);

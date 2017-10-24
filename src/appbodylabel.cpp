@@ -28,6 +28,7 @@ static const QString HTMLTemplate = "<body>%1</body>";
 
 appBodyLabel::appBodyLabel(QWidget *parent) : QLabel(parent)
 {
+    setWordWrap(true);
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);
 }
 
@@ -35,11 +36,15 @@ void appBodyLabel::setText(const QString &text)
 {
     m_text = text;
 
+    QLabel::setText(text);
+
     update();
 }
 
 void appBodyLabel::paintEvent(QPaintEvent *event)
 {
+    Q_UNUSED(event);
+
     QPainter painter(this);
 
     QTextOption appNameOption;
@@ -63,8 +68,6 @@ void appBodyLabel::paintEvent(QPaintEvent *event)
     td.setDocumentMargin(0);
     td.setHtml(HTMLTemplate.arg(appBody));
     td.drawContents(&painter);
-
-    QLabel::paintEvent(event);
 }
 
 const QString appBodyLabel::holdTextInRect(const QFontMetrics &fm, const QString &text, const QRect &rect) const
