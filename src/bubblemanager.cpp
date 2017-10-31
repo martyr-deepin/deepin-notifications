@@ -168,8 +168,15 @@ void BubbleManager::AddOneRecord(NotificationEntity *entity)
 
 void BubbleManager::registerAsService()
 {
-    QDBusConnection::sessionBus().registerService(NotificationsDBusService);
-    QDBusConnection::sessionBus().registerObject(NotificationsDBusPath, this);
+    QDBusConnection connection = QDBusConnection::sessionBus();
+    connection.interface()->registerService(NotificationsDBusService,
+                                                  QDBusConnectionInterface::ReplaceExistingService,
+                                                  QDBusConnectionInterface::AllowReplacement);
+    connection.registerObject(NotificationsDBusPath, this);
+
+    // quit if another instance of deepin-notifications starts.
+    connect(connection.interface(), &QDBusConnectionInterface::serviceUnregistered,
+            qApp, &QApplication::quit);
 }
 
 void BubbleManager::controlCenterRectChangedSlot(const QRect &rect)
