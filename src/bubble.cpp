@@ -119,11 +119,14 @@ void Bubble::setBasePosition(int x, int y, QRect rect)
     const QPoint dPos(x - BubbleWidth, y);
     const QSize dSize(BubbleWidth, BubbleHeight);
 
+
     move(dPos);
     resize(dSize);
 
-    m_inAnimation->setStartValue(QPoint(x - width(), y - height()));
-    m_inAnimation->setEndValue(QPoint(x - width(), y));
+    const int baseX = x - width();
+
+    m_inAnimation->setStartValue(QPoint(baseX, y - height()));
+    m_inAnimation->setEndValue(QPoint(baseX, y));
 
     const QRect normalGeo( dPos, dSize );
     QRect outGeo( normalGeo.right(), normalGeo.y(), 0, normalGeo.height());

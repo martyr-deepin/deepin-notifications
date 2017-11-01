@@ -61,6 +61,9 @@ BubbleManager::BubbleManager(QObject *parent) :
 
     connect(m_dbusdockinterface, &DBusDockInterface::geometryChanged, this, &BubbleManager::dockchangedSlot);
     connect(m_persistence, &Persistence::RecordAdded, this, &BubbleManager::AddOneRecord);
+
+    if (m_dbusdockinterface->isValid())
+        m_dbusdockinterface->geometry();
 }
 
 BubbleManager::~BubbleManager()
@@ -251,27 +254,22 @@ int BubbleManager::getX()
     int pointerScreen = desktop->screenNumber(QCursor::pos());
     int primaryScreen = desktop->primaryScreen();
 
-    if (pointerScreen != primaryScreen) {
-        QRect rect( desktop->screenGeometry(pointerScreen) );
-        return  rect.x() + rect.width();
-    }
+    QRect rect( desktop->screenGeometry(pointerScreen) );
 
-    QRect rect( desktop->screenGeometry(primaryScreen) );
+    if (pointerScreen != primaryScreen)
+        return  rect.x() + rect.width();
+
+    if (!m_dbusdockinterface->isValid())
+        return rect.x() + rect.width();
+
+    rect = desktop->screenGeometry(primaryScreen);
 
     if (m_dbusControlCenter->isValid() && m_dbusControlCenter->rect().x() < rect.width())
         return m_dbusControlCenter->rect().x();
 
     if (m_dockGeometry.width() < m_dockGeometry.height()) { // vertical
-        if (m_dockGeometry.center().x() < rect.center().x()) { // left
-
-        } else { // right
+        if (m_dockGeometry.center().x() >= rect.center().x()) { // right
             return m_dccX - m_dockGeometry.width();
-        }
-    } else { // horizontal
-        if (m_dockGeometry.center().y() < rect.center().y()) { // top
-
-        } else { // bottom
-
         }
     }
 
@@ -284,27 +282,24 @@ int BubbleManager::getY()
     int pointerScreen = desktop->screenNumber(QCursor::pos());
     int primaryScreen = desktop->primaryScreen();
 
-    if (pointerScreen != primaryScreen) {
-        QRect rect( desktop->screenGeometry(pointerScreen) );
+    QRect rect( desktop->screenGeometry(pointerScreen) );
+
+    if (pointerScreen != primaryScreen)
         return  rect.y();
-    }
 
-    QRect rect( desktop->screenGeometry(primaryScreen) );
-    if (m_dockGeometry.width() < m_dockGeometry.height()) { // vertical
-        if (m_dockGeometry.center().x() < rect.center().x()) { // left
+    if (!m_dbusdockinterface->isValid())
+        return rect.y();
 
-        } else { // right
 
-        }
-    } else { // horizontal
+    rect = desktop->screenGeometry(primaryScreen);
+
+    if (m_dockGeometry.width() >= m_dockGeometry.height()) {
         if (m_dockGeometry.center().y() < rect.center().y()) { // top
             if (getX() == rect.width() && (rect.width() - m_dockGeometry.width()) / 2.0 > m_bubble->width()) {
                 return rect.y();
             } else {
                 return m_dockGeometry.height();
             }
-        } else { // bottom
-
         }
     }
 
