@@ -1,4 +1,19 @@
 <a name=""></a>
+##  3.1.0 (2017-11-03)
+
+
+#### Features
+
+*   quit if another instance starts ([c7edfacc](https://github.com/linuxdeepin/deepin-notifications/commit/c7edfacc37c54c15b3aa4ba052c47deca368c851))
+
+#### Bug Fixes
+
+* **pos:**  position error when user login ([22665e01](https://github.com/linuxdeepin/deepin-notifications/commit/22665e01589a92a6a1626850e85f5302eb61a96a))
+* **style:**  not set DApplication theme ([5d95c7a9](https://github.com/linuxdeepin/deepin-notifications/commit/5d95c7a9e9c51ee920e8b3d9cd3951595381aecd))
+
+
+
+<a name=""></a>
 ##  (2017-10-25)
 
 
