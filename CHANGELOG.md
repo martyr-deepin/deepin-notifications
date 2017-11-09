@@ -1,3 +1,13 @@
+<a name="3.1.1"></a>
+### 3.1.1 (2017-11-09)
+
+
+#### Bug Fixes
+
+* **pos:**  pos error with multi screen ([9c653f60](https://github.com/linuxdeepin/deepin-notifications/commit/9c653f60c131e2d633a2619c133b4fffafafc938))
+
+
+
 <a name=""></a>
 ##  3.1.0 (2017-11-03)
 
