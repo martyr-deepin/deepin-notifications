@@ -262,7 +262,7 @@ int BubbleManager::getX()
     if (!m_dbusControlCenter->isValid() && !m_dbusdockinterface->isValid())
         return m_dccX;
 
-    if (m_dbusControlCenter->rect().x() < m_dockGeometry.x())
+    if (m_dbusControlCenter->isValid() && m_dbusControlCenter->rect().x() < m_dockGeometry.x())
         return m_dbusControlCenter->rect().x();
 
     rect = desktop->screenGeometry(primaryScreen);
@@ -291,9 +291,11 @@ int BubbleManager::getY()
 
     rect = desktop->screenGeometry(primaryScreen);
 
+    const int left = m_dbusControlCenter->isValid() ? m_dbusControlCenter->rect().left() : rect.right();
+
     if (m_dockGeometry.width() >= m_dockGeometry.height())
         if (m_dockGeometry.center().y() < rect.center().y()) // top
-            if (m_dockGeometry.right() > m_dbusControlCenter->rect().left() - m_bubble->width())
+            if (m_dockGeometry.right() > left - m_bubble->width())
                 return m_dockGeometry.y() + m_dockGeometry.height();
 
     return rect.y();
