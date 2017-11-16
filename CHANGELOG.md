@@ -1,3 +1,13 @@
+<a name="3.1.2"></a>
+### 3.1.2 (2017-11-16)
+
+
+#### Bug Fixes
+
+* **pos:**  not check control center dbus is invalid ([8dd59dce](https://github.com/linuxdeepin/deepin-notifications/commit/8dd59dce0bc13318bb757ef1e6ce40ddac167308))
+
+
+
 <a name="3.1.1"></a>
 ### 3.1.1 (2017-11-09)
 
