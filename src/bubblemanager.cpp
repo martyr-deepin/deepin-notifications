@@ -35,7 +35,8 @@
 BubbleManager::BubbleManager(QObject *parent) :
     QObject(parent),
     m_persistence(new Persistence),
-    m_dbusControlCenter(0)
+    m_dbusControlCenter(0),
+    m_currentNotify(nullptr)
 {
     m_bubble = new Bubble();
 
@@ -95,22 +96,30 @@ QString BubbleManager::GetServerInformation(QString &name, QString &vender, QStr
     return QString("1.2");
 }
 
-uint BubbleManager::Notify(const QString &appName, uint,
+uint BubbleManager::Notify(const QString &appName, uint id,
                            const QString &appIcon, const QString &summary,
                            const QString &body, const QStringList &actions,
                            const QVariantMap hints, int expireTimeout)
 {
-#ifdef QT_DEBUG
-    qDebug() << "Notify" << appName << appIcon << summary << body << actions << hints << expireTimeout;
-#endif
-
     // timestamp as id;
     // if body is empty, summary will be interchanged;
-    const qint64 id = QDateTime::currentMSecsSinceEpoch();
+    if (!id)
+        id = QDateTime::currentMSecsSinceEpoch();
+
+#ifdef QT_DEBUG
+    qDebug() << "Notify" << appName  << id << appIcon << summary << body << actions << hints << expireTimeout;
+#endif
+
     NotificationEntity *notification = new NotificationEntity(appName, QString::number(id), appIcon, summary,
                                                               body, actions, hints, this);
-    m_persistence->addOne(notification);
-    m_entities.enqueue(notification);
+
+    if (m_currentNotify && m_currentNotify->id() == QString::number(id)) {
+        m_bubble->setEntity(notification);
+    } else {
+        m_persistence->addOne(notification);
+        m_entities.enqueue(notification);
+    }
+
     if (!m_bubble->isVisible()) { consumeEntities(); }
 
     return id;
@@ -332,9 +341,12 @@ void BubbleManager::bindControlCenterX()
 
 void BubbleManager::consumeEntities()
 {
-    if (m_entities.isEmpty()) { return; }
+    if (m_entities.isEmpty()) {
+        m_currentNotify = nullptr;
+        return;
+    }
 
-    NotificationEntity *notification = m_entities.dequeue();
+    m_currentNotify = m_entities.dequeue();
 
     QDesktopWidget *desktop = QApplication::desktop();
     int pointerScreen = desktop->screenNumber(QCursor::pos());
@@ -357,7 +369,7 @@ void BubbleManager::consumeEntities()
         pScreenWidget = desktop->screen(pointerScreen);
 
     m_bubble->setBasePosition(getX(), getY(), pScreenWidget->geometry());
-    m_bubble->setEntity(notification);
+    m_bubble->setEntity(m_currentNotify);
 
     m_bubble->disconnect();
     connect(m_bubble, SIGNAL(expired(int)), this, SLOT(bubbleExpired(int)));
