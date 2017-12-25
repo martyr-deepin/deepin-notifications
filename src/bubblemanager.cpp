@@ -29,15 +29,18 @@
 
 #include "persistence.h"
 
+#include <QTimer>
 #include <QDebug>
 
-
-BubbleManager::BubbleManager(QObject *parent) :
-    QObject(parent),
-    m_persistence(new Persistence),
-    m_dbusControlCenter(0),
-    m_currentNotify(nullptr)
+BubbleManager::BubbleManager(QObject *parent)
+    : QObject(parent)
+    , m_persistence(new Persistence)
+    , m_dbusControlCenter(0)
+    , m_quitTimer(new QTimer(this))
 {
+    m_quitTimer->setInterval(6 * 1000);
+    m_quitTimer->setSingleShot(true);
+
     m_bubble = new Bubble();
 
     m_dbusDaemonInterface = new DBusDaemonInterface(DBusDaemonDBusService, DBusDaemonDBusPath,
@@ -65,6 +68,10 @@ BubbleManager::BubbleManager(QObject *parent) :
 
     if (m_dbusdockinterface->isValid())
         m_dbusdockinterface->geometry();
+
+    connect(m_quitTimer, &QTimer::timeout, this, [=] {
+        qApp->exit();
+    });
 }
 
 BubbleManager::~BubbleManager()
@@ -348,6 +355,8 @@ void BubbleManager::consumeEntities()
     }
 
     m_currentNotify = m_entities.dequeue();
+
+    m_quitTimer->start();
 
     QDesktopWidget *desktop = QApplication::desktop();
     int pointerScreen = desktop->screenNumber(QCursor::pos());
