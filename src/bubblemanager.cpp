@@ -19,14 +19,19 @@
 
 #include "persistence.h"
 
+#include <QTimer>
 #include <QDebug>
 
 
-BubbleManager::BubbleManager(QObject *parent) :
-    QObject(parent),
-    m_persistence(new Persistence),
-    m_dbusControlCenter(0)
+BubbleManager::BubbleManager(QObject *parent)
+    : QObject(parent)
+    , m_persistence(new Persistence)
+    , m_dbusControlCenter(0)
+    , m_quitTimer(new QTimer(this))
 {
+    m_quitTimer->setInterval(60 * 1000);
+    m_quitTimer->setSingleShot(true);
+
     m_bubble = new Bubble();
 
     m_dbusDaemonInterface = new DBusDaemonInterface(DBusDaemonDBusService, DBusDaemonDBusPath,
@@ -51,6 +56,10 @@ BubbleManager::BubbleManager(QObject *parent) :
 
     connect(m_dbusdockinterface, &DBusDockInterface::geometryChanged, this, &BubbleManager::dockchangedSlot);
     connect(m_persistence, &Persistence::RecordAdded, this, &BubbleManager::AddOneRecord);
+
+    connect(m_quitTimer, &QTimer::timeout, this, [=] {
+        qApp->exit();
+    });
 }
 
 BubbleManager::~BubbleManager()
@@ -325,6 +334,8 @@ void BubbleManager::bindControlCenterX()
 void BubbleManager::consumeEntities()
 {
     if (m_entities.isEmpty()) { return; }
+
+    m_quitTimer->start();
 
     NotificationEntity *notification = m_entities.dequeue();
 
