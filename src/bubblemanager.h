@@ -35,7 +35,11 @@ class DBusControlCenter;
 class DBusDaemonInterface;
 class Login1ManagerInterface;
 class DBusDockInterface;
+
+#ifndef DISABLE_DB
 class Persistence;
+#endif
+
 class BubbleManager : public QObject
 {
     Q_OBJECT
@@ -88,7 +92,9 @@ public slots:
 
 private:
     Bubble *m_bubble;
+#ifndef DISABLE_DB
     Persistence *m_persistence;
+#endif
     QQueue<NotificationEntity*> m_entities;
     DBusControlCenter *m_dbusControlCenter;
     DBusDaemonInterface *m_dbusDaemonInterface;

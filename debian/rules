@@ -5,3 +5,7 @@
 
 override_dh_auto_install:
 	dh_auto_install -- INSTALL_ROOT=$(CURDIR)/debian/deepin-notifications
+
+override_dh_auto_configure:
+	dh_auto_configure -- \
+		DISABLE_DB=YES

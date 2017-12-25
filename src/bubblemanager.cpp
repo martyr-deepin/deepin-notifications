@@ -17,15 +17,18 @@
 #include "dbuslogin1manager.h"
 #include "notificationentity.h"
 
+#ifndef DISABLE_DB
 #include "persistence.h"
+#endif
 
 #include <QTimer>
 #include <QDebug>
 
-
 BubbleManager::BubbleManager(QObject *parent)
     : QObject(parent)
+#ifndef DISABLE_DB
     , m_persistence(new Persistence)
+#endif
     , m_dbusControlCenter(0)
     , m_quitTimer(new QTimer(this))
 {
@@ -55,11 +58,17 @@ BubbleManager::BubbleManager(QObject *parent)
             this, SLOT(onPrepareForSleep(bool)));
 
     connect(m_dbusdockinterface, &DBusDockInterface::geometryChanged, this, &BubbleManager::dockchangedSlot);
+
+#ifndef DISABLE_DB
     connect(m_persistence, &Persistence::RecordAdded, this, &BubbleManager::AddOneRecord);
+#endif
 
     connect(m_quitTimer, &QTimer::timeout, this, [=] {
         qApp->exit();
     });
+
+    if (m_dbusdockinterface->isValid())
+        m_dbusdockinterface->geometry();
 }
 
 BubbleManager::~BubbleManager()
@@ -104,7 +113,10 @@ uint BubbleManager::Notify(const QString &appName, uint,
     const qint64 id = QDateTime::currentMSecsSinceEpoch();
     NotificationEntity *notification = new NotificationEntity(appName, QString::number(id), appIcon, summary,
                                                               body, actions, hints, this);
+#ifndef DISABLE_DB
     m_persistence->addOne(notification);
+#endif
+
     m_entities.enqueue(notification);
     if (!m_bubble->isVisible()) { consumeEntities(); }
 
@@ -113,6 +125,7 @@ uint BubbleManager::Notify(const QString &appName, uint,
 
 QString BubbleManager::GetAllRecords()
 {
+#ifndef DISABLE_DB
     QJsonArray array;
 
     const QList<NotificationEntity> &value = m_persistence->getAll();
@@ -130,11 +143,16 @@ QString BubbleManager::GetAllRecords()
 
     QJsonDocument doc(array);
     return doc.toJson();
+#else
+    return QString();
+#endif
 }
 
 void BubbleManager::RemoveRecord(const QString &id)
 {
+#ifndef DISABLE_DB
     m_persistence->removeOne(id);
+#endif
 
     QFile file(CachePath + id + ".png");
     file.remove();
@@ -142,7 +160,9 @@ void BubbleManager::RemoveRecord(const QString &id)
 
 void BubbleManager::ClearRecords()
 {
+#ifndef DISABLE_DB
     m_persistence->removeAll();
+#endif
 
     QDir dir;
     dir.rmdir(CachePath);

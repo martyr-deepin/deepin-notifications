@@ -22,3 +22,7 @@ QMAKE_CLEAN       += $${service.output}
 service.path   = $${PREFIX}/share/dbus-1/services
 service.files += files/com.deepin.Notifications.service
 INSTALLS += service
+
+isEqual(DISABLE_DB, YES) {
+    DEFINES += DISABLE_DB
+}
