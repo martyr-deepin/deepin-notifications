@@ -262,29 +262,23 @@ int BubbleManager::getX()
     int pointerScreen = desktop->screenNumber(QCursor::pos());
     int primaryScreen = desktop->primaryScreen();
 
-    if (pointerScreen != primaryScreen) {
-        QRect rect( desktop->screenGeometry(pointerScreen) );
+    QRect rect( desktop->screenGeometry(pointerScreen) );
+
+    if (pointerScreen != primaryScreen)
         return  rect.x() + rect.width();
-    }
 
-    QRect rect( desktop->screenGeometry(primaryScreen) );
+    if (!m_dbusControlCenter->isValid() && !m_dbusdockinterface->isValid())
+        return m_dccX;
 
-    if (m_dbusControlCenter->rect().x() < rect.width())
+    if (m_dbusControlCenter->isValid() && m_dbusControlCenter->rect().x() < m_dockGeometry.x())
         return m_dbusControlCenter->rect().x();
 
-    if (m_dockGeometry.width() < m_dockGeometry.height()) { // vertical
-        if (m_dockGeometry.center().x() < rect.center().x()) { // left
+    rect = desktop->screenGeometry(primaryScreen);
 
-        } else { // right
-            return m_dccX - m_dockGeometry.width();
-        }
-    } else { // horizontal
-        if (m_dockGeometry.center().y() < rect.center().y()) { // top
-
-        } else { // bottom
-
-        }
-    }
+    if (m_dockGeometry.width() < m_dockGeometry.height()) // vertical
+        if (m_dockGeometry.center().x() >= rect.center().x()) // right
+            if ((rect.height() - m_dockGeometry.height()) / 2.0 < m_bubble->height())
+                return (rect.x() + rect.width()) - m_dockGeometry.width();
 
     return m_dccX;
 }
@@ -295,29 +289,22 @@ int BubbleManager::getY()
     int pointerScreen = desktop->screenNumber(QCursor::pos());
     int primaryScreen = desktop->primaryScreen();
 
-    if (pointerScreen != primaryScreen) {
-        QRect rect( desktop->screenGeometry(pointerScreen) );
+    QRect rect( desktop->screenGeometry(pointerScreen) );
+
+    if (pointerScreen != primaryScreen)
         return  rect.y();
-    }
 
-    QRect rect( desktop->screenGeometry(primaryScreen) );
-    if (m_dockGeometry.width() < m_dockGeometry.height()) { // vertical
-        if (m_dockGeometry.center().x() < rect.center().x()) { // left
+    if (!m_dbusdockinterface->isValid())
+        return rect.y();
 
-        } else { // right
+    rect = desktop->screenGeometry(primaryScreen);
 
-        }
-    } else { // horizontal
-        if (m_dockGeometry.center().y() < rect.center().y()) { // top
-            if (getX() == rect.width() && (rect.width() - m_dockGeometry.width()) / 2.0 > m_bubble->width()) {
-                return rect.y();
-            } else {
-                return m_dockGeometry.height();
-            }
-        } else { // bottom
+    const int left = m_dbusControlCenter->isValid() ? m_dbusControlCenter->rect().left() : rect.right();
 
-        }
-    }
+    if (m_dockGeometry.width() >= m_dockGeometry.height())
+        if (m_dockGeometry.center().y() < rect.center().y()) // top
+            if (m_dockGeometry.right() > left - m_bubble->width())
+                return m_dockGeometry.y() + m_dockGeometry.height();
 
     return rect.y();
 }
@@ -371,7 +358,10 @@ void BubbleManager::consumeEntities()
     if (checkControlCenterExistence() && pointerScreen == primaryScreen)
         bindControlCenterX();
 
-    m_dccX = pScreenWidget->x() + pScreenWidget->width();
+    if (m_dbusControlCenter->isValid())
+        m_dccX = m_dbusControlCenter->rect().x();
+    else
+        m_dccX = pScreenWidget->x() + pScreenWidget->width();
 
     if (pointerScreen != primaryScreen)
         pScreenWidget = desktop->screen(pointerScreen);
