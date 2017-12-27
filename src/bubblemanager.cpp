@@ -113,7 +113,7 @@ uint BubbleManager::Notify(const QString &appName, uint id,
     NotificationEntity *notification = new NotificationEntity(appName, QString::number(id), appIcon, summary,
                                                               body, actions, hints, this);
 
-    if (m_currentNotify && m_currentNotify->id() == QString::number(id)) {
+    if (!m_currentNotify.isNull() && m_currentNotify->id() == QString::number(id)) {
         m_bubble->setEntity(notification);
     } else {
         m_persistence->addOne(notification);
@@ -341,6 +341,11 @@ void BubbleManager::bindControlCenterX()
 
 void BubbleManager::consumeEntities()
 {
+    if (!m_currentNotify.isNull()) {
+        m_currentNotify->deleteLater();
+        m_currentNotify = nullptr;
+    }
+
     if (m_entities.isEmpty()) {
         m_currentNotify = nullptr;
         return;

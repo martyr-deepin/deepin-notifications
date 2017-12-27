@@ -104,7 +104,9 @@ private:
     DBusDaemonInterface *m_dbusDaemonInterface;
     Login1ManagerInterface *m_login1ManagerInterface;
     DBusDockInterface *m_dbusdockinterface;
-    NotificationEntity *m_currentNotify;
+
+    QPointer<NotificationEntity> m_currentNotify;
+
     int   m_dccX;
     QRect m_dockGeometry;
 
