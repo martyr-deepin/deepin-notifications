@@ -59,7 +59,8 @@ Bubble::Bubble(NotificationEntity *entity):
     m_body(new AppBody(this)),
     m_actionButton(new ActionButton(this))
 {
-    setWindowFlags(Qt::X11BypassWindowManagerHint | Qt::WindowStaysOnTopHint);
+    setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Tool);
+
     setAttribute(Qt::WA_TranslucentBackground);
 
     m_wmHelper = DWindowManagerHelper::instance();
