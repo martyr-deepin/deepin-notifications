@@ -91,7 +91,6 @@ public slots:
     void bubbleDismissed(int);
     void bubbleReplacedByOther(int);
     void bubbleActionInvoked(int, QString);
-    void bubbleAboutToQuit();
 
     void onPrepareForSleep(bool);
 

@@ -59,7 +59,6 @@ signals:
     void dismissed(int);
     void replacedByOther(int);
     void actionInvoked(int, QString);
-    void aboutToQuit();
 
 public slots:
     QPoint getCursorPos();
@@ -82,7 +81,6 @@ private:
     QPropertyAnimation *m_inAnimation = nullptr;
     QPropertyAnimation *m_outAnimation = nullptr;
     QTimer *m_outTimer = nullptr;
-    QTimer *m_aboutToOutTimer = nullptr;
     DPlatformWindowHandle *m_handle;
     DWindowManagerHelper *m_wmHelper;
 

@@ -96,7 +96,6 @@ void Bubble::setEntity(NotificationEntity *entity)
     m_entity = entity;
 
     m_outTimer->stop();
-    m_aboutToOutTimer->stop();
 
     updateContent();
 
@@ -107,7 +106,6 @@ void Bubble::setEntity(NotificationEntity *entity)
         m_inAnimation->start();
     }
 
-    m_aboutToOutTimer->start();
     m_outTimer->start();
 }
 
@@ -154,7 +152,6 @@ void Bubble::closeButtonClicked()
     emit dismissed(m_entity->id().toInt());
 
     m_outTimer->stop();
-    m_aboutToOutTimer->stop();
 }
 
 void Bubble::compositeChanged()
@@ -174,7 +171,6 @@ void Bubble::mousePressEvent(QMouseEvent *)
     emit dismissed(m_entity->id().toInt());
 
     m_outTimer->stop();
-    m_aboutToOutTimer->stop();
 }
 
 void Bubble::moveEvent(QMoveEvent *event)
@@ -263,11 +259,6 @@ void Bubble::initTimers()
             m_outAnimation->start();
         }
     });
-
-    m_aboutToOutTimer = new QTimer(this);
-    m_aboutToOutTimer->setInterval(m_outTimer->interval() - 1000);
-    m_aboutToOutTimer->setSingleShot(true);
-    connect(m_aboutToOutTimer, &QTimer::timeout, this, &Bubble::aboutToQuit);
 }
 
 bool Bubble::containsMouse() const

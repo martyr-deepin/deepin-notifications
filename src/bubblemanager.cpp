@@ -232,11 +232,6 @@ void BubbleManager::bubbleActionInvoked(int id, QString actionId)
     consumeEntities();
 }
 
-void BubbleManager::bubbleAboutToQuit()
-{
-    consumeEntities();
-}
-
 void BubbleManager::onPrepareForSleep(bool sleep)
 {
     // workaround to avoid the "About to suspend..." notifications still
@@ -381,6 +376,4 @@ void BubbleManager::consumeEntities()
     connect(m_bubble, SIGNAL(dismissed(int)), this, SLOT(bubbleDismissed(int)));
     connect(m_bubble, SIGNAL(replacedByOther(int)), this, SLOT(bubbleReplacedByOther(int)));
     connect(m_bubble, SIGNAL(actionInvoked(int, QString)), this, SLOT(bubbleActionInvoked(int, QString)));
-    connect(m_bubble, SIGNAL(aboutToQuit()), this, SLOT(bubbleAboutToQuit()));
-
 }
