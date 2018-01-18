@@ -103,15 +103,23 @@ uint BubbleManager::Notify(const QString &appName, uint id,
 {
     // timestamp as id;
     // if body is empty, summary will be interchanged;
-    if (!id)
-        id = QDateTime::currentMSecsSinceEpoch();
 
 #ifdef QT_DEBUG
-    qDebug() << "Notify" << appName  << id << appIcon << summary << body << actions << hints << expireTimeout;
+    qDebug() << "Notify" << appName << QString::number(id) << appIcon << summary << body << actions << hints << expireTimeout;
 #endif
 
-    NotificationEntity *notification = new NotificationEntity(appName, QString::number(id), appIcon, summary,
-                                                              body, actions, hints, this);
+    // In many cases, ID is empty to avoid inserting database failures and initializing use of time
+    qint64 time = id ? id : QDateTime::currentMSecsSinceEpoch();
+
+    NotificationEntity *notification = new NotificationEntity(appName,
+                                                              QString::number((uint)time),
+                                                              appIcon,
+                                                              summary,
+                                                              body,
+                                                              actions,
+                                                              hints,
+                                                              QString::number(QDateTime::currentMSecsSinceEpoch()),
+                                                              this);
 
     if (!m_currentNotify.isNull() && m_currentNotify->id() == QString::number(id)) {
         m_bubble->setEntity(notification);
@@ -122,7 +130,7 @@ uint BubbleManager::Notify(const QString &appName, uint id,
 
     if (!m_bubble->isVisible()) { consumeEntities(); }
 
-    return id;
+    return time;
 }
 
 QString BubbleManager::GetAllRecords()
@@ -137,7 +145,8 @@ QString BubbleManager::GetAllRecords()
             {"icon", entity.appIcon()},
             {"summary", entity.summary()},
             {"body", entity.body()},
-            {"id", entity.id()}
+            {"id", entity.id()},
+            {"time", entity.ctime()}
         };
         array.append(obj);
     }
@@ -170,7 +179,8 @@ void BubbleManager::AddOneRecord(NotificationEntity *entity)
         {"icon", entity->appIcon()},
         {"summary", entity->summary()},
         {"body", entity->body()},
-        {"id", entity->id()}
+        {"id", entity->id()},
+        {"time", entity->ctime()}
     };
     QJsonDocument doc(notifyJson);
     QString notify(doc.toJson(QJsonDocument::Compact));

@@ -19,10 +19,12 @@
 
 #include "notificationentity.h"
 
+#include <QDateTime>
+
 NotificationEntity::NotificationEntity(const QString &appName, const QString &id,
                                        const QString &appIcon, const QString &summary,
                                        const QString &body, const QStringList &actions,
-                                       const QVariantMap hints, QObject *parent) :
+                                       const QVariantMap hints, const QString ctime, QObject *parent) :
     QObject(parent),
     m_appName(appName),
     m_id(id),
@@ -30,13 +32,14 @@ NotificationEntity::NotificationEntity(const QString &appName, const QString &id
     m_summary(summary),
     m_body(body),
     m_actions(actions),
-    m_hints(hints)
+    m_hints(hints),
+    m_ctime(ctime)
 {
 }
 
 NotificationEntity::NotificationEntity(const NotificationEntity &notify) :
     NotificationEntity(notify.appName(), notify.id(), notify.appIcon(), notify.summary(),
-                       notify.body(), notify.actions(), notify.hints())
+                       notify.body(), notify.actions(), notify.hints(), notify.ctime())
 {
 
 }
@@ -114,7 +117,7 @@ void NotificationEntity::setHints(const QVariantMap &hints)
 
 QString NotificationEntity::ctime() const
 {
-    return m_id;
+    return m_ctime;
 }
 
 

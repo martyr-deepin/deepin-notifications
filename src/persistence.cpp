@@ -79,7 +79,7 @@ void Persistence::addOne(NotificationEntity *entity)
     query.bindValue(":summary", entity->summary());
     query.bindValue(":body", entity->body());
     query.bindValue(":appname", entity->appName());
-    query.bindValue(":ctime", entity->id());
+    query.bindValue(":ctime", entity->ctime());
 
     if (!query.exec()) {
         qWarning() << "insert value to database failed: " << query.lastError().text();
@@ -122,7 +122,7 @@ QList<NotificationEntity> Persistence::getAll()
     const int summaryName = query.record().indexOf(ColumnSummary);
     const int bodyName = query.record().indexOf(ColumnBody);
     const int appNameName = query.record().indexOf(ColumnAppName);
-//    const int ctimeName = query.record().indexOf(ColumnCTime);
+    const int ctimeName = query.record().indexOf(ColumnCTime);
 
     while (query.next())
     {
@@ -131,11 +131,9 @@ QList<NotificationEntity> Persistence::getAll()
         const QString icon = query.value(iconName).toString();
         const QString summary = query.value(summaryName).toString();
         const QString body = query.value(bodyName).toString();
+        const QString ctime = query.value(ctimeName).toString();
 
-        // ID is the same as ctime at the current stage.
-        // const QString ctime = query.value(ctimeName).toString();
-
-        NotificationEntity ent(appName, id, icon, summary, body, QStringList(), QVariantMap());
+        NotificationEntity ent(appName, id, icon, summary, body, QStringList(), QVariantMap(), ctime);
         ret << ent;
     }
 

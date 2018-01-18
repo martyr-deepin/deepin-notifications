@@ -31,7 +31,7 @@ public:
     NotificationEntity(const QString &appName, const QString &id,
                        const QString &appIcon, const QString &summary,
                        const QString &body, const QStringList &actions,
-                       const QVariantMap hints, QObject *parent=0);
+                       const QVariantMap hints, const QString ctime, QObject *parent=0);
 
     NotificationEntity(const NotificationEntity &notify);
     NotificationEntity& operator=(const NotificationEntity &notify);
@@ -67,6 +67,7 @@ private:
     QString m_body;
     QStringList m_actions;
     QVariantMap m_hints;
+    QString m_ctime;
 };
 
 #endif // NOTIFICATIONENTITY_H
