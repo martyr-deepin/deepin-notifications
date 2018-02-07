@@ -66,7 +66,7 @@ Q_SIGNALS:
 class DDENotifyDBus : public QDBusAbstractAdaptor
 {
     Q_OBJECT
-    Q_CLASSINFO("D-Bus Interface", "com.deepin.dde.Notifications")
+    Q_CLASSINFO("D-Bus Interface", "com.deepin.dde.Notification")
 public:
     explicit DDENotifyDBus(QObject *parent);
     ~DDENotifyDBus();
