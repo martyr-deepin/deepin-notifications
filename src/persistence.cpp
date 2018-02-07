@@ -56,12 +56,12 @@ Persistence::Persistence(QObject *parent)
     QSqlQuery query(m_dbConnection);
     query.prepare(QString("CREATE TABLE IF NOT EXISTS %1"
                           "("
-                          "%2 TEXT PRIMARY KEY,"
+                          "%2 TEXT,"
                           "%3 TEXT,"
                           "%4 TEXT,"
                           "%5 TEXT,"
                           "%6 TEXT,"
-                          "%7 TEXT"
+                          "%7 TEXT PRIMARY KEY"
                           ");").arg(TableName, ColumnId, ColumnIcon, ColumnSummary, ColumnBody, ColumnAppName, ColumnCTime));
 
     if (!query.exec()) {
@@ -85,8 +85,9 @@ void Persistence::addOne(NotificationEntity *entity)
         qWarning() << "insert value to database failed: " << query.lastError().text();
     } else {
         qDebug() << "insert value " << entity->id();
-        emit RecordAdded(entity);
     }
+
+    emit RecordAdded(entity);
 }
 
 void Persistence::addAll(QList<NotificationEntity *> entities)

@@ -123,10 +123,15 @@ uint BubbleManager::Notify(const QString &appName, uint id,
 
     if (!m_currentNotify.isNull() && m_currentNotify->id() == QString::number(id)) {
         m_bubble->setEntity(notification);
+
+        m_currentNotify->deleteLater();
+        m_currentNotify = notification;
+
     } else {
-        m_persistence->addOne(notification);
         m_entities.enqueue(notification);
     }
+
+    m_persistence->addOne(notification);
 
     if (!m_bubble->isVisible()) { consumeEntities(); }
 
