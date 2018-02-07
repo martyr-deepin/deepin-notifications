@@ -16,9 +16,13 @@ INSTALLS += target
 
 service.input      = files/com.deepin.Notifications.service.in
 service.output     = files/com.deepin.Notifications.service
-QMAKE_SUBSTITUTES += service
-QMAKE_CLEAN       += $${service.output}
+
+ddedbus.input = files/com.deepin.dde.Notifications.service.in
+ddedbus.output     = files/com.deepin.dde.Notifications.service
+
+QMAKE_SUBSTITUTES += service ddedbus
+QMAKE_CLEAN       += $${service.output} $${ddedbus.output}
 
 service.path   = $${PREFIX}/share/dbus-1/services
-service.files += files/com.deepin.Notifications.service
+service.files += files/com.deepin.Notifications.service files/com.deepin.dde.Notifications.service
 INSTALLS += service

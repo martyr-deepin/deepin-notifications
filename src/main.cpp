@@ -23,16 +23,28 @@
 
 DWIDGET_USE_NAMESPACE
 
+#define APP_NAME "deepin-notifications"
+
 int main(int argc, char *argv[])
 {
     DApplication::loadDXcbPlugin();
 
     DApplication app(argc, argv);
     app.setTheme("light");
+    app.setOrganizationName("deepin");
+    app.setApplicationName(APP_NAME);
 
-    BubbleManager manager;
-    NotificationsDBusAdaptor adapter(&manager);
-    manager.registerAsService();
+    if (app.setSingleInstance(APP_NAME, DApplication::UserScope)) {
+        BubbleManager manager;
 
-    return app.exec();
+        DDENotifyDBus ddenotify(&manager);
+        NotificationsDBusAdaptor adapter(&manager);
+        manager.registerAsService();
+
+        return app.exec();
+    } else {
+        qWarning() << "An instance has already existed!";
+    }
+
+    return 0;
 }

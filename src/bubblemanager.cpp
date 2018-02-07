@@ -196,9 +196,11 @@ void BubbleManager::registerAsService()
                                                   QDBusConnectionInterface::AllowReplacement);
     connection.registerObject(NotificationsDBusPath, this);
 
-    // quit if another instance of deepin-notifications starts.
-    connect(connection.interface(), &QDBusConnectionInterface::serviceUnregistered,
-            qApp, &QApplication::quit);
+    QDBusConnection ddenotifyConnect = QDBusConnection::sessionBus();
+    ddenotifyConnect.interface()->registerService(DDENotifyDBusServer,
+                                                  QDBusConnectionInterface::ReplaceExistingService,
+                                                  QDBusConnectionInterface::AllowReplacement);
+    ddenotifyConnect.registerObject(DDENotifyDBusPath, this);
 }
 
 void BubbleManager::controlCenterRectChangedSlot(const QRect &rect)
