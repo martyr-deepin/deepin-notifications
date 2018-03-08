@@ -1,3 +1,19 @@
+<a name=""></a>
+##  3.2.0 (2018-03-08)
+
+
+#### Bug Fixes
+
+*   Time error caused by numerical overflow and use new time field ([8c1d322a](https://github.com/linuxdeepin/deepin-notifications/commit/8c1d322a1ab553b9f5260c1ea24680287cd5c2eb))
+* **manager:**  notification memory leak ([8062d9df](https://github.com/linuxdeepin/deepin-notifications/commit/8062d9dfb76efe9746c8459cc0eb2bb950cf77a2))
+
+#### Features
+
+*   solve overlap with lock ([1c575b41](https://github.com/linuxdeepin/deepin-notifications/commit/1c575b416c12c849afc920c07e87932dc51798bf))
+* **notify:**  Update the content instead of adding new notifications ([43bf8bad](https://github.com/linuxdeepin/deepin-notifications/commit/43bf8bad8ee141ee068b77228f1333c2d4722acd))
+
+
+
 <a name="3.1.2"></a>
 ### 3.1.2 (2017-11-16)
 
