@@ -140,24 +140,7 @@ uint BubbleManager::Notify(const QString &appName, uint id,
 
 QString BubbleManager::GetAllRecords()
 {
-    QJsonArray array;
-
-    const QList<NotificationEntity> &value = m_persistence->getAll();
-    for (const NotificationEntity &entity : value) {
-        QJsonObject obj
-        {
-            {"name", entity.appName()},
-            {"icon", entity.appIcon()},
-            {"summary", entity.summary()},
-            {"body", entity.body()},
-            {"id", entity.id()},
-            {"time", entity.ctime()}
-        };
-        array.append(obj);
-    }
-
-    QJsonDocument doc(array);
-    return doc.toJson();
+    return m_persistence->getAll();
 }
 
 void BubbleManager::RemoveRecord(const QString &id)

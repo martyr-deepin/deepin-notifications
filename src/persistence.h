@@ -35,7 +35,7 @@ public:
     void removeOne(const QString &id);
     void removeAll();
 
-    QList<NotificationEntity> getAll();
+    QString getAll();
 
 signals:
     void RecordAdded(NotificationEntity *entify);

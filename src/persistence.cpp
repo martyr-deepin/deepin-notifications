@@ -25,6 +25,9 @@
 #include <QSqlRecord>
 #include <QDebug>
 #include <QDir>
+#include <QJsonDocument>
+#include <QJsonArray>
+#include <QJsonObject>
 
 #include "notificationentity.h"
 
@@ -112,10 +115,8 @@ void Persistence::removeAll()
     query.exec();
 }
 
-QList<NotificationEntity> Persistence::getAll()
+QString Persistence::getAll()
 {
-    QList<NotificationEntity> ret;
-
     QSqlQuery query(QString("SELECT * FROM %1").arg(TableName), m_dbConnection);
 
     const int idName = query.record().indexOf(ColumnId);
@@ -125,18 +126,21 @@ QList<NotificationEntity> Persistence::getAll()
     const int appNameName = query.record().indexOf(ColumnAppName);
     const int ctimeName = query.record().indexOf(ColumnCTime);
 
+    QJsonArray array;
+
     while (query.next())
     {
-        const QString appName = query.value(appNameName).toString();
-        const QString id = query.value(idName).toString();
-        const QString icon = query.value(iconName).toString();
-        const QString summary = query.value(summaryName).toString();
-        const QString body = query.value(bodyName).toString();
-        const QString ctime = query.value(ctimeName).toString();
-
-        NotificationEntity ent(appName, id, icon, summary, body, QStringList(), QVariantMap(), ctime);
-        ret << ent;
+        QJsonObject obj
+        {
+            {"name", query.value(appNameName).toString()},
+            {"icon", query.value(iconName).toString()},
+            {"summary", query.value(summaryName).toString()},
+            {"body", query.value(bodyName).toString()},
+            {"id", query.value(idName).toString()},
+            {"time", query.value(ctimeName).toString()}
+        };
+        array.append(obj);
     }
 
-    return ret;
+    return QJsonDocument(array).toJson();
 }
