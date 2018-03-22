@@ -1,3 +1,13 @@
+<a name="3.2.1"></a>
+### 3.2.1 (2018-03-22)
+
+
+#### Bug Fixes
+
+*   remove unnecessary motion ([86e7acde](https://github.com/linuxdeepin/deepin-notifications/commit/86e7acde6cdc16d45589199883294dc45cdbc5f7))
+
+
+
 <a name=""></a>
 ##  3.2.0 (2018-03-08)
 
