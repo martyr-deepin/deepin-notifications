@@ -45,8 +45,9 @@ Persistence::Persistence(QObject *parent)
     const QString dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 
     QDir dir(dataDir);
-    if (!dir.exists())
-        dir.mkdir(dataDir);
+    if (!dir.exists()) {
+        dir.mkpath(dataDir);
+    }
 
     m_dbConnection = QSqlDatabase::addDatabase("QSQLITE", "QSQLITE");
     m_dbConnection.setDatabaseName(dataDir + "/" + "data.db");
