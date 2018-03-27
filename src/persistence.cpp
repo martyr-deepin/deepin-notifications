@@ -86,9 +86,9 @@ void Persistence::addOne(NotificationEntity *entity)
     query.bindValue(":ctime", entity->ctime());
 
     if (!query.exec()) {
-        qWarning() << "insert value to database failed: " << query.lastError().text();
+        qWarning() << "insert value to database failed: " << query.lastError().text() << entity->id() << entity->ctime();
     } else {
-        qDebug() << "insert value " << entity->id();
+        qDebug() << "insert value " << entity->ctime();
     }
 
     emit RecordAdded(entity);
@@ -104,8 +104,8 @@ void Persistence::addAll(QList<NotificationEntity *> entities)
 void Persistence::removeOne(const QString &id)
 {
     QSqlQuery query(m_dbConnection);
-    query.prepare(QString("DELETE FROM %1 WHERE id = (:id)").arg(TableName));
-    query.bindValue(":id", id);
+    query.prepare(QString("DELETE FROM %1 WHERE ctime = (:ctime)").arg(TableName));
+    query.bindValue(":ctime", id);
     query.exec();
 }
 
