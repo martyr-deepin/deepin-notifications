@@ -1,3 +1,14 @@
+<a name="3.2.2"></a>
+### 3.2.2 (2018-03-28)
+
+
+#### Bug Fixes
+
+*   not use time as id when remove notify ([a24353eb](https://github.com/linuxdeepin/deepin-notifications/commit/a24353ebc3c9df5f94a342435fd91726d26d01ec))
+*   create parent folder failed ([f6814e96](https://github.com/linuxdeepin/deepin-notifications/commit/f6814e9660e3d5c408354ce59e8fead0f3687e59))
+
+
+
 <a name="3.2.1"></a>
 ### 3.2.1 (2018-03-22)
 
