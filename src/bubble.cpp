@@ -200,7 +200,7 @@ void Bubble::updateContent()
 
 void Bubble::initUI()
 {
-    setFixedSize(BubbleWidth, BubbleHeight);
+    resize(BubbleWidth, BubbleHeight);
 
     m_icon->setFixedSize(48, 48);
     m_icon->move(11, 11);
