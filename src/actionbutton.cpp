@@ -80,9 +80,6 @@ bool ActionButton::addButtons(const QStringList &list)
     for (int i = 0; i != list.size(); ++i) {
         if (i % 2 == 0) {
             id = list[i];
-            if (id == "default") {
-                i++; continue;
-            }
         } else {
             Button *button = new Button(list[i]);
             m_buttons << button;

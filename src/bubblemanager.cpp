@@ -225,10 +225,11 @@ void BubbleManager::bubbleReplacedByOther(int id)
     emit NotificationClosed(id, BubbleManager::Unknown);
 }
 
-void BubbleManager::bubbleActionInvoked(int id, QString actionId)
+void BubbleManager::bubbleActionInvoked(uint id, QString actionId)
 {
     m_bubble->setVisible(false);
     emit ActionInvoked(id, actionId);
+    emit NotificationClosed(id, BubbleManager::Closed);
     consumeEntities();
 }
 
@@ -375,5 +376,5 @@ void BubbleManager::consumeEntities()
     connect(m_bubble, SIGNAL(expired(int)), this, SLOT(bubbleExpired(int)));
     connect(m_bubble, SIGNAL(dismissed(int)), this, SLOT(bubbleDismissed(int)));
     connect(m_bubble, SIGNAL(replacedByOther(int)), this, SLOT(bubbleReplacedByOther(int)));
-    connect(m_bubble, SIGNAL(actionInvoked(int, QString)), this, SLOT(bubbleActionInvoked(int, QString)));
+    connect(m_bubble, SIGNAL(actionInvoked(uint, QString)), this, SLOT(bubbleActionInvoked(uint, QString)));
 }

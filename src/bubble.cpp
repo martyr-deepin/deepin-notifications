@@ -221,7 +221,9 @@ void Bubble::initUI()
             }
             ++i;
         }
-        emit actionInvoked(m_entity->id().toInt(), actionId);
+
+        m_outTimer->stop();
+        emit actionInvoked(m_entity->id().toUInt(), actionId);
     });
 }
 
@@ -268,6 +270,8 @@ void Bubble::processActions()
     m_actionButton->clear();
 
     m_actionButton->addButtons(m_entity->actions());
+
+    qDebug() << m_entity->actions();
 
     if (m_actionButton->isEmpty()) {
         m_actionButton->hide();

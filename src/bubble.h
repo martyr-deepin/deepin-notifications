@@ -58,7 +58,7 @@ signals:
     void expired(int);
     void dismissed(int);
     void replacedByOther(int);
-    void actionInvoked(int, QString);
+    void actionInvoked(uint, QString);
 
 public slots:
     QPoint getCursorPos();

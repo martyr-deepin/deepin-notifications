@@ -60,6 +60,7 @@ public Q_SLOTS: // METHODS
     QString GetServerInformation(QString &out1, QString &out2, QString &out3);
     uint Notify(const QString &in0, uint in1, const QString &in2, const QString &in3, const QString &in4, const QStringList &in5, const QVariantMap &in6, int in7);
 Q_SIGNALS:
+    void ActionInvoked(uint in0, const QString &in1);
     void NotificationClosed(uint in0, uint in1);
 };
 
