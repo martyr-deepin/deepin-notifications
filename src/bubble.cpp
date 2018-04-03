@@ -186,11 +186,6 @@ void Bubble::moveEvent(QMoveEvent *event)
 
 void Bubble::updateContent()
 {
-    QJsonArray actions;
-    foreach (QString action, m_entity->actions()) {
-        actions.append(action);
-    }
-
     m_body->setTitle(m_entity->summary());
     m_body->setText(m_entity->body());
 
@@ -272,26 +267,16 @@ void Bubble::processActions()
 {
     m_actionButton->clear();
 
-    QString id;
-    QString text;
-    QStringList actions = m_entity->actions();
-    for (int i = 0; i < actions.length(); i++) {
-        if (i % 2 == 0) {
-            id = actions.at(i);
-            if (id == "default") {
-                i++; continue;
-            }
-        } else {
-            text = actions.at(i);
-            m_actionButton->addButton(id, text);
-        }
-    }
+    m_actionButton->addButtons(m_entity->actions());
 
     if (m_actionButton->isEmpty()) {
+        m_actionButton->hide();
         m_body->setFixedSize(220, BubbleHeight);
     } else {
+        m_actionButton->show();
         m_body->setFixedSize(150, BubbleHeight);
     }
+
 }
 
 void Bubble::processIconData()

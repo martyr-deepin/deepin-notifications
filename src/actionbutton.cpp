@@ -23,6 +23,7 @@
 #include <QMoveEvent>
 #include <QtMath>
 #include <QDebug>
+#include <QStyle>
 
 #include "actionbutton.h"
 
@@ -33,16 +34,72 @@ static const QColor TextHover = Qt::white;
 ActionButton::ActionButton(QWidget *parent) :
     QFrame(parent)
 {
-    setMouseTracking(true);
+    setObjectName("ActionButton");
     setFixedSize(70, 70);
+
+    m_layout = new QVBoxLayout;
+    m_layout->setMargin(0);
+    m_layout->setSpacing(0);
+
+    setLayout(m_layout);
+
+    setStyleSheet("#ActionButton {"
+                  "border: solid rgba(0, 0, 0, 0.1);"
+                  "border-left-width: 1px;"
+                  "}"
+                  "#ActionButton > QPushButton[isHead=true] {"
+                  "margin: 0;"
+                  "border: none;"
+                  "color: rgb(0, 135, 255);"
+                  "}"
+                  "#ActionButton > QPushButton {"
+                  "margin: 0;"
+                  "border: solid rgba(0, 0, 0, 0.1);"
+                  "border-top-width: 1px;"
+                  "color: rgb(0, 135, 255);"
+                  "}"
+                  "#ActionButton > QPushButton:hover {"
+                  "margin: 0;"
+                  "border: none;"
+                  "color: white;"
+                  "background: rgb(0, 135, 255);"
+                  "}");
 }
 
-bool ActionButton::addButton(QString id, QString text)
+bool ActionButton::addButtons(const QStringList &list)
 {
-    if (m_buttons.length() > 1) return false;
+    if (list.isEmpty()) return false;
 
-    m_buttons.append(Button{id, text});
-    update();
+    const int buttonHeight = ((double)height() / (double)list.size()) * 2;
+
+    QString id;
+
+    // Each even element in the list (starting at index 0) represents the
+    // identifier for the action. Each odd element in the list is the
+    // localized string that will be displayed to the user.
+    for (int i = 0; i != list.size(); ++i) {
+        if (i % 2 == 0) {
+            id = list[i];
+            if (id == "default") {
+                i++; continue;
+            }
+        } else {
+            Button *button = new Button(list[i]);
+            m_buttons << button;
+
+            button->setFixedHeight(buttonHeight);
+
+            connect(button, &Button::clicked, this, [=] {
+                emit buttonClicked(id);
+            });
+
+            button->setIsHead(false);
+
+            m_layout->addWidget(button);
+        }
+    }
+
+    m_buttons.first()->setIsHead(true);
 
     return true;
 }
@@ -54,163 +111,26 @@ bool ActionButton::isEmpty()
 
 void ActionButton::clear()
 {
+    for (QWidget *w : m_buttons) {
+        m_layout->removeWidget(w);
+        w->deleteLater();
+    }
+
     m_buttons.clear();
 }
 
-void ActionButton::paintEvent(QPaintEvent *)
+void Button::setIsHead(bool head)
 {
-    if (m_buttons.isEmpty()) return;
+    if (m_isHead == head) return;
 
-    QPainter painter;
-    painter.begin(this);
+    m_isHead = head;
 
-    painter.setPen(BorderColor);
-
-    // draw left seperators
-    painter.drawLine(rect().topLeft(), rect().bottomLeft());
-
-    QPainterPath path;
-    // draw two buttons
-    if (m_buttons.length() > 1) {
-        // draw background
-        if (m_mouseInButtonOne) {
-            path.moveTo(rect().topLeft());
-            path.lineTo(width() - m_radius, 0);
-            path.quadTo(QPoint(width(), 0), QPoint(width(), m_radius));
-            path.lineTo(width(), height() / 2);
-            path.lineTo(0, height() / 2);
-            path.lineTo(rect().topLeft());
-
-            QLinearGradient linearGradient(width() / 2, 0,width() / 2, height() / 2);
-            if (m_mousePressed) {
-                linearGradient.setColorAt(0.0,QColor("#0b8cff"));
-                linearGradient.setColorAt(1.0,QColor("#0aa1ff"));
-            } else {
-                linearGradient.setColorAt(0.0,QColor("#8ccfff"));
-                linearGradient.setColorAt(1.0,QColor("#4bb8ff"));
-            }
-            painter.fillPath(path, QBrush(linearGradient));
-        } else if (m_mouseInButtonTwo) {
-            path.moveTo(rect().bottomLeft());
-            path.lineTo(width() - m_radius, height());
-            path.quadTo(QPoint(width(), height()), QPoint(width(), height() - m_radius));
-            path.lineTo(width(), height() / 2);
-            path.lineTo(0, height() / 2);
-
-            QLinearGradient linearGradient(width() / 2, height() /2 ,width() / 2, height());
-            if (m_mousePressed) {
-                linearGradient.setColorAt(0.0,QColor("#0b8cff"));
-                linearGradient.setColorAt(1.0,QColor("#0aa1ff"));
-            } else {
-                linearGradient.setColorAt(0.0,QColor("#8ccfff"));
-                linearGradient.setColorAt(1.0,QColor("#4bb8ff"));
-            }
-            painter.fillPath(path, QBrush(linearGradient));
-        }
-
-        painter.drawLine(QPoint(0, height() / 2), QPoint(width(), height() / 2));
-
-        // draw text
-        if (m_mouseHover) {
-            painter.setPen(TextHover);
-        } else {
-            painter.setPen(TextColor);
-        }
-        painter.drawText(QRectF(rect().topLeft(), QSize(width(), height() / 2)),
-                         Qt::AlignHCenter | Qt::AlignVCenter,
-                         m_buttons.at(0).text);
-        painter.drawText(QRectF(QPoint(0, height() / 2), QSize(width(), height() / 2)),
-                         Qt::AlignHCenter | Qt::AlignVCenter,
-                         m_buttons.at(1).text);
-    } else { // draw one button
-        // draw background
-        if (m_mouseInButtonOne || m_mouseInButtonTwo) {
-            path.moveTo(rect().topLeft());
-            path.lineTo(width() - m_radius, 0);
-            path.quadTo(QPoint(width(), 0), QPoint(width(), m_radius));
-            path.lineTo(width(), height() - m_radius);
-            path.quadTo(QPoint(width(), height()), QPoint(width() - m_radius, height()));
-            path.lineTo(0, height());
-            path.lineTo(rect().topLeft());
-
-            QLinearGradient linearGradient(width() / 2, 0,width() / 2, height());
-            if (m_mousePressed) {
-                linearGradient.setColorAt(0.0,QColor("#0b8cff"));
-                linearGradient.setColorAt(1.0,QColor("#0aa1ff"));
-            } else {
-                linearGradient.setColorAt(0.0,QColor("#8ccfff"));
-                linearGradient.setColorAt(1.0,QColor("#4bb8ff"));
-            }
-            painter.fillPath(path, QBrush(linearGradient));
-        }
-
-        // draw text
-        if (m_mouseHover) {
-            painter.setPen(TextHover);
-        } else {
-            painter.setPen(TextColor);
-        }
-        painter.drawText(rect(),
-                         Qt::AlignHCenter | Qt::AlignVCenter,
-                         m_buttons.at(0).text);
-    }
-
-    painter.end();
-
-    m_mouseInButtonOne = false;
-    m_mouseInButtonTwo = false;
+    style()->unpolish(this);
+    style()->polish(this);
 }
 
-void ActionButton::mouseMoveEvent(QMouseEvent * event)
+Button::Button(const QString &text, QWidget *parent)
+    : QPushButton(text, parent)
 {
-    if (event->y() < height() / 2) {
-        m_mouseInButtonOne = true;
-    } else {
-        m_mouseInButtonTwo = true;
-    }
-    event->accept();
-    m_mouseHover = true;
-    update();
-}
-
-void ActionButton::mousePressEvent(QMouseEvent * event)
-{
-    m_mousePressed = true;
-    if (event->y() < height() / 2) {
-        m_mouseInButtonOne = true;
-    } else {
-        m_mouseInButtonTwo = true;
-    }
-    event->accept();
-    m_mouseHover = true;
-    update();
-}
-
-void ActionButton::leaveEvent(QEvent * event)
-{
-    m_mouseInButtonOne = false;
-    m_mouseInButtonTwo = false;
-    event->accept();
-    m_mouseHover = false;
-    m_mousePressed = false;
-
-    update();
-}
-
-void ActionButton::mouseReleaseEvent(QMouseEvent *event)
-{
-    if (event->y() < height() / 2) {
-        m_mouseInButtonOne = true;
-        emit buttonClicked(m_buttons.at(0).id);
-    } else {
-        m_mouseInButtonTwo = true;
-        if (m_buttons.length() > 1) {
-            emit buttonClicked(m_buttons.at(1).id);
-        } else {
-            emit buttonClicked(m_buttons.at(0).id);
-        }
-    }
-    m_mousePressed = false;
-    event->accept();
-    update();
+    setIsHead(false);
 }

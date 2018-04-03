@@ -22,39 +22,41 @@
 
 #include <QFrame>
 #include <QPainter>
+#include <QPushButton>
+#include <QVBoxLayout>
+#include <QMap>
+
+class Button : public QPushButton {
+    Q_OBJECT
+    Q_PROPERTY(bool isHead READ isHead DESIGNABLE true SCRIPTABLE true)
+
+public:
+    Button(const QString &text, QWidget *parent = 0);
+
+    bool isHead() const { return m_isHead; }
+    void setIsHead(bool head = true);
+
+private:
+    bool m_isHead;
+};
 
 class ActionButton : public QFrame
 {
     Q_OBJECT
-    struct Button {
-        QString id;
-        QString text;
-    };
 
 public:
     ActionButton(QWidget * parent = 0);
 
-    bool addButton(QString id, QString text);
+    bool addButtons(const QStringList &list);
     bool isEmpty();
     void clear();
 
 signals:
     void buttonClicked(QString id);
 
-protected:
-    void paintEvent(QPaintEvent *) Q_DECL_OVERRIDE;
-    void mouseMoveEvent(QMouseEvent *) Q_DECL_OVERRIDE;
-    void mousePressEvent(QMouseEvent *) Q_DECL_OVERRIDE;
-    void leaveEvent(QEvent *) Q_DECL_OVERRIDE;
-    void mouseReleaseEvent(QMouseEvent *) Q_DECL_OVERRIDE;
-
 private:
-    int m_radius = 4;
-    QList<Button> m_buttons;
-    bool m_mouseInButtonOne = false;
-    bool m_mouseInButtonTwo = false;
-    bool m_mousePressed = false;
-    bool m_mouseHover = false;
+    QVBoxLayout *m_layout;
+    QList<Button*> m_buttons;
 };
 
 #endif // ACTIONBUTTON_H
