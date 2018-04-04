@@ -78,7 +78,7 @@ void BubbleManager::CloseNotification(uint id)
     return;
 }
 
-QStringList BubbleManager::GetCapbilities()
+QStringList BubbleManager::GetCapabilities()
 {
     QStringList result;
     result << "action-icons" << "actions" << "body" << "body-hyperlinks" << "body-markup";

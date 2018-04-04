@@ -63,11 +63,11 @@ void NotificationsDBusAdaptor::CloseNotification(uint in0)
     QMetaObject::invokeMethod(parent(), "CloseNotification", Q_ARG(uint, in0));
 }
 
-QStringList NotificationsDBusAdaptor::GetCapbilities()
+QStringList NotificationsDBusAdaptor::GetCapabilities()
 {
-    // handle method call org.freedesktop.Notifications.GetCapbilities
+    // handle method call org.freedesktop.Notifications.GetCapabilities
     QStringList out0;
-    QMetaObject::invokeMethod(parent(), "GetCapbilities", Q_RETURN_ARG(QStringList, out0));
+    QMetaObject::invokeMethod(parent(), "GetCapabilities", Q_RETURN_ARG(QStringList, out0));
     return out0;
 }
 
@@ -107,11 +107,11 @@ void DDENotifyDBus::CloseNotification(uint in0)
     QMetaObject::invokeMethod(parent(), "CloseNotification", Q_ARG(uint, in0));
 }
 
-QStringList DDENotifyDBus::GetCapbilities()
+QStringList DDENotifyDBus::GetCapabilities()
 {
-    // handle method call org.freedesktop.Notifications.GetCapbilities
+    // handle method call org.freedesktop.Notifications.GetCapabilities
     QStringList out0;
-    QMetaObject::invokeMethod(parent(), "GetCapbilities", Q_RETURN_ARG(QStringList, out0));
+    QMetaObject::invokeMethod(parent(), "GetCapabilities", Q_RETURN_ARG(QStringList, out0));
     return out0;
 }
 

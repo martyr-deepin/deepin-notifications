@@ -73,7 +73,7 @@ signals:
 public slots:
     // Notifications dbus implementation
     void CloseNotification(uint);
-    QStringList GetCapbilities();
+    QStringList GetCapabilities();
     QString GetServerInformation(QString &, QString &, QString &);
     uint Notify(const QString &, uint, const QString &, const QString &, const QString &, const QStringList &, const QVariantMap, int);
 
