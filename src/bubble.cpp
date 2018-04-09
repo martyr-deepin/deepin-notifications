@@ -31,6 +31,7 @@
 #include <QProcess>
 #include <QDBusArgument>
 #include <QMoveEvent>
+#include <QGSettings>
 
 #include "notificationentity.h"
 #include "appicon.h"
@@ -52,13 +53,18 @@ static const int Padding = 20;
 static const int BubbleWidth = 300;
 static const int BubbleHeight = 70;
 
-Bubble::Bubble(NotificationEntity *entity):
-    DBlurEffectWidget(),
-    m_entity(entity),
-    m_icon(new AppIcon(this)),
-    m_body(new AppBody(this)),
-    m_actionButton(new ActionButton(this))
+Bubble::Bubble(NotificationEntity *entity)
+    : DBlurEffectWidget()
+    , m_entity(entity)
+    , m_icon(new AppIcon(this))
+    , m_body(new AppBody(this))
+    , m_actionButton(new ActionButton(this))
+    , m_quitTimer(new QTimer(this))
+
 {
+    m_quitTimer->setInterval(60 * 1000);
+    m_quitTimer->setSingleShot(true);
+
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Tool);
 
     setAttribute(Qt::WA_TranslucentBackground);
@@ -82,6 +88,7 @@ Bubble::Bubble(NotificationEntity *entity):
     setEntity(entity);
 
     connect(m_wmHelper, &DWindowManagerHelper::hasCompositeChanged, this, &Bubble::compositeChanged);
+    connect(m_quitTimer, &QTimer::timeout, this, &Bubble::onDelayQuit);
 }
 
 NotificationEntity *Bubble::entity() const
@@ -182,6 +189,20 @@ void Bubble::moveEvent(QMoveEvent *event)
     }
 
     DBlurEffectWidget::moveEvent(event);
+}
+
+void Bubble::showEvent(QShowEvent *event)
+{
+    DBlurEffectWidget::showEvent(event);
+
+    m_quitTimer->start();
+}
+
+void Bubble::hideEvent(QHideEvent *event)
+{
+    DBlurEffectWidget::hideEvent(event);
+
+    m_quitTimer->start();
 }
 
 void Bubble::updateContent()
@@ -391,3 +412,13 @@ const QPixmap Bubble::converToPixmap(const QDBusArgument &value)
                                           Qt::KeepAspectRatioByExpanding,
                                           Qt::SmoothTransformation);
 }
+
+void Bubble::onDelayQuit()
+{
+    const QGSettings gsettings("com.deepin.dde.notification", "/com/deepin/dde/notification/");
+    if (gsettings.keys().contains("autoExit") && gsettings.get("auto-exit").toBool()) {
+        qWarning() << "Killer Timeout, now quiiting...";
+        qApp->quit();
+    }
+}
+

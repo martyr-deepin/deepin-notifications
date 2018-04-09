@@ -110,7 +110,6 @@ private:
 
     int   m_dccX;
     QRect m_dockGeometry;
-    QTimer *m_quitTimer;
 
     bool checkDockExistence();
     bool checkControlCenterExistence();
@@ -120,7 +119,6 @@ private:
 
     void bindControlCenterX();
     void consumeEntities();
-
 };
 
 #endif // BUBBLEMANAGER_H

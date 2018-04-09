@@ -65,11 +65,13 @@ public slots:
     void setMask(int, int, int, int);
     void closeButtonClicked();
     void compositeChanged();
-
+    void onDelayQuit();
 
 protected:
     void mousePressEvent(QMouseEvent *) Q_DECL_OVERRIDE;
     void moveEvent(QMoveEvent *) Q_DECL_OVERRIDE;
+    void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
+    void hideEvent(QHideEvent *event) Q_DECL_OVERRIDE;
 
 private:
     NotificationEntity *m_entity;
@@ -86,6 +88,7 @@ private:
 
     bool m_offScreen = true;
     QRect m_screenGeometry;
+    QTimer *m_quitTimer;
 
     void updateContent();
     void initUI();
