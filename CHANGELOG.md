@@ -1,3 +1,19 @@
+<a name=""></a>
+##  3.2.2.1 (2018-04-11)
+
+
+#### Bug Fixes
+
+*   Empty ID because of signal type error ([1078a58b](https://github.com/linuxdeepin/deepin-notifications/commit/1078a58b344aa89028776496250aab5e70556312))
+*   invalid geometry animation. ([27ab808e](https://github.com/linuxdeepin/deepin-notifications/commit/27ab808ec67b31b41796fabbdfbfa79095e55921))
+
+#### Features
+
+*   auto quit ([0cb84849](https://github.com/linuxdeepin/deepin-notifications/commit/0cb84849e95a346659314302639e684593066740))
+* **time:**  add auto quit ([63d8aeff](https://github.com/linuxdeepin/deepin-notifications/commit/63d8aefff5cbc2e7ae06857636d4fd6e0642e768))
+
+
+
 <a name="3.2.2"></a>
 ### 3.2.2 (2018-03-28)
 
