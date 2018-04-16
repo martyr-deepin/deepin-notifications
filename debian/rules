@@ -1,7 +1,10 @@
 #!/usr/bin/make -f
 
 %:
-	dh $@
+	dh $@ --with systemd
 
 override_dh_auto_install:
 	dh_auto_install -- INSTALL_ROOT=$(CURDIR)/debian/deepin-notifications
+
+override_dh_systemd_enable:
+	dh_systemd_enable || true

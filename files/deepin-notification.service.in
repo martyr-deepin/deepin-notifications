@@ -1,0 +1,7 @@
+[Unit]
+Description=DDE notification service
+
+[Service]
+Type=dbus
+BusName=org.freedesktop.Notifications
+ExecStart=$$PREFIX/lib/deepin-notifications
