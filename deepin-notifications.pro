@@ -12,14 +12,24 @@ SOURCES += src/main.cpp
 RESOURCES += images.qrc
 
 target.path = $${PREFIX}/lib/deepin-notifications
-INSTALLS += target
 
 service.input      = files/deepin-notification.service.in
 service.output     = files/deepin-notification.service
 
-QMAKE_SUBSTITUTES += service
-QMAKE_CLEAN       += $${service.output} $${ddedbus.output}
+orgDBus.input = files/com.deepin.dde.freedesktop.Notification.service.in
+orgDBus.output = files/com.deepin.dde.freedesktop.Notification.service
+
+ddeDBus.input = files/com.deepin.dde.Notification.service.in
+ddeDBus.output = files/com.deepin.dde.Notification.service
+
+QMAKE_SUBSTITUTES += service orgDBus ddeDBus
+QMAKE_CLEAN       += $${service.output} $${orgDBus.output} $${ddeDBus.output}
 
 service.path   = $${PREFIX}/lib/systemd/user/
 service.files += files/deepin-notification.service
-INSTALLS += service
+
+dbus.path = $${PREFIX}/share/dbus-1/services/
+dbus.files += files/com.deepin.dde.freedesktop.Notification.service
+dbus.files += files/com.deepin.dde.Notification.service
+
+INSTALLS += service target dbus

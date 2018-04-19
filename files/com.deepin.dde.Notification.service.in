@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=com.deepin.dde.Notification
+Exec=$$PREFIX/lib/deepin-notifications/deepin-notifications
+SystemdService=deepin-notification.service
