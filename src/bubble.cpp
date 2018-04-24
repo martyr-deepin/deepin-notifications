@@ -174,8 +174,12 @@ void Bubble::compositeChanged()
 
 void Bubble::mousePressEvent(QMouseEvent *)
 {
-    // TODO: default action support
-    emit dismissed(m_entity->id().toInt());
+    if (!m_defaultAction.isEmpty()) {
+        emit actionInvoked(m_entity->id().toUInt(), m_defaultAction);
+        m_defaultAction.clear();
+    } else {
+        emit dismissed(m_entity->id().toInt());
+    }
 
     m_outTimer->stop();
 }
@@ -290,9 +294,15 @@ void Bubble::processActions()
 {
     m_actionButton->clear();
 
-    m_actionButton->addButtons(m_entity->actions());
+    QStringList list = m_entity->actions();
+    if (list.contains("default")) {
+        const int index = list.indexOf("default");
+        m_defaultAction = list[index + 1];
+        list.removeAt(index + 1);
+        list.removeAt(index);
+    }
 
-    qDebug() << m_entity->actions();
+    m_actionButton->addButtons(list);
 
     if (m_actionButton->isEmpty()) {
         m_actionButton->hide();

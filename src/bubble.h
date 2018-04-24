@@ -89,6 +89,7 @@ private:
     bool m_offScreen = true;
     QRect m_screenGeometry;
     QTimer *m_quitTimer;
+    QString m_defaultAction;
 
     void updateContent();
     void initUI();
