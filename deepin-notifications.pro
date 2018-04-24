@@ -11,6 +11,10 @@ SOURCES += src/main.cpp
 
 RESOURCES += images.qrc
 
+isEmpty(PREFIX){
+    PREFIX = /usr
+}
+
 target.path = $${PREFIX}/lib/deepin-notifications
 
 service.input      = files/deepin-notification.service.in
