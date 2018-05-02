@@ -126,19 +126,26 @@ void Bubble::setBasePosition(int x, int y, QRect rect)
     const QSize dSize(BubbleWidth, BubbleHeight);
 
 
-    move(dPos);
-    resize(dSize);
+    if (m_inAnimation->state() != QPropertyAnimation::Running) {
+        const int baseX = x - width();
 
-    const int baseX = x - width();
+        m_inAnimation->setStartValue(QPoint(baseX, y - height()));
+        m_inAnimation->setEndValue(QPoint(baseX, y));
 
-    m_inAnimation->setStartValue(QPoint(baseX, y - height()));
-    m_inAnimation->setEndValue(QPoint(baseX, y));
+        move(dPos);
+        resize(dSize);
+    }
 
-    const QRect normalGeo( dPos, dSize );
-    QRect outGeo( normalGeo.right(), normalGeo.y(), 0, normalGeo.height());
+    if (m_outAnimation->state() != QPropertyAnimation::Running) {
+        const QRect normalGeo( dPos, dSize );
+        QRect outGeo( normalGeo.right(), normalGeo.y(), 0, normalGeo.height());
 
-    m_outAnimation->setStartValue(normalGeo);
-    m_outAnimation->setEndValue(outGeo);
+        m_outAnimation->setStartValue(normalGeo);
+        m_outAnimation->setEndValue(outGeo);
+
+        move(dPos);
+        resize(dSize);
+    }
 
     if (!rect.isEmpty())
         m_screenGeometry = rect;
