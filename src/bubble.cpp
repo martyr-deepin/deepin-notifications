@@ -297,7 +297,8 @@ void Bubble::processActions()
     QStringList list = m_entity->actions();
     if (list.contains("default")) {
         const int index = list.indexOf("default");
-        m_defaultAction = list[index + 1];
+        m_defaultAction = list[index];
+        // Default action does not need to be displayed, removed from the list
         list.removeAt(index + 1);
         list.removeAt(index);
     }
