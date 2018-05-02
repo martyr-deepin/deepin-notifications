@@ -193,14 +193,7 @@ void BubbleManager::registerAsService()
 void BubbleManager::controlCenterRectChangedSlot(const QRect &rect)
 {
     m_dccX = rect.x();
-    QDesktopWidget *m_desktop = QApplication::desktop();
-    QRect primaryRect = m_desktop->availableGeometry(m_desktop->primaryScreen());
-
-    if (primaryRect.x() + primaryRect.width() - ControlCenterWidth < m_dccX
-            && m_dccX < primaryRect.x() + primaryRect.width())
-    {
-        m_bubble->setBasePosition(getX(), getY());
-    }
+    m_bubble->setBasePosition(getX(), getY());
 }
 
 void BubbleManager::bubbleExpired(int id)
