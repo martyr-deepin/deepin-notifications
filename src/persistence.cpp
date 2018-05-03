@@ -20,7 +20,6 @@
 #include "persistence.h"
 
 #include <QStandardPaths>
-#include <QSqlQuery>
 #include <QSqlError>
 #include <QSqlRecord>
 #include <QDebug>
@@ -54,11 +53,14 @@ Persistence::Persistence(QObject *parent)
     if (!m_dbConnection.open()) {
         qWarning() << "open database error" << m_dbConnection.lastError().text();
     } else {
+#ifdef QT_DEBUG
         qDebug() << "database open";
+#endif
     }
 
-    QSqlQuery query(m_dbConnection);
-    query.prepare(QString("CREATE TABLE IF NOT EXISTS %1"
+    m_query = QSqlQuery(m_dbConnection);
+    m_query.setForwardOnly(true);
+    m_query.prepare(QString("CREATE TABLE IF NOT EXISTS %1"
                           "("
                           "%2 TEXT,"
                           "%3 TEXT,"
@@ -68,27 +70,28 @@ Persistence::Persistence(QObject *parent)
                           "%7 TEXT PRIMARY KEY"
                           ");").arg(TableName, ColumnId, ColumnIcon, ColumnSummary, ColumnBody, ColumnAppName, ColumnCTime));
 
-    if (!query.exec()) {
-        qWarning() << "create table failed" << query.lastError().text();
+    if (!m_query.exec()) {
+        qWarning() << "create table failed" << m_query.lastError().text();
     }
 }
 
 void Persistence::addOne(NotificationEntity *entity)
 {
-    QSqlQuery query(m_dbConnection);
-    query.prepare(QString("INSERT INTO %1 (%2, %3, %4, %5, %6, %7) VALUES (:id, :icon, :summary, :body, :appname, :ctime)") \
+    m_query.prepare(QString("INSERT INTO %1 (%2, %3, %4, %5, %6, %7) VALUES (:id, :icon, :summary, :body, :appname, :ctime)") \
                   .arg(TableName, ColumnId, ColumnIcon, ColumnSummary, ColumnBody, ColumnAppName, ColumnCTime));
-    query.bindValue(":id", entity->id());
-    query.bindValue(":icon", entity->appIcon());
-    query.bindValue(":summary", entity->summary());
-    query.bindValue(":body", entity->body());
-    query.bindValue(":appname", entity->appName());
-    query.bindValue(":ctime", entity->ctime());
+    m_query.bindValue(":id", entity->id());
+    m_query.bindValue(":icon", entity->appIcon());
+    m_query.bindValue(":summary", entity->summary());
+    m_query.bindValue(":body", entity->body());
+    m_query.bindValue(":appname", entity->appName());
+    m_query.bindValue(":ctime", entity->ctime());
 
-    if (!query.exec()) {
-        qWarning() << "insert value to database failed: " << query.lastError().text() << entity->id() << entity->ctime();
+    if (!m_query.exec()) {
+        qWarning() << "insert value to database failed: " << m_query.lastError().text() << entity->id() << entity->ctime();
     } else {
+#ifdef QT_DEBUG
         qDebug() << "insert value " << entity->ctime();
+#endif
     }
 
     emit RecordAdded(entity);
@@ -103,45 +106,57 @@ void Persistence::addAll(QList<NotificationEntity *> entities)
 
 void Persistence::removeOne(const QString &id)
 {
-    QSqlQuery query(m_dbConnection);
-    query.prepare(QString("DELETE FROM %1 WHERE ctime = (:ctime)").arg(TableName));
-    query.bindValue(":ctime", id);
-    query.exec();
+    m_query.prepare(QString("DELETE FROM %1 WHERE ctime = (:ctime)").arg(TableName));
+    m_query.bindValue(":ctime", id);
+
+    if (!m_query.exec()) {
+        qWarning() << "remove value:" << id << "from database failed: " << m_query.lastError().text();
+    } else {
+#ifdef QT_DEBUG
+        qDebug() << "remove value:" << id;
+#endif
+    }
 }
 
 void Persistence::removeAll()
 {
-    QSqlQuery query(m_dbConnection);
-    query.prepare(QString("DELETE FROM %1").arg(TableName));
-    query.exec();
+    m_query.prepare(QString("DELETE FROM %1").arg(TableName));
+
+    if (!m_query.exec()) {
+        qWarning() << "remove all from database failed: " << m_query.lastError().text();
+    } else {
+#ifdef QT_DEBUG
+        qDebug() << "remove all done";
+#endif
+    }
 }
 
 QString Persistence::getAll()
 {
-    QSqlQuery query(QString("SELECT * FROM %1").arg(TableName), m_dbConnection);
+    m_query.prepare(QString("SELECT %1, %2, %3, %4, %5, %6 FROM %7")
+               .arg(ColumnId, ColumnIcon, ColumnSummary, ColumnBody, ColumnAppName, ColumnCTime, TableName));
 
-    const int idName = query.record().indexOf(ColumnId);
-    const int iconName = query.record().indexOf(ColumnIcon);
-    const int summaryName = query.record().indexOf(ColumnSummary);
-    const int bodyName = query.record().indexOf(ColumnBody);
-    const int appNameName = query.record().indexOf(ColumnAppName);
-    const int ctimeName = query.record().indexOf(ColumnCTime);
+    if (!m_query.exec()) {
+        qWarning() << "get all from database failed: " << m_query.lastError().text();
+    } else {
+#ifdef QT_DEBUG
+        qDebug() << "get all done";
+#endif
+    }
 
     QJsonArray array;
-
-    while (query.next())
+    while (m_query.next())
     {
         QJsonObject obj
         {
-            {"name", query.value(appNameName).toString()},
-            {"icon", query.value(iconName).toString()},
-            {"summary", query.value(summaryName).toString()},
-            {"body", query.value(bodyName).toString()},
-            {"id", query.value(idName).toString()},
-            {"time", query.value(ctimeName).toString()}
+            {"name", m_query.value(4).toString()},
+            {"icon", m_query.value(1).toString()},
+            {"summary", m_query.value(2).toString()},
+            {"body", m_query.value(3).toString()},
+            {"id", m_query.value(0).toString()},
+            {"time", m_query.value(5).toString()}
         };
         array.append(obj);
     }
-
     return QJsonDocument(array).toJson();
 }

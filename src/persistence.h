@@ -22,6 +22,7 @@
 
 #include <QObject>
 #include <QSqlDatabase>
+#include <QSqlQuery>
 
 class NotificationEntity;
 class Persistence : public QObject
@@ -43,6 +44,7 @@ signals:
 private:
 //    QList<NotificationEntity*> m_buffer;
     QSqlDatabase m_dbConnection;
+    QSqlQuery m_query;
 };
 
 #endif // PERSISTENCE_H
