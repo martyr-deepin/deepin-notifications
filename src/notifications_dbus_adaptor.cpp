@@ -138,6 +138,20 @@ QString DDENotifyDBus::GetAllRecords()
     return out0;
 }
 
+QString DDENotifyDBus::GetRecordById(const QString &id)
+{
+    QString out0;
+    QMetaObject::invokeMethod(parent(), "GetRecordById", Q_RETURN_ARG(QString, out0), Q_ARG(QString, id));
+    return out0;
+}
+
+QString DDENotifyDBus::GetRecordsFromId(int rowCount, const QString &offsetId)
+{
+    QString out0;
+    QMetaObject::invokeMethod(parent(), "GetRecordsFromId", Q_RETURN_ARG(QString, out0), Q_ARG(int, rowCount), Q_ARG(QString, offsetId));
+    return out0;
+}
+
 void DDENotifyDBus::RemoveRecord(const QString &id)
 {
     QMetaObject::invokeMethod(parent(), "RemoveRecord", Q_ARG(QString, id));

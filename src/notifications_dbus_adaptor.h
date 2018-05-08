@@ -78,6 +78,8 @@ public Q_SLOTS:
     QString GetServerInformation(QString &out1, QString &out2, QString &out3);
     uint Notify(const QString &in0, uint in1, const QString &in2, const QString &in3, const QString &in4, const QStringList &in5, const QVariantMap &in6, int in7);
     QString GetAllRecords();
+    QString GetRecordById(const QString &id);
+    QString GetRecordsFromId(int rowCount, const QString &offsetId);
     void RemoveRecord(const QString &id);
     void ClearRecords();
 Q_SIGNALS: // SIGNALS

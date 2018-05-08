@@ -175,6 +175,16 @@ QString BubbleManager::GetAllRecords()
     return m_persistence->getAll();
 }
 
+QString BubbleManager::GetRecordById(const QString &id)
+{
+    return m_persistence->getById(id);
+}
+
+QString BubbleManager::GetRecordsFromId(int rowCount, const QString &offsetId)
+{
+    return m_persistence->getFrom(rowCount, offsetId);
+}
+
 void BubbleManager::RemoveRecord(const QString &id)
 {
     m_persistence->removeOne(id);

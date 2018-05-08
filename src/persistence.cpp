@@ -156,6 +156,7 @@ void Persistence::removeOne(const QString &id)
 
     if (!m_query.exec()) {
         qWarning() << "remove value:" << id << "from database failed: " << m_query.lastError().text();
+        return;
     } else {
         qDebug() << "remove value:" << id;
     }
@@ -181,6 +182,7 @@ void Persistence::removeAll()
 
     if (!m_query.exec()) {
         qWarning() << "remove all from database failed: " << m_query.lastError().text();
+        return;
     } else {
         qDebug() << "remove all done";
     }
@@ -188,6 +190,7 @@ void Persistence::removeAll()
     // Remove the unused space
     if (!m_query.exec("VACUUM")) {
         qWarning() << "remove the unused space failed: " << m_query.lastError().text();
+        return;
     } else {
         qDebug() << "remove the unused space done";
     }
@@ -223,6 +226,7 @@ QString Persistence::getAll()
 
     if (!m_query.exec()) {
         qWarning() << "get all from database failed: " << m_query.lastError().text();
+        return QString();
     } else {
         qDebug() << "get all done";
     }
@@ -273,16 +277,104 @@ QString Persistence::getAll()
     return QJsonDocument(array).toJson();
 }
 
-// TODO:
 QString Persistence::getById(const QString &id)
 {
+    m_query.prepare(QString("SELECT %1, %2, %3, %4, %5, %6 FROM %7 WHERE ID = (:id)")
+               .arg(ColumnId, ColumnIcon, ColumnSummary, ColumnBody, ColumnAppName,
+                    ColumnCTime, TableName_v2));
+    m_query.bindValue(":id", id);
 
+    if (!m_query.exec()) {
+        qWarning() << "get data by id:" << id << "failed: " << m_query.lastError().text();
+        return QString();
+    } else {
+#ifdef QT_DEBUG
+        qDebug() << "get data by id:" << id << "done";
+#endif
+    }
+
+    QJsonArray array;
+    while (m_query.next())
+    {
+        QJsonObject obj
+        {
+            {"id", m_query.value(0).toString()},
+            {"icon", m_query.value(1).toString()},
+            {"summary", m_query.value(2).toString()},
+            {"body", m_query.value(3).toString()},
+            {"name", m_query.value(4).toString()},
+            {"time", m_query.value(5).toString()}
+        };
+        array.append(obj);
+    }
+    qDebug() << array;
+
+    if (array.size() > 1) {
+        qWarning() << "more than one data has been obtained by id:" << id;
+    }
+
+    return QJsonDocument(array).toJson();
 }
 
-// TODO:
-QString Persistence::get(int offset, int rowCount)
+QString Persistence::getFrom(int rowCount, const QString &offsetId)
 {
+    // gets the line number of the specified offset
+    m_query.prepare(QString("SELECT count() FROM %1 WHERE ID <= (:offsetId)").arg(TableName_v2));
+    m_query.bindValue(":offsetId", offsetId);
 
+    if (!m_query.exec()) {
+        qWarning() << "get line number failed: " << m_query.lastError().text();
+        return QString();
+    } else {
+#ifdef QT_DEBUG
+        qDebug() << "get line number done";
+#endif
+    }
+
+    m_query.next();
+    QString rowNum = m_query.value(0).toString();
+    if (rowNum.isEmpty()) {
+        qWarning() << "the line number is invalid: ";
+        return QString();
+    } else {
+#ifdef QT_DEBUG
+        qDebug() << "line number is valid";
+#endif
+    }
+
+    // get data from rowNum+1
+    m_query.prepare(QString("SELECT %1, %2, %3, %4, %5, %6 FROM %7 LIMIT (:rowCount) OFFSET (:offset)")
+               .arg(ColumnId, ColumnIcon, ColumnSummary, ColumnBody, ColumnAppName,
+                    ColumnCTime, TableName_v2));
+    m_query.bindValue(":rowCount", rowCount);
+    m_query.bindValue(":offset", rowNum);
+
+    if (!m_query.exec()) {
+        qWarning() << "get data from database failed: " << m_query.lastError().text();
+        return QString();
+    } else {
+#ifdef QT_DEBUG
+        qDebug() << "get data done";
+#endif
+    }
+
+    QJsonArray array;
+    while (m_query.next())
+    {
+        QJsonObject obj
+        {
+            {"id", m_query.value(0).toString()},
+            {"icon", m_query.value(1).toString()},
+            {"summary", m_query.value(2).toString()},
+            {"body", m_query.value(3).toString()},
+            {"name", m_query.value(4).toString()},
+            {"time", m_query.value(5).toString()}
+        };
+        array.append(obj);
+    }
+    qDebug() << array;
+
+    return QJsonDocument(array).toJson();
 }
 
 void Persistence::attemptCreateTable()

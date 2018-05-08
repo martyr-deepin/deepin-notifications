@@ -81,6 +81,8 @@ public slots:
 
     // Extra DBus APIs
     QString GetAllRecords();
+    QString GetRecordById(const QString &id);
+    QString GetRecordsFromId(int rowCount, const QString &offsetId);
     void RemoveRecord(const QString &id);
     void ClearRecords();
     void AddOneRecord(NotificationEntity *entity);

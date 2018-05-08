@@ -40,8 +40,10 @@ public:
 
     QString getAll();
     QString getById(const QString &id);
+
     // the result starts with offset + 1
-    QString get(int offset, int rowCount);
+    // If rowcount is - 1, it is obtained from offset + 1 to the last.
+    QString getFrom(int rowCount, const QString &offsetId);
 
 signals:
     void RecordAdded(NotificationEntity *entify);
