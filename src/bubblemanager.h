@@ -3,6 +3,8 @@
  *
  * Author:     kirigaya <kirigaya@mkacg.com>
  *
+ * Maintainer: listenerri <listenerri@gmail.com>
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -75,7 +77,7 @@ public slots:
     void CloseNotification(uint);
     QStringList GetCapabilities();
     QString GetServerInformation(QString &, QString &, QString &);
-    uint Notify(const QString &, uint, const QString &, const QString &, const QString &, const QStringList &, const QVariantMap, int);
+    uint Notify(const QString &, uint replacesId, const QString &, const QString &, const QString &, const QStringList &, const QVariantMap, int);
 
     // Extra DBus APIs
     QString GetAllRecords();

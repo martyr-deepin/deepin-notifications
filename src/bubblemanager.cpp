@@ -3,6 +3,8 @@
  *
  * Author:     kirigaya <kirigaya@mkacg.com>
  *
+ * Maintainer: listenerri <listenerri@gmail.com>
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -95,20 +97,51 @@ QString BubbleManager::GetServerInformation(QString &name, QString &vender, QStr
     return QString("1.2");
 }
 
-uint BubbleManager::Notify(const QString &appName, uint id,
+uint BubbleManager::Notify(const QString &appName, uint replacesId,
                            const QString &appIcon, const QString &summary,
                            const QString &body, const QStringList &actions,
                            const QVariantMap hints, int expireTimeout)
 {
+#ifdef QT_DEBUG
+    qDebug() << "a new Notify:" << "appName:" + appName << "replaceID:" + QString::number(replacesId)
+             << "appIcon:" + appIcon << "summary:" + summary << "body:" + body
+             << "actions:" << actions << "hints:" << hints << "expireTimeout:" << expireTimeout;
+
+    NotificationEntity *notification1 = new NotificationEntity(appName, QString(), appIcon,
+                                                              summary, body, actions, hints,
+                                                              QString::number(QDateTime::currentMSecsSinceEpoch()),
+                                                              QString::number(replacesId),
+                                                              QString::number(expireTimeout),
+                                                              this);
+
+    if (!m_currentNotify.isNull() && m_currentNotify->id() == QString::number(replacesId)) {
+        m_bubble->setEntity(notification1);
+
+        m_currentNotify->deleteLater();
+        m_currentNotify = notification1;
+
+    } else {
+        m_entities.enqueue(notification1);
+    }
+
+    m_persistence->addOne(notification1);
+
+    if (!m_bubble->isVisible()) { consumeEntities(); }
+
+    // If replaces_id is 0, the return value is a UINT32 that represent the notification.
+    // If replaces_id is not 0, the returned value is the same value as replaces_id.
+    return replacesId == 0 ? notification1->id().toUInt() : replacesId;
+#endif
+////////////////////////////////////////////////////////////////////////////////////
     // timestamp as id;
     // if body is empty, summary will be interchanged;
 
 #ifdef QT_DEBUG
-    qDebug() << "Notify" << appName << QString::number(id) << appIcon << summary << body << actions << hints << expireTimeout;
+    qDebug() << "Notify" << appName << QString::number(replacesId) << appIcon << summary << body << actions << hints << expireTimeout;
 #endif
 
     // In many cases, ID is empty to avoid inserting database failures and initializing use of time
-    qint64 time = id ? id : QDateTime::currentMSecsSinceEpoch();
+    qint64 time = replacesId ? replacesId : QDateTime::currentMSecsSinceEpoch();
 
     NotificationEntity *notification = new NotificationEntity(appName,
                                                               QString::number((uint)time),
@@ -120,7 +153,7 @@ uint BubbleManager::Notify(const QString &appName, uint id,
                                                               QString::number(QDateTime::currentMSecsSinceEpoch()),
                                                               this);
 
-    if (!m_currentNotify.isNull() && m_currentNotify->id() == QString::number(id)) {
+    if (!m_currentNotify.isNull() && m_currentNotify->id() == QString::number(replacesId)) {
         m_bubble->setEntity(notification);
 
         m_currentNotify->deleteLater();
@@ -150,6 +183,7 @@ void BubbleManager::RemoveRecord(const QString &id)
     file.remove();
 }
 
+// TODO: The directory cannot be deleted
 void BubbleManager::ClearRecords()
 {
     m_persistence->removeAll();

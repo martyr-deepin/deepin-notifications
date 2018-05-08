@@ -3,6 +3,8 @@
  *
  * Author:     kirigaya <kirigaya@mkacg.com>
  *
+ * Maintainer: listenerri <listenerri@gmail.com>
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -37,12 +39,17 @@ public:
     void removeAll();
 
     QString getAll();
+    QString getById(const QString &id);
+    // the result starts with offset + 1
+    QString get(int offset, int rowCount);
 
 signals:
     void RecordAdded(NotificationEntity *entify);
 
 private:
-//    QList<NotificationEntity*> m_buffer;
+    void attemptCreateTable();
+
+private:
     QSqlDatabase m_dbConnection;
     QSqlQuery m_query;
 };

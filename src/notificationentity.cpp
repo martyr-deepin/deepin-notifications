@@ -3,6 +3,8 @@
  *
  * Author:     kirigaya <kirigaya@mkacg.com>
  *
+ * Maintainer: listenerri <listenerri@gmail.com>
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -21,10 +23,17 @@
 
 #include <QDateTime>
 
+NotificationEntity::NotificationEntity(const QString &appName, const QString &id, const QString &appIcon, const QString &summary, const QString &body, const QStringList &actions, const QVariantMap hints, const QString &ctime, QObject *parent)
+{
+    NotificationEntity(appName,id,appIcon,summary,body,actions,hints,ctime,"","",parent);
+}
+
 NotificationEntity::NotificationEntity(const QString &appName, const QString &id,
                                        const QString &appIcon, const QString &summary,
                                        const QString &body, const QStringList &actions,
-                                       const QVariantMap hints, const QString ctime, QObject *parent) :
+                                       const QVariantMap hints, const QString &ctime,
+                                       const QString &replacesId, const QString &timeout,
+                                       QObject *parent) :
     QObject(parent),
     m_appName(appName),
     m_id(id),
@@ -33,13 +42,17 @@ NotificationEntity::NotificationEntity(const QString &appName, const QString &id
     m_body(body),
     m_actions(actions),
     m_hints(hints),
-    m_ctime(ctime)
+    m_ctime(ctime),
+    m_replacesId(replacesId),
+    m_timeout(timeout)
 {
+
 }
 
 NotificationEntity::NotificationEntity(const NotificationEntity &notify) :
     NotificationEntity(notify.appName(), notify.id(), notify.appIcon(), notify.summary(),
-                       notify.body(), notify.actions(), notify.hints(), notify.ctime())
+                       notify.body(), notify.actions(), notify.hints(), notify.ctime(),
+                       notify.replacesId(), notify.timeout())
 {
 
 }
@@ -118,6 +131,26 @@ void NotificationEntity::setHints(const QVariantMap &hints)
 QString NotificationEntity::ctime() const
 {
     return m_ctime;
+}
+
+QString NotificationEntity::replacesId() const
+{
+    return m_replacesId;
+}
+
+void NotificationEntity::setReplacesId(const QString &replacesId)
+{
+    m_replacesId = replacesId;
+}
+
+QString NotificationEntity::timeout() const
+{
+    return m_timeout;
+}
+
+void NotificationEntity::setTimeout(const QString &timeout)
+{
+    m_timeout = timeout;
 }
 
 

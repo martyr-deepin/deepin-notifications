@@ -3,6 +3,8 @@
  *
  * Author:     kirigaya <kirigaya@mkacg.com>
  *
+ * Maintainer: listenerri <listenerri@gmail.com>
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -28,10 +30,19 @@ class NotificationEntity : public QObject
 {
     Q_OBJECT
 public:
+    // TODO: need to remove
     NotificationEntity(const QString &appName, const QString &id,
                        const QString &appIcon, const QString &summary,
                        const QString &body, const QStringList &actions,
-                       const QVariantMap hints, const QString ctime, QObject *parent=0);
+                       const QVariantMap hints, const QString &ctime,
+                       QObject *parent=0);
+
+    NotificationEntity(const QString &appName, const QString &id,
+                       const QString &appIcon, const QString &summary,
+                       const QString &body, const QStringList &actions,
+                       const QVariantMap hints, const QString &ctime,
+                       const QString &replacesId, const QString &timeout,
+                       QObject *parent=0);
 
     NotificationEntity(const NotificationEntity &notify);
     NotificationEntity& operator=(const NotificationEntity &notify);
@@ -59,6 +70,12 @@ public:
 
     QString ctime() const;
 
+    QString replacesId() const;
+    void setReplacesId(const QString &replacesId);
+
+    QString timeout() const;
+    void setTimeout(const QString &timeout);
+
 private:
     QString m_appName;
     QString m_id;
@@ -68,6 +85,8 @@ private:
     QStringList m_actions;
     QVariantMap m_hints;
     QString m_ctime;
+    QString m_replacesId;
+    QString m_timeout;
 };
 
 #endif // NOTIFICATIONENTITY_H
