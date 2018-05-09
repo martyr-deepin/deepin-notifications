@@ -95,6 +95,7 @@ public Q_SLOTS: // METHODS
 
 Q_SIGNALS: // SIGNALS
     void rectChanged(const QRect &rect);
+    void destRectChanged(const QRect &rect);
 };
 
 namespace com {

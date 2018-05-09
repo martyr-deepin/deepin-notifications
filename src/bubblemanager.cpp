@@ -2,6 +2,7 @@
  * Copyright (C) 2014 ~ 2018 Deepin Technology Co., Ltd.
  *
  * Author:     kirigaya <kirigaya@mkacg.com>
+ *             listenerri <listenerri@gmail.com>
  *
  * Maintainer: listenerri <listenerri@gmail.com>
  *
@@ -234,10 +235,11 @@ void BubbleManager::registerAsService()
     ddenotifyConnect.registerObject(DDENotifyDBusPath, this);
 }
 
-void BubbleManager::controlCenterRectChangedSlot(const QRect &rect)
+void BubbleManager::onCCDestRectChanged(const QRect &rect)
 {
-    m_dccX = rect.x();
+//    m_dccX = rect.x();
     m_bubble->setBasePosition(getX(), getY());
+    m_bubble->resetMoveAnim(rect);
 }
 
 void BubbleManager::bubbleExpired(int id)
@@ -368,7 +370,7 @@ void BubbleManager::bindControlCenterX()
                                                         QDBusConnection::sessionBus(),
                                                         this);
     }
-    connect(m_dbusControlCenter, &DBusControlCenter::rectChanged, this, &BubbleManager::controlCenterRectChangedSlot);
+    connect(m_dbusControlCenter, &DBusControlCenter::destRectChanged, this, &BubbleManager::onCCDestRectChanged);
 }
 
 void BubbleManager::consumeEntities()

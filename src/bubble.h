@@ -2,6 +2,7 @@
  * Copyright (C) 2014 ~ 2018 Deepin Technology Co., Ltd.
  *
  * Author:     kirigaya <kirigaya@mkacg.com>
+ *             listenerri <listenerri@gmail.com>
  *
  * Maintainer: listenerri <listenerri@gmail.com>
  *
@@ -68,6 +69,7 @@ public slots:
     void closeButtonClicked();
     void compositeChanged();
     void onDelayQuit();
+    void resetMoveAnim(const QRect &rect);
 
 protected:
     void mousePressEvent(QMouseEvent *) Q_DECL_OVERRIDE;
@@ -84,14 +86,16 @@ private:
 
     QPropertyAnimation *m_inAnimation = nullptr;
     QPropertyAnimation *m_outAnimation = nullptr;
+    QPropertyAnimation *m_moveAnimation = nullptr;
     QTimer *m_outTimer = nullptr;
+    QTimer *m_quitTimer;
     DPlatformWindowHandle *m_handle;
     DWindowManagerHelper *m_wmHelper;
 
-    bool m_offScreen = true;
     QRect m_screenGeometry;
-    QTimer *m_quitTimer;
     QString m_defaultAction;
+
+    bool m_offScreen = true;
 
     void updateContent();
     void initUI();

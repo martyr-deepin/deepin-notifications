@@ -2,6 +2,7 @@
  * Copyright (C) 2014 ~ 2018 Deepin Technology Co., Ltd.
  *
  * Author:     kirigaya <kirigaya@mkacg.com>
+ *             listenerri <listenerri@gmail.com>
  *
  * Maintainer: listenerri <listenerri@gmail.com>
  *
@@ -89,7 +90,7 @@ public slots:
 
     void registerAsService();
 
-    void controlCenterRectChangedSlot(const QRect &rect);
+    void onCCDestRectChanged(const QRect &rect);
     void dockchangedSlot(const QRect &geometry);
     void dbusNameOwnerChangedSlot(QString, QString, QString);
 

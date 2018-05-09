@@ -2,6 +2,7 @@
  * Copyright (C) 2014 ~ 2018 Deepin Technology Co., Ltd.
  *
  * Author:     kirigaya <kirigaya@mkacg.com>
+ *             listenerri <listenerri@gmail.com>
  *
  * Maintainer: listenerri <listenerri@gmail.com>
  *
@@ -129,13 +130,10 @@ void Bubble::setBasePosition(int x, int y, QRect rect)
 
 
     if (m_inAnimation->state() != QPropertyAnimation::Running) {
-        const int baseX = x - width();
+        const int baseX = x - BubbleWidth;
 
-        m_inAnimation->setStartValue(QPoint(baseX, y - height()));
+        m_inAnimation->setStartValue(QPoint(baseX, y - BubbleHeight));
         m_inAnimation->setEndValue(QPoint(baseX, y));
-
-        move(dPos);
-        resize(dSize);
     }
 
     if (m_outAnimation->state() != QPropertyAnimation::Running) {
@@ -144,7 +142,10 @@ void Bubble::setBasePosition(int x, int y, QRect rect)
 
         m_outAnimation->setStartValue(normalGeo);
         m_outAnimation->setEndValue(outGeo);
+    }
 
+    if (m_inAnimation->state() != QPropertyAnimation::Running &&
+            m_outAnimation->state() != QPropertyAnimation::Running) {
         move(dPos);
         resize(dSize);
     }
@@ -274,6 +275,9 @@ void Bubble::initAnimations()
     connect(m_outAnimation, &QPropertyAnimation::finished, [this]{
         emit expired(m_entity->id().toInt());
     });
+
+    m_moveAnimation = new QPropertyAnimation(this, "pos", this);
+    m_moveAnimation->setEasingCurve(QEasingCurve::OutCubic);
 }
 
 void Bubble::initTimers()
@@ -442,3 +446,11 @@ void Bubble::onDelayQuit()
     }
 }
 
+void Bubble::resetMoveAnim(const QRect &rect)
+{
+    if (isVisible()) {
+        m_moveAnimation->setStartValue(QPoint(this->x(), this->y()));
+        m_moveAnimation->setEndValue(QPoint(rect.x() - Padding - BubbleWidth, this->y()));
+        m_moveAnimation->start();
+    }
+}
