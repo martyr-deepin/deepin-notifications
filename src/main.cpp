@@ -39,7 +39,9 @@ int main(int argc, char *argv[])
 
         DDENotifyDBus ddenotify(&manager);
         NotificationsDBusAdaptor adapter(&manager);
-        manager.registerAsService();
+
+        Q_UNUSED(ddenotify)
+        Q_UNUSED(adapter)
 
         return app.exec();
     } else {

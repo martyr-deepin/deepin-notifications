@@ -52,7 +52,7 @@ public:
     void clear();
 
 signals:
-    void buttonClicked(QString id);
+    void buttonClicked(const QString &id);
 
 private:
     QVBoxLayout *m_layout;

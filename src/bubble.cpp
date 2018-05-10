@@ -154,23 +154,6 @@ void Bubble::setBasePosition(int x, int y, QRect rect)
         m_screenGeometry = rect;
 }
 
-QPoint Bubble::getCursorPos()
-{
-    return QCursor::pos();
-}
-
-void Bubble::setMask(int, int, int, int)
-{
-
-}
-
-void Bubble::closeButtonClicked()
-{
-    emit dismissed(m_entity->id().toInt());
-
-    m_outTimer->stop();
-}
-
 void Bubble::compositeChanged()
 {
     if (!m_wmHelper->hasComposite()) {
@@ -185,10 +168,10 @@ void Bubble::compositeChanged()
 void Bubble::mousePressEvent(QMouseEvent *)
 {
     if (!m_defaultAction.isEmpty()) {
-        emit actionInvoked(m_entity->id().toUInt(), m_defaultAction);
+        Q_EMIT actionInvoked(m_entity->id().toUInt(), m_defaultAction);
         m_defaultAction.clear();
     } else {
-        emit dismissed(m_entity->id().toInt());
+        Q_EMIT dismissed(m_entity->id().toInt());
     }
 
     m_outTimer->stop();
@@ -219,6 +202,42 @@ void Bubble::hideEvent(QHideEvent *event)
     m_quitTimer->start();
 }
 
+void Bubble::onActionButtonClicked(const QString &actionId)
+{
+    QMap<QString, QVariant> hints = m_entity->hints();
+    QMap<QString, QVariant>::const_iterator i = hints.constBegin();
+    while (i != hints.constEnd()) {
+        QStringList args = i.value().toString().split(",");
+        if (!args.isEmpty()) {
+            QString cmd = args.first();
+            args.removeFirst();
+            if (i.key() == "x-deepin-action-" + actionId) {
+                QProcess::startDetached(cmd, args);
+            }
+        }
+        ++i;
+    }
+
+    m_outTimer->stop();
+    Q_EMIT actionInvoked(m_entity->id().toUInt(), actionId);
+}
+
+void Bubble::onOutTimerTimeout()
+{
+    if (containsMouse()) {
+        m_outTimer->stop();
+        m_outTimer->start();
+    } else {
+        m_offScreen = true;
+        m_outAnimation->start();
+    }
+}
+
+void Bubble::onOutAnimFinished()
+{
+    Q_EMIT expired(m_entity->id().toInt());
+}
+
 void Bubble::updateContent()
 {
     m_body->setTitle(m_entity->summary());
@@ -242,24 +261,7 @@ void Bubble::initUI()
 
     setStyleSheet(BubbleStyleSheet);
 
-    connect(m_actionButton, &ActionButton::buttonClicked, [this](QString actionId){
-        QMap<QString, QVariant> hints = m_entity->hints();
-        QMap<QString, QVariant>::const_iterator i = hints.constBegin();
-        while (i != hints.constEnd()) {
-            QStringList args = i.value().toString().split(",");
-            if (args.length()) {
-                QString cmd = args.first();
-                args.removeFirst();
-                if (i.key() == "x-deepin-action-" + actionId) {
-                    QProcess::startDetached(cmd, args);
-                }
-            }
-            ++i;
-        }
-
-        m_outTimer->stop();
-        emit actionInvoked(m_entity->id().toUInt(), actionId);
-    });
+    connect(m_actionButton, &ActionButton::buttonClicked, this, &Bubble::onActionButtonClicked);
 }
 
 void Bubble::initAnimations()
@@ -272,9 +274,7 @@ void Bubble::initAnimations()
     m_outAnimation->setDuration(300);
     m_outAnimation->setEasingCurve(QEasingCurve::OutCubic);
 
-    connect(m_outAnimation, &QPropertyAnimation::finished, [this]{
-        emit expired(m_entity->id().toInt());
-    });
+    connect(m_outAnimation, &QPropertyAnimation::finished, this, &Bubble::onOutAnimFinished);
 
     m_moveAnimation = new QPropertyAnimation(this, "pos", this);
     m_moveAnimation->setEasingCurve(QEasingCurve::OutCubic);
@@ -285,15 +285,7 @@ void Bubble::initTimers()
     m_outTimer = new QTimer(this);
     m_outTimer->setInterval(5000);
     m_outTimer->setSingleShot(true);
-    connect(m_outTimer, &QTimer::timeout, [this]{
-        if (containsMouse()) {
-            m_outTimer->stop();
-            m_outTimer->start();
-        } else {
-            m_offScreen = true;
-            m_outAnimation->start();
-        }
-    });
+    connect(m_outTimer, &QTimer::timeout, this, &Bubble::onOutTimerTimeout);
 }
 
 bool Bubble::containsMouse() const
@@ -303,11 +295,14 @@ bool Bubble::containsMouse() const
     return rectToGlobal.contains(QCursor::pos());
 }
 
+// Each even element in the list (starting at index 0) represents the identifier for the action.
+// Each odd element in the list is the localized string that will be displayed to the user.
 void Bubble::processActions()
 {
     m_actionButton->clear();
 
     QStringList list = m_entity->actions();
+    // the "default" is identifier for the default action
     if (list.contains("default")) {
         const int index = list.indexOf("default");
         m_defaultAction = list[index];

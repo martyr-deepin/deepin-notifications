@@ -37,10 +37,9 @@
 
 BubbleManager::BubbleManager(QObject *parent)
     : QObject(parent)
-    , m_persistence(new Persistence)
-    , m_dbusControlCenter(0)
 {
-    m_bubble = new Bubble();
+    m_bubble = new Bubble;
+    m_persistence = new Persistence;
 
     m_dbusDaemonInterface = new DBusDaemonInterface(DBusDaemonDBusService, DBusDaemonDBusPath,
                                                     QDBusConnection::sessionBus(), this);
@@ -51,22 +50,27 @@ BubbleManager::BubbleManager(QObject *parent)
     m_login1ManagerInterface = new Login1ManagerInterface(Login1DBusService, Login1DBusPath,
                                                           QDBusConnection::systemBus(), this);
 
-    m_dbusControlCenter = new DBusControlCenter(ControlCenterDBusService,
-                                                    ControlCenterDBusPath,
-                                                    QDBusConnection::sessionBus(),
-                                                    this);
+    m_dbusControlCenter = new DBusControlCenter(ControlCenterDBusService, ControlCenterDBusPath,
+                                                    QDBusConnection::sessionBus(), this);
+
+    connect(m_bubble, SIGNAL(expired(int)), this, SLOT(bubbleExpired(int)));
+    connect(m_bubble, SIGNAL(dismissed(int)), this, SLOT(bubbleDismissed(int)));
+    connect(m_bubble, SIGNAL(replacedByOther(int)), this, SLOT(bubbleReplacedByOther(int)));
+    connect(m_bubble, SIGNAL(actionInvoked(uint, QString)), this, SLOT(bubbleActionInvoked(uint, QString)));
 
     connect(m_dbusDaemonInterface, SIGNAL(NameOwnerChanged(QString, QString, QString)),
-            this, SLOT(dbusNameOwnerChangedSlot(QString, QString, QString)));
+            this, SLOT(onDbusNameOwnerChanged(QString, QString, QString)));
 
     connect(m_login1ManagerInterface, SIGNAL(PrepareForSleep(bool)),
             this, SLOT(onPrepareForSleep(bool)));
 
-    connect(m_dbusdockinterface, &DBusDockInterface::geometryChanged, this, &BubbleManager::dockchangedSlot);
-    connect(m_persistence, &Persistence::RecordAdded, this, &BubbleManager::AddOneRecord);
+    connect(m_dbusdockinterface, &DBusDockInterface::geometryChanged, this, &BubbleManager::onDockRectChanged);
+    connect(m_persistence, &Persistence::RecordAdded, this, &BubbleManager::onRecordAdded);
 
     if (m_dbusdockinterface->isValid())
         m_dbusdockinterface->geometry();
+
+    registerAsService();
 }
 
 BubbleManager::~BubbleManager()
@@ -203,7 +207,7 @@ void BubbleManager::ClearRecords()
     dir.rmdir(CachePath);
 }
 
-void BubbleManager::AddOneRecord(NotificationEntity *entity)
+void BubbleManager::onRecordAdded(NotificationEntity *entity)
 {
     QJsonObject notifyJson
     {
@@ -217,7 +221,7 @@ void BubbleManager::AddOneRecord(NotificationEntity *entity)
     QJsonDocument doc(notifyJson);
     QString notify(doc.toJson(QJsonDocument::Compact));
 
-    emit RecordAdded(notify);
+    Q_EMIT RecordAdded(notify);
 }
 
 void BubbleManager::registerAsService()
@@ -245,7 +249,7 @@ void BubbleManager::onCCDestRectChanged(const QRect &rect)
 void BubbleManager::bubbleExpired(int id)
 {
     m_bubble->setVisible(false);
-    emit NotificationClosed(id, BubbleManager::Expired);
+    Q_EMIT NotificationClosed(id, BubbleManager::Expired);
 
     consumeEntities();
 }
@@ -253,21 +257,21 @@ void BubbleManager::bubbleExpired(int id)
 void BubbleManager::bubbleDismissed(int id)
 {
     m_bubble->setVisible(false);
-    emit NotificationClosed(id, BubbleManager::Dismissed);
+    Q_EMIT NotificationClosed(id, BubbleManager::Dismissed);
 
     consumeEntities();
 }
 
 void BubbleManager::bubbleReplacedByOther(int id)
 {
-    emit NotificationClosed(id, BubbleManager::Unknown);
+    Q_EMIT NotificationClosed(id, BubbleManager::Unknown);
 }
 
 void BubbleManager::bubbleActionInvoked(uint id, QString actionId)
 {
     m_bubble->setVisible(false);
-    emit ActionInvoked(id, actionId);
-    emit NotificationClosed(id, BubbleManager::Closed);
+    Q_EMIT ActionInvoked(id, actionId);
+    Q_EMIT NotificationClosed(id, BubbleManager::Closed);
     consumeEntities();
 }
 
@@ -293,13 +297,12 @@ bool BubbleManager::checkControlCenterExistence()
 
 int BubbleManager::getX()
 {
-    QDesktopWidget *desktop = QApplication::desktop();
-    int pointerScreen = desktop->screenNumber(QCursor::pos());
-    int primaryScreen = desktop->primaryScreen();
+    QPair<QRect, bool> pair = screensInfo(QCursor::pos());
+    const QRect &rect = pair.first;
 
-    QRect rect( desktop->screenGeometry(pointerScreen) );
-
-    if (pointerScreen != primaryScreen)
+    // directly show the notify on the screen containing mouse,
+    // because dock and control-centor will only be displayed on the primary screen.
+    if (!pair.second)
         return  rect.x() + rect.width();
 
     if (!m_dbusControlCenter->isValid() && !m_dbusdockinterface->isValid())
@@ -307,8 +310,6 @@ int BubbleManager::getX()
 
     if (m_dbusControlCenter->isValid() && m_dbusControlCenter->rect().x() < m_dockGeometry.x())
         return m_dbusControlCenter->rect().x();
-
-    rect = desktop->screenGeometry(primaryScreen);
 
     if (m_dockGeometry.width() < m_dockGeometry.height()) // vertical
         if (m_dockGeometry.center().x() >= rect.center().x()) // right
@@ -320,19 +321,14 @@ int BubbleManager::getX()
 
 int BubbleManager::getY()
 {
-    QDesktopWidget *desktop = QApplication::desktop();
-    int pointerScreen = desktop->screenNumber(QCursor::pos());
-    int primaryScreen = desktop->primaryScreen();
+    QPair<QRect, bool> pair = screensInfo(QCursor::pos());
+    const QRect &rect = pair.first;
 
-    QRect rect( desktop->screenGeometry(pointerScreen) );
-
-    if (pointerScreen != primaryScreen)
+    if (!pair.second)
         return  rect.y();
 
     if (!m_dbusdockinterface->isValid())
         return rect.y();
-
-    rect = desktop->screenGeometry(primaryScreen);
 
     const int left = m_dbusControlCenter->isValid() ? m_dbusControlCenter->rect().left() : rect.right();
 
@@ -344,18 +340,26 @@ int BubbleManager::getY()
     return rect.y();
 }
 
-void BubbleManager::dockchangedSlot(const QRect &geometry)
+QPair<QRect, bool> BubbleManager::screensInfo(const QPoint &point) const
+{
+    QDesktopWidget *desktop = QApplication::desktop();
+    int pointScreen = desktop->screenNumber(point);
+    int primaryScreen = desktop->primaryScreen();
+
+    QRect rect = desktop->screenGeometry(pointScreen);
+
+    return QPair<QRect, bool>(rect, (pointScreen == primaryScreen));
+}
+
+void BubbleManager::onDockRectChanged(const QRect &geometry)
 {
     m_dockGeometry = geometry;
     m_bubble->setBasePosition(getX(), getY());
 }
 
-void BubbleManager::dbusNameOwnerChangedSlot(QString name, QString, QString newName)
+void BubbleManager::onDbusNameOwnerChanged(QString name, QString, QString newName)
 {
-    QDesktopWidget *desktop = QApplication::desktop();
-    int currentScreen = desktop->screenNumber(m_bubble->pos());
-    int primaryScreen = desktop->primaryScreen();
-    if (name == ControlCenterDBusService && currentScreen == primaryScreen) {
+    if (name == ControlCenterDBusService && screensInfo(m_bubble->pos()).second) {
         if (!newName.isEmpty()) {
             bindControlCenterX();
         }
@@ -409,10 +413,4 @@ void BubbleManager::consumeEntities()
 
     m_bubble->setBasePosition(getX(), getY(), pScreenWidget->geometry());
     m_bubble->setEntity(m_currentNotify);
-
-    m_bubble->disconnect();
-    connect(m_bubble, SIGNAL(expired(int)), this, SLOT(bubbleExpired(int)));
-    connect(m_bubble, SIGNAL(dismissed(int)), this, SLOT(bubbleDismissed(int)));
-    connect(m_bubble, SIGNAL(replacedByOther(int)), this, SLOT(bubbleReplacedByOther(int)));
-    connect(m_bubble, SIGNAL(actionInvoked(uint, QString)), this, SLOT(bubbleActionInvoked(uint, QString)));
 }

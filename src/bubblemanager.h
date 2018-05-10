@@ -65,19 +65,20 @@ public:
         Unknown = 4
     };
 
-signals:
+Q_SIGNALS:
+    // Standard Notifications dbus implementation
     void ActionInvoked(uint, const QString &);
     void NotificationClosed(uint, uint);
 
     // Extra DBus APIs
-signals:
     void RecordAdded(const QString &);
 
-public slots:
-    // Notifications dbus implementation
+public Q_SLOTS:
+    // Standard Notifications dbus implementation
     void CloseNotification(uint);
     QStringList GetCapabilities();
     QString GetServerInformation(QString &, QString &, QString &);
+    // new notify will be received by this slot
     uint Notify(const QString &, uint replacesId, const QString &, const QString &, const QString &, const QStringList &, const QVariantMap, int);
 
     // Extra DBus APIs
@@ -86,21 +87,36 @@ public slots:
     QString GetRecordsFromId(int rowCount, const QString &offsetId);
     void RemoveRecord(const QString &id);
     void ClearRecords();
-    void AddOneRecord(NotificationEntity *entity);
 
-    void registerAsService();
+private Q_SLOTS:
+    void onRecordAdded(NotificationEntity *entity);
 
     void onCCDestRectChanged(const QRect &rect);
-    void dockchangedSlot(const QRect &geometry);
-    void dbusNameOwnerChangedSlot(QString, QString, QString);
+    void onDockRectChanged(const QRect &geometry);
+    void onDbusNameOwnerChanged(QString, QString, QString);
+    void onPrepareForSleep(bool);
 
     void bubbleExpired(int);
     void bubbleDismissed(int);
     void bubbleReplacedByOther(int);
     void bubbleActionInvoked(uint, QString);
 
-    void onPrepareForSleep(bool);
+private:
+    void registerAsService();
 
+    bool checkDockExistence();
+    bool checkControlCenterExistence();
+
+    int getX();
+    int getY();
+
+    // return geometry of the containing specified point screen,
+    // and return true if primary-screen and specified-point-screen are the same screen,
+    // or return false.
+    QPair<QRect, bool> screensInfo(const QPoint &point) const;
+
+    void bindControlCenterX();
+    void consumeEntities();
 
 private:
     Bubble *m_bubble;
@@ -115,15 +131,6 @@ private:
 
     int   m_dccX;
     QRect m_dockGeometry;
-
-    bool checkDockExistence();
-    bool checkControlCenterExistence();
-
-    int getX();
-    int getY();
-
-    void bindControlCenterX();
-    void consumeEntities();
 };
 
 #endif // BUBBLEMANAGER_H

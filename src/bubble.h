@@ -51,22 +51,17 @@ class Bubble : public DBlurEffectWidget
 public:
     Bubble(NotificationEntity *entity=0);
 
-    void setBasePosition(int,int, QRect = QRect());
-
     NotificationEntity *entity() const;
+    void setBasePosition(int,int, QRect = QRect());
     void setEntity(NotificationEntity *entity);
 
-
-signals:
+Q_SIGNALS:
     void expired(int);
     void dismissed(int);
     void replacedByOther(int);
     void actionInvoked(uint, QString);
 
-public slots:
-    QPoint getCursorPos();
-    void setMask(int, int, int, int);
-    void closeButtonClicked();
+public Q_SLOTS:
     void compositeChanged();
     void onDelayQuit();
     void resetMoveAnim(const QRect &rect);
@@ -76,6 +71,23 @@ protected:
     void moveEvent(QMoveEvent *) Q_DECL_OVERRIDE;
     void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
     void hideEvent(QHideEvent *event) Q_DECL_OVERRIDE;
+
+private Q_SLOTS:
+    void onActionButtonClicked(const QString &actionId);
+    void onOutTimerTimeout();
+    void onOutAnimFinished();
+
+private:
+    void initUI();
+    void initAnimations();
+    void initTimers();
+    void updateContent();
+    void processActions();
+    void processIconData();
+    bool containsMouse() const;
+
+    void saveImg(const QImage &image);
+    const QPixmap converToPixmap(const QDBusArgument &value);
 
 private:
     NotificationEntity *m_entity;
@@ -96,18 +108,6 @@ private:
     QString m_defaultAction;
 
     bool m_offScreen = true;
-
-    void updateContent();
-    void initUI();
-    void initAnimations();
-    void initTimers();
-    bool containsMouse() const;
-
-    void processActions();
-    void processIconData();
-
-    void saveImg(const QImage &image);
-    const QPixmap converToPixmap(const QDBusArgument &value);
 };
 
 #endif // BUBBLE_H
