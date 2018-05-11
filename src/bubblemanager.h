@@ -121,12 +121,12 @@ private:
 private:
     Bubble *m_bubble;
     Persistence *m_persistence;
-    QQueue<NotificationEntity*> m_entities;
     DBusControlCenter *m_dbusControlCenter;
     DBusDaemonInterface *m_dbusDaemonInterface;
     Login1ManagerInterface *m_login1ManagerInterface;
     DBusDockInterface *m_dbusdockinterface;
 
+    QQueue<NotificationEntity*> m_entities;
     QPointer<NotificationEntity> m_currentNotify;
 
     int   m_dccX;
