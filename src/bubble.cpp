@@ -443,9 +443,15 @@ void Bubble::onDelayQuit()
 
 void Bubble::resetMoveAnim(const QRect &rect)
 {
-    if (isVisible()) {
-        m_moveAnimation->setStartValue(QPoint(this->x(), this->y()));
-        m_moveAnimation->setEndValue(QPoint(rect.x() - Padding - BubbleWidth, this->y()));
+    if (isVisible() && m_outAnimation->state() != QPropertyAnimation::Running) {
+        const QPoint &endPoint = QPoint(rect.x() - Padding - BubbleWidth, y());
+        m_moveAnimation->setStartValue(QPoint(x(), y()));
+        m_moveAnimation->setEndValue(endPoint);
+
+        const QRect &startRect = QRect(endPoint, QSize(BubbleWidth, BubbleHeight));
+        m_outAnimation->setStartValue(startRect);
+        m_outAnimation->setEndValue(QRect(startRect.right(), startRect.y(), 0, BubbleHeight));
+
         m_moveAnimation->start();
     }
 }
