@@ -174,6 +174,7 @@ void Bubble::mousePressEvent(QMouseEvent *)
         Q_EMIT dismissed(m_entity->id().toInt());
     }
 
+    m_offScreen = true;
     m_outTimer->stop();
 }
 
