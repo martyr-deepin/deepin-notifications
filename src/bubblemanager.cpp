@@ -40,6 +40,8 @@ BubbleManager::BubbleManager(QObject *parent)
 {
     m_bubble = new Bubble;
     m_persistence = new Persistence;
+    m_dccX = 0 ;
+    m_dockPosition = DockPosition::Bottom;
 
     m_dbusDaemonInterface = new DBusDaemonInterface(DBusDaemonDBusService, DBusDaemonDBusPath,
                                                     QDBusConnection::sessionBus(), this);
@@ -67,8 +69,9 @@ BubbleManager::BubbleManager(QObject *parent)
     connect(m_dbusdockinterface, &DBusDockInterface::geometryChanged, this, &BubbleManager::onDockRectChanged);
     connect(m_persistence, &Persistence::RecordAdded, this, &BubbleManager::onRecordAdded);
 
+    // get correct value for m_isDockOnRight/m_isDockOnTop
     if (m_dbusdockinterface->isValid())
-        m_dbusdockinterface->geometry();
+        onDockRectChanged(m_dbusdockinterface->geometry());
 
     registerAsService();
 }
@@ -245,6 +248,19 @@ void BubbleManager::onCCDestRectChanged(const QRect &rect)
 {
 //    m_dccX = rect.x();
     m_bubble->setBasePosition(getX(), getY());
+
+    if (rect.width() == 0) { // close the control-center
+        if (m_dockPosition == DockPosition::Right) {
+            const QRect &screenRect = screensInfo(QCursor::pos()).first;
+            if ((screenRect.height() - m_dockGeometry.height()) / 2.0 < m_bubble->height()) {
+                QRect mRect = rect;
+                mRect.setX((screenRect.right()) - m_dockGeometry.width());
+                m_bubble->resetMoveAnim(mRect);
+                return;
+            }
+        }
+    }
+
     m_bubble->resetMoveAnim(rect);
 }
 
@@ -313,12 +329,11 @@ int BubbleManager::getX()
     if (m_dbusControlCenter->isValid() && m_dbusControlCenter->rect().x() < m_dockGeometry.x())
         return m_dbusControlCenter->rect().x();
 
-    if (m_dockGeometry.width() < m_dockGeometry.height()) // vertical
-        if (m_dockGeometry.center().x() >= rect.center().x()) // right
-            if ((rect.height() - m_dockGeometry.height()) / 2.0 < m_bubble->height())
-                return (rect.x() + rect.width()) - m_dockGeometry.width();
+    if (m_dockPosition == DockPosition::Right)
+        if ((rect.height() - m_dockGeometry.height()) / 2.0 < m_bubble->height())
+            return (rect.x() + rect.width()) - m_dockGeometry.width();
 
-    return m_dccX;
+    return rect.width();
 }
 
 int BubbleManager::getY()
@@ -332,12 +347,8 @@ int BubbleManager::getY()
     if (!m_dbusdockinterface->isValid())
         return rect.y();
 
-    const int left = m_dbusControlCenter->isValid() ? m_dbusControlCenter->rect().left() : rect.right();
-
-    if (m_dockGeometry.width() >= m_dockGeometry.height())
-        if (m_dockGeometry.center().y() < rect.center().y()) // top
-            if (m_dockGeometry.right() > left - m_bubble->width())
-                return m_dockGeometry.y() + m_dockGeometry.height();
+    if (m_dockPosition == DockPosition::Top)
+        return m_dockGeometry.bottom();
 
     return rect.y();
 }
@@ -356,6 +367,22 @@ QPair<QRect, bool> BubbleManager::screensInfo(const QPoint &point) const
 void BubbleManager::onDockRectChanged(const QRect &geometry)
 {
     m_dockGeometry = geometry;
+
+    const QRect &screenRect = screensInfo(QCursor::pos()).first;
+    if (m_dockGeometry.width() < m_dockGeometry.height()) { // dock is in vertical mode
+        if (m_dockGeometry.center().x() >= screenRect.center().x()) { // dock is on the right
+            m_dockPosition = DockPosition::Right;
+        } else {
+            m_dockPosition = DockPosition::Left;
+        }
+    } else { // dock is in horizontal mode
+        if (m_dockGeometry.center().y() < screenRect.center().y()) { // dock is on the top
+            m_dockPosition = DockPosition::Top;
+        } else {
+            m_dockPosition = DockPosition::Bottom;
+        }
+    }
+
     m_bubble->setBasePosition(getX(), getY());
 }
 

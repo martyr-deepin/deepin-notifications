@@ -65,6 +65,13 @@ public:
         Unknown = 4
     };
 
+    enum DockPosition {
+        Left = 1,
+        Top = 2,
+        Right = 3,
+        Bottom = 4
+    };
+
 Q_SIGNALS:
     // Standard Notifications dbus implementation
     void ActionInvoked(uint, const QString &);
@@ -131,6 +138,8 @@ private:
 
     int   m_dccX;
     QRect m_dockGeometry;
+
+    DockPosition m_dockPosition;
 };
 
 #endif // BUBBLEMANAGER_H
