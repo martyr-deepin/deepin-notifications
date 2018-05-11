@@ -17,10 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <DApplication>
 #include "bubblemanager.h"
 #include "notifications_dbus_adaptor.h"
 
+#include <DLog>
+#include <DApplication>
+
+DCORE_USE_NAMESPACE
 DWIDGET_USE_NAMESPACE
 
 #define APP_NAME "deepin-notifications"
@@ -35,6 +38,9 @@ int main(int argc, char *argv[])
     app.setApplicationName(APP_NAME);
 
     if (app.setSingleInstance(APP_NAME, DApplication::UserScope)) {
+        DLogManager::registerConsoleAppender();
+        DLogManager::registerFileAppender();
+
         BubbleManager manager;
 
         DDENotifyDBus ddenotify(&manager);
