@@ -66,29 +66,11 @@ Persistence::Persistence(QObject *parent)
     m_query = QSqlQuery(m_dbConnection);
     m_query.setForwardOnly(true);
 
-#ifdef QT_DEBUG
-        attemptCreateTable();
-        return;
-#endif
-
-    m_query.prepare(QString("CREATE TABLE IF NOT EXISTS %1"
-                          "("
-                          "%2 TEXT,"
-                          "%3 TEXT,"
-                          "%4 TEXT,"
-                          "%5 TEXT,"
-                          "%6 TEXT,"
-                          "%7 TEXT PRIMARY KEY"
-                          ");").arg(TableName, ColumnId, ColumnIcon, ColumnSummary, ColumnBody, ColumnAppName, ColumnCTime));
-
-    if (!m_query.exec()) {
-        qWarning() << "create table failed" << m_query.lastError().text();
-    }
+    attemptCreateTable();
 }
 
 void Persistence::addOne(NotificationEntity *entity)
 {
-#ifdef QT_DEBUG
     m_query.prepare(QString("INSERT INTO %1 (%2, %3, %4, %5, %6, %7, %8)"
                             "VALUES (:icon, :summary, :body, :appname, :ctime, :replacesid, :timeout)") \
                   .arg(TableName_v2, ColumnIcon, ColumnSummary, ColumnBody,
@@ -105,7 +87,9 @@ void Persistence::addOne(NotificationEntity *entity)
         qWarning() << "insert value to database failed: " << m_query.lastError().text() << entity->id() << entity->ctime();
         return;
     } else {
+#ifdef QT_DEBUG
         qDebug() << "insert value done, time is:" << entity->ctime();
+#endif
     }
 
     // to get entity's id in database
@@ -115,30 +99,11 @@ void Persistence::addOne(NotificationEntity *entity)
     } else {
         m_query.next();
         entity->setId(m_query.value(0).toString());
+#ifdef QT_DEBUG
         qDebug() << "get entity's id done:" << entity->id();
+#endif
         emit RecordAdded(entity);
     }
-    return;
-#endif
-///////////////////////////////////////////////////////////////////////
-    m_query.prepare(QString("INSERT INTO %1 (%2, %3, %4, %5, %6, %7) VALUES (:id, :icon, :summary, :body, :appname, :ctime)") \
-                  .arg(TableName, ColumnId, ColumnIcon, ColumnSummary, ColumnBody, ColumnAppName, ColumnCTime));
-    m_query.bindValue(":id", entity->id());
-    m_query.bindValue(":icon", entity->appIcon());
-    m_query.bindValue(":summary", entity->summary());
-    m_query.bindValue(":body", entity->body());
-    m_query.bindValue(":appname", entity->appName());
-    m_query.bindValue(":ctime", entity->ctime());
-
-    if (!m_query.exec()) {
-        qWarning() << "insert value to database failed: " << m_query.lastError().text() << entity->id() << entity->ctime();
-    } else {
-#ifdef QT_DEBUG
-        qDebug() << "insert value " << entity->ctime();
-#endif
-    }
-
-    emit RecordAdded(entity);
 }
 
 void Persistence::addAll(QList<NotificationEntity *> entities)
@@ -150,24 +115,12 @@ void Persistence::addAll(QList<NotificationEntity *> entities)
 
 void Persistence::removeOne(const QString &id)
 {
-#ifdef QT_DEBUG
     m_query.prepare(QString("DELETE FROM %1 WHERE ID = (:id)").arg(TableName_v2));
     m_query.bindValue(":id", id);
 
     if (!m_query.exec()) {
         qWarning() << "remove value:" << id << "from database failed: " << m_query.lastError().text();
         return;
-    } else {
-        qDebug() << "remove value:" << id;
-    }
-    return;
-#endif
-///////////////////////////////////////////////////////////////////////
-    m_query.prepare(QString("DELETE FROM %1 WHERE ctime = (:ctime)").arg(TableName));
-    m_query.bindValue(":ctime", id);
-
-    if (!m_query.exec()) {
-        qWarning() << "remove value:" << id << "from database failed: " << m_query.lastError().text();
     } else {
 #ifdef QT_DEBUG
         qDebug() << "remove value:" << id;
@@ -177,31 +130,12 @@ void Persistence::removeOne(const QString &id)
 
 void Persistence::removeAll()
 {
-#ifdef QT_DEBUG
     m_query.prepare(QString("DELETE FROM %1").arg(TableName_v2));
 
     if (!m_query.exec()) {
         qWarning() << "remove all from database failed: " << m_query.lastError().text();
         return;
     } else {
-        qDebug() << "remove all done";
-    }
-
-    // Remove the unused space
-    if (!m_query.exec("VACUUM")) {
-        qWarning() << "remove the unused space failed: " << m_query.lastError().text();
-        return;
-    } else {
-        qDebug() << "remove the unused space done";
-    }
-    return;
-#endif
-///////////////////////////////////////////////////////////////////////
-    m_query.prepare(QString("DELETE FROM %1").arg(TableName));
-
-    if (!m_query.exec()) {
-        qWarning() << "remove all from database failed: " << m_query.lastError().text();
-    } else {
 #ifdef QT_DEBUG
         qDebug() << "remove all done";
 #endif
@@ -210,6 +144,7 @@ void Persistence::removeAll()
     // Remove the unused space
     if (!m_query.exec("VACUUM")) {
         qWarning() << "remove the unused space failed: " << m_query.lastError().text();
+        return;
     } else {
 #ifdef QT_DEBUG
         qDebug() << "remove the unused space done";
@@ -219,7 +154,6 @@ void Persistence::removeAll()
 
 QString Persistence::getAll()
 {
-#ifdef QT_DEBUG
     m_query.prepare(QString("SELECT %1, %2, %3, %4, %5, %6 FROM %7")
                .arg(ColumnId, ColumnIcon, ColumnSummary, ColumnBody, ColumnAppName,
                     ColumnCTime, TableName_v2));
@@ -228,7 +162,9 @@ QString Persistence::getAll()
         qWarning() << "get all from database failed: " << m_query.lastError().text();
         return QString();
     } else {
+#ifdef QT_DEBUG
         qDebug() << "get all done";
+#endif
     }
 
     QJsonArray array1;
@@ -246,35 +182,6 @@ QString Persistence::getAll()
         array1.append(obj);
     }
     return QJsonDocument(array1).toJson();
-#endif
-///////////////////////////////////////////////////////////////////////
-    m_query.prepare(QString("SELECT %1, %2, %3, %4, %5, %6 FROM %7")
-               .arg(ColumnId, ColumnIcon, ColumnSummary, ColumnBody, ColumnAppName,
-                    ColumnCTime, TableName));
-
-    if (!m_query.exec()) {
-        qWarning() << "get all from database failed: " << m_query.lastError().text();
-    } else {
-#ifdef QT_DEBUG
-        qDebug() << "get all done";
-#endif
-    }
-
-    QJsonArray array;
-    while (m_query.next())
-    {
-        QJsonObject obj
-        {
-            {"name", m_query.value(4).toString()},
-            {"icon", m_query.value(1).toString()},
-            {"summary", m_query.value(2).toString()},
-            {"body", m_query.value(3).toString()},
-            {"id", m_query.value(0).toString()},
-            {"time", m_query.value(5).toString()}
-        };
-        array.append(obj);
-    }
-    return QJsonDocument(array).toJson();
 }
 
 QString Persistence::getById(const QString &id)

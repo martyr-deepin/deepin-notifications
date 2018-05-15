@@ -30,13 +30,6 @@ class NotificationEntity : public QObject
 {
     Q_OBJECT
 public:
-    // TODO: need to remove
-    NotificationEntity(const QString &appName, const QString &id,
-                       const QString &appIcon, const QString &summary,
-                       const QString &body, const QStringList &actions,
-                       const QVariantMap hints, const QString &ctime,
-                       QObject *parent=0);
-
     NotificationEntity(const QString &appName, const QString &id,
                        const QString &appIcon, const QString &summary,
                        const QString &body, const QStringList &actions,

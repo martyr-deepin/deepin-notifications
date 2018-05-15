@@ -114,8 +114,9 @@ uint BubbleManager::Notify(const QString &appName, uint replacesId,
     qDebug() << "a new Notify:" << "appName:" + appName << "replaceID:" + QString::number(replacesId)
              << "appIcon:" + appIcon << "summary:" + summary << "body:" + body
              << "actions:" << actions << "hints:" << hints << "expireTimeout:" << expireTimeout;
+#endif
 
-    NotificationEntity *notification1 = new NotificationEntity(appName, QString(), appIcon,
+    NotificationEntity *notification = new NotificationEntity(appName, QString(), appIcon,
                                                               summary, body, actions, hints,
                                                               QString::number(QDateTime::currentMSecsSinceEpoch()),
                                                               QString::number(replacesId),
@@ -125,50 +126,11 @@ uint BubbleManager::Notify(const QString &appName, uint replacesId,
     if (replacesId > 0) {
         if (!m_currentNotify.isNull() && (m_currentNotify->id() == QString::number(replacesId)
                               || m_currentNotify->replacesId() == QString::number(replacesId))) {
-            m_bubble->setEntity(notification1);
+            m_bubble->setEntity(notification);
 
             m_currentNotify->deleteLater();
-            m_currentNotify = notification1;
+            m_currentNotify = notification;
         }
-    } else {
-        m_entities.enqueue(notification1);
-    }
-
-    m_persistence->addOne(notification1);
-
-    if (!m_bubble->isVisible()) { consumeEntities(); }
-
-    // If replaces_id is 0, the return value is a UINT32 that represent the notification.
-    // If replaces_id is not 0, the returned value is the same value as replaces_id.
-    return replacesId == 0 ? notification1->id().toUInt() : replacesId;
-#endif
-////////////////////////////////////////////////////////////////////////////////////
-    // timestamp as id;
-    // if body is empty, summary will be interchanged;
-
-#ifdef QT_DEBUG
-    qDebug() << "Notify" << appName << QString::number(replacesId) << appIcon << summary << body << actions << hints << expireTimeout;
-#endif
-
-    // In many cases, ID is empty to avoid inserting database failures and initializing use of time
-    qint64 time = replacesId ? replacesId : QDateTime::currentMSecsSinceEpoch();
-
-    NotificationEntity *notification = new NotificationEntity(appName,
-                                                              QString::number((uint)time),
-                                                              appIcon,
-                                                              summary,
-                                                              body,
-                                                              actions,
-                                                              hints,
-                                                              QString::number(QDateTime::currentMSecsSinceEpoch()),
-                                                              this);
-
-    if (!m_currentNotify.isNull() && m_currentNotify->id() == QString::number(replacesId)) {
-        m_bubble->setEntity(notification);
-
-        m_currentNotify->deleteLater();
-        m_currentNotify = notification;
-
     } else {
         m_entities.enqueue(notification);
     }
@@ -177,7 +139,9 @@ uint BubbleManager::Notify(const QString &appName, uint replacesId,
 
     if (!m_bubble->isVisible()) { consumeEntities(); }
 
-    return time;
+    // If replaces_id is 0, the return value is a UINT32 that represent the notification.
+    // If replaces_id is not 0, the returned value is the same value as replaces_id.
+    return replacesId == 0 ? notification->id().toUInt() : replacesId;
 }
 
 QString BubbleManager::GetAllRecords()
