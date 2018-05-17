@@ -98,7 +98,7 @@ public Q_SLOTS:
 private Q_SLOTS:
     void onRecordAdded(NotificationEntity *entity);
 
-    void onCCDestRectChanged(const QRect &rect);
+    void onCCDestRectChanged(const QRect &destRect);
     void onDockRectChanged(const QRect &geometry);
     void onDbusNameOwnerChanged(QString, QString, QString);
     void onPrepareForSleep(bool);
@@ -136,7 +136,7 @@ private:
     QQueue<NotificationEntity*> m_entities;
     QPointer<NotificationEntity> m_currentNotify;
 
-    int   m_dccX;
+    QRect m_ccGeometry;
     QRect m_dockGeometry;
 
     DockPosition m_dockPosition;

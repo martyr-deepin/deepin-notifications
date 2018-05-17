@@ -53,7 +53,6 @@ BubbleManager::BubbleManager(QObject *parent)
 {
     m_bubble = new Bubble;
     m_persistence = new Persistence;
-    m_dccX = 0 ;
     m_dockPosition = DockPosition::Bottom;
 
     m_dbusDaemonInterface = new DBusDaemonInterface(DBusDaemonDBusService, DBusDaemonDBusPath,
@@ -82,9 +81,11 @@ BubbleManager::BubbleManager(QObject *parent)
     connect(m_dbusdockinterface, &DBusDockInterface::geometryChanged, this, &BubbleManager::onDockRectChanged);
     connect(m_persistence, &Persistence::RecordAdded, this, &BubbleManager::onRecordAdded);
 
-    // get correct value for m_isDockOnRight/m_isDockOnTop
+    // get correct value for m_dockGeometry, m_ccGeometry, m_dockPosition
     if (m_dbusdockinterface->isValid())
         onDockRectChanged(m_dbusdockinterface->geometry());
+    if (m_dbusControlCenter->isValid())
+        onCCDestRectChanged(m_dbusControlCenter->rect());
 
     registerAsService();
 }
@@ -219,24 +220,27 @@ void BubbleManager::registerAsService()
     ddenotifyConnect.registerObject(DDENotifyDBusPath, this);
 }
 
-void BubbleManager::onCCDestRectChanged(const QRect &rect)
+void BubbleManager::onCCDestRectChanged(const QRect &destRect)
 {
-//    m_dccX = rect.x();
+    // get the current rect of control-center
+    m_ccGeometry = m_dbusControlCenter->rect();
+    // use the current rect of control-center to setup position of bubble
+    // to avoid a move-anim bug
     m_bubble->setBasePosition(getX(), getY());
 
-    if (rect.width() == 0) { // close the control-center
+    // use destination rect of control-center to setup move-anim
+    if (destRect.width() == 0) { // closing the control-center
         if (m_dockPosition == DockPosition::Right) {
             const QRect &screenRect = screensInfo(QCursor::pos()).first;
             if ((screenRect.height() - m_dockGeometry.height()) / 2.0 < m_bubble->height()) {
-                QRect mRect = rect;
+                QRect mRect = destRect;
                 mRect.setX((screenRect.right()) - m_dockGeometry.width());
                 m_bubble->resetMoveAnim(mRect);
                 return;
             }
         }
     }
-
-    m_bubble->resetMoveAnim(rect);
+    m_bubble->resetMoveAnim(destRect);
 }
 
 void BubbleManager::bubbleExpired(int id)
@@ -296,21 +300,25 @@ int BubbleManager::getX()
     // directly show the notify on the screen containing mouse,
     // because dock and control-centor will only be displayed on the primary screen.
     if (!pair.second)
-        return  rect.x() + rect.width();
+        return  rect.width();
 
+    // DBus object is invalid, return screen right
     if (!m_dbusControlCenter->isValid() && !m_dbusdockinterface->isValid())
-        return m_dccX;
+        return rect.width();
 
-    // Step1. Check dbus is valid
-    // Step2. Check Dock position
-    // Step3. If Dock is right position, return dock x when control center not show
-    if (m_dbusControlCenter->isValid()) {
-        if (m_dockPosition == DockPosition::Right) {
-            if (m_dbusControlCenter->rect().x() >  m_dockGeometry.x()) {
+    // if dock dbus is valid and dock position is right
+    if (m_dbusdockinterface->isValid() && m_dockPosition == DockPosition::Right) {
+        // check dde-control-center is valid
+        if (m_dbusControlCenter->isValid()) {
+            if (m_ccGeometry.x() >  m_dockGeometry.x()) {
                 return (rect.x() + rect.width()) - m_dockGeometry.width();
             }
         }
-
+        // dde-control-center is invalid, return dock' x
+        return (rect.x() + rect.width()) - m_dockGeometry.width();
+    }
+    //  dock position is not right, and dde-control-center is valid
+    if (m_dbusControlCenter->isValid()) {
         return m_dbusControlCenter->rect().x();
     }
 
@@ -410,13 +418,11 @@ void BubbleManager::consumeEntities()
         m_dockGeometry = m_dbusdockinterface->geometry();
     }
 
+    if (checkControlCenterExistence())
+        m_ccGeometry = m_dbusControlCenter->rect();
+
     if (checkControlCenterExistence() && pointerScreen == primaryScreen)
         bindControlCenterX();
-
-    if (m_dbusControlCenter->isValid())
-        m_dccX = m_dbusControlCenter->rect().x();
-    else
-        m_dccX = pScreenWidget->x() + pScreenWidget->width();
 
     if (pointerScreen != primaryScreen)
         pScreenWidget = desktop->screen(pointerScreen);
