@@ -1,4 +1,21 @@
 <a name=""></a>
+##  3.3.0 (2018-05-24)
+
+
+#### Features
+
+*   support default action ([3ecb1f41](https://github.com/linuxdeepin/deepin-notifications/commit/3ecb1f416736dc0971403038e852732d0aa52648))
+
+#### Bug Fixes
+
+*   empty notify ([8b022576](https://github.com/linuxdeepin/deepin-notifications/commit/8b022576282233bfd8619feb5edc1900c7ab1e19))
+*   error action id ([027d6b74](https://github.com/linuxdeepin/deepin-notifications/commit/027d6b74c07f9de2531bd6cf2087f567606f6047))
+*   not set default PREFIX ([5a945853](https://github.com/linuxdeepin/deepin-notifications/commit/5a94585328f1643df342acbfedc8f578f4c027bc))
+*   not restart ([643d323e](https://github.com/linuxdeepin/deepin-notifications/commit/643d323ea7430f3b2096e441d1712ce32fcb7e6d))
+
+
+
+<a name=""></a>
 ##  3.2.2.1 (2018-04-11)
 
 
