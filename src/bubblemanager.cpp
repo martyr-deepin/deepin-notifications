@@ -288,12 +288,18 @@ int BubbleManager::getX()
     if (!m_dbusControlCenter->isValid() && !m_dbusdockinterface->isValid())
         return m_dccX;
 
-    if (m_dbusControlCenter->isValid() && m_dbusControlCenter->rect().x() < m_dockGeometry.x())
-        return m_dbusControlCenter->rect().x();
+    // Step1. Check dbus is valid
+    // Step2. Check Dock position
+    // Step3. If Dock is right position, return dock x when control center not show
+    if (m_dbusControlCenter->isValid()) {
+        if (m_dockPosition == DockPosition::Right) {
+            if (m_dbusControlCenter->rect().x() >  m_dockGeometry.x()) {
+                return (rect.x() + rect.width()) - m_dockGeometry.width();
+            }
+        }
 
-    if (m_dockPosition == DockPosition::Right)
-        if ((rect.height() - m_dockGeometry.height()) / 2.0 < m_bubble->height())
-            return (rect.x() + rect.width()) - m_dockGeometry.width();
+        return m_dbusControlCenter->rect().x();
+    }
 
     return rect.width();
 }
