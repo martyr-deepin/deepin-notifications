@@ -24,6 +24,7 @@
 #include <QIcon>
 #include <QApplication>
 #include <QScreen>
+#include <QUrl>
 #include "appicon.h"
 
 
@@ -39,17 +40,20 @@ void AppIcon::setIcon(const QString &iconPath)
     const qreal pixelRatio = qApp->primaryScreen()->devicePixelRatio();
     QPixmap pixmap;
 
-    // iconPath is an absolute path of the system.
-    if (QFile::exists(iconPath) && QFileInfo(iconPath).isAbsolute()) {
-        pixmap = QPixmap(iconPath);
-    } else if (iconPath.startsWith("data:image/")){
+    if (iconPath.startsWith("data:image/")){
         // iconPath is a string representing an inline image.
         QStringList strs = iconPath.split("base64,");
         if (strs.length() == 2) {
             QByteArray data = QByteArray::fromBase64(strs.at(1).toLatin1());
             pixmap.loadFromData(data);
         }
-    } else {
+    }
+
+    if (pixmap.isNull()) {
+        QString iconUrl;
+        const QUrl url(iconPath);
+        iconUrl = url.isLocalFile() ? url.toLocalFile() : url.url();
+
         const QIcon &icon = QIcon::fromTheme(iconPath, QIcon::fromTheme("application-x-desktop"));
         pixmap = icon.pixmap(width() * pixelRatio, height() * pixelRatio);
     }
@@ -60,7 +64,7 @@ void AppIcon::setIcon(const QString &iconPath)
                                Qt::SmoothTransformation);
 
         pixmap.setDevicePixelRatio(pixelRatio);
-
-        setPixmap(pixmap);
     }
+
+    setPixmap(pixmap);
 }
