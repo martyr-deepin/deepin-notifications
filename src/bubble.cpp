@@ -57,7 +57,7 @@ static const int BubbleWidth = 300;
 static const int BubbleHeight = 70;
 
 Bubble::Bubble(NotificationEntity *entity)
-    : DBlurEffectWidget()
+    : DBlurEffectWidget(nullptr)
     , m_entity(entity)
     , m_icon(new AppIcon(this))
     , m_body(new AppBody(this))
@@ -183,7 +183,8 @@ void Bubble::moveEvent(QMoveEvent *event)
     // don't show this bubble on unrelated screens while sliding in.
     if (m_inAnimation->state() == QPropertyAnimation::Running) {
         const bool visible = m_screenGeometry.contains(event->pos());
-        resize(visible ? QSize(BubbleWidth, BubbleHeight) : QSize(1, 1));
+//        resize(visible ? QSize(BubbleWidth, BubbleHeight) : QSize(1, 1));
+        setVisible(visible);
     }
 
     DBlurEffectWidget::moveEvent(event);
@@ -192,6 +193,10 @@ void Bubble::moveEvent(QMoveEvent *event)
 void Bubble::showEvent(QShowEvent *event)
 {
     DBlurEffectWidget::showEvent(event);
+
+    QTimer::singleShot(1, this, [=] {
+        raise();
+    });
 
     m_quitTimer->start();
 }
