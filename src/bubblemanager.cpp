@@ -123,14 +123,12 @@ uint BubbleManager::Notify(const QString &appName, uint replacesId,
                                                               QString::number(expireTimeout),
                                                               this);
 
-    if (replacesId > 0) {
-        if (!m_currentNotify.isNull() && (m_currentNotify->id() == QString::number(replacesId)
-                              || m_currentNotify->replacesId() == QString::number(replacesId))) {
-            m_bubble->setEntity(notification);
+    if (!m_currentNotify.isNull() && (m_currentNotify->id() == QString::number(replacesId)
+                                      || m_currentNotify->replacesId() == QString::number(replacesId))) {
+        m_bubble->setEntity(notification);
 
-            m_currentNotify->deleteLater();
-            m_currentNotify = notification;
-        }
+        m_currentNotify->deleteLater();
+        m_currentNotify = notification;
     } else {
         m_entities.enqueue(notification);
     }
