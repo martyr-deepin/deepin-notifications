@@ -34,6 +34,19 @@
 
 #include <QTimer>
 #include <QDebug>
+#include <QXmlStreamReader>
+
+static QString removeHTML(const QString &source) {
+    QXmlStreamReader xml(source);
+    QString textString;
+    while (!xml.atEnd()) {
+        if ( xml.readNext() == QXmlStreamReader::Characters ) {
+            textString += xml.text();
+        }
+    }
+
+    return textString.isEmpty() ? source : textString;
+}
 
 BubbleManager::BubbleManager(QObject *parent)
     : QObject(parent)
@@ -117,7 +130,7 @@ uint BubbleManager::Notify(const QString &appName, uint replacesId,
 #endif
 
     NotificationEntity *notification = new NotificationEntity(appName, QString(), appIcon,
-                                                              summary, body, actions, hints,
+                                                              summary, removeHTML(body), actions, hints,
                                                               QString::number(QDateTime::currentMSecsSinceEpoch()),
                                                               QString::number(replacesId),
                                                               QString::number(expireTimeout),

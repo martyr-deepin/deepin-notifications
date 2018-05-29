@@ -26,12 +26,13 @@ AppBody::AppBody(QWidget *parent)
 {
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
-    m_titleLbl = new QLabel;
+    m_titleLbl = new appBodyLabel;
     m_bodyLbl = new appBodyLabel;
 
     m_titleLbl->setWordWrap(true);
 
     m_titleLbl->setStyleSheet("font-weight: 460; color: #303030;");
+    m_bodyLbl->setStyleSheet("color: rgba(0,0,0,0.9);");
 
     QVBoxLayout *layout = new QVBoxLayout;
     layout->setMargin(0);
@@ -49,8 +50,6 @@ AppBody::AppBody(QWidget *parent)
 
 void AppBody::setTitle(const QString &title)
 {
-    m_title = title;
-
     m_titleLbl->setVisible(!title.isEmpty());
 
     m_titleLbl->setText(title);

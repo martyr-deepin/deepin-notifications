@@ -33,10 +33,7 @@ public:
     void setText(const QString & text);
 
 private:
-    QString m_title;
-    QString m_bodyText;
-
-    QLabel *m_titleLbl;
+    appBodyLabel *m_titleLbl;
     appBodyLabel *m_bodyLbl;
 };
 

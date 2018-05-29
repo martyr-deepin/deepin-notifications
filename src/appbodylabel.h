@@ -28,9 +28,6 @@ public:
     explicit appBodyLabel(QWidget *parent = nullptr);
     void setText(const QString &text);
 
-protected:
-    void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
-
 private:
     const QString holdTextInRect(const QFontMetrics &fm, const QString &text, const QRect &rect) const;
 

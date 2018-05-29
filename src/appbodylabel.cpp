@@ -22,6 +22,7 @@
 #include <QEvent>
 #include <QPainter>
 #include <QDebug>
+#include <QApplication>
 
 static const QString DefaultCSS = "body { color: rgba(0,0,0,0.9);}";
 static const QString HTMLTemplate = "<body>%1</body>";
@@ -36,38 +37,16 @@ void appBodyLabel::setText(const QString &text)
 {
     m_text = text;
 
-    QLabel::setText(text);
-
-    update();
-}
-
-void appBodyLabel::paintEvent(QPaintEvent *event)
-{
-    Q_UNUSED(event);
-
-    QPainter painter(this);
-
     QTextOption appNameOption;
     appNameOption.setAlignment(Qt::AlignLeft | Qt::AlignTop);
     appNameOption.setWrapMode(QTextOption::WordWrap);
 
-    QFont appNamefont(painter.font());
-
+    QFont appNamefont(qApp->font());
     const QFontMetrics fm(appNamefont);
 
-    QString appBody = holdTextInRect(fm, m_text, rect());
+    QLabel::setText(holdTextInRect(fm, m_text, rect()));
 
-    painter.setBrush(Qt::transparent);
-    painter.setPen(Qt::black);
-
-    QTextDocument td;
-    td.setDefaultTextOption(appNameOption);
-    td.setDefaultFont(appNamefont);
-    td.setDefaultStyleSheet(DefaultCSS);
-    td.setTextWidth(this->width());
-    td.setDocumentMargin(0);
-    td.setHtml(HTMLTemplate.arg(appBody));
-    td.drawContents(&painter);
+    update();
 }
 
 const QString appBodyLabel::holdTextInRect(const QFontMetrics &fm, const QString &text, const QRect &rect) const
