@@ -1,3 +1,16 @@
+<a name="3.3.1"></a>
+### 3.3.1 (2018-05-29)
+
+
+#### Bug Fixes
+
+*   notify position ([c381732c](https://github.com/linuxdeepin/deepin-notifications/commit/c381732c499d1c7ac5eae047d469e7f53224d6cb))
+*   error check replace id ([36ca1d34](https://github.com/linuxdeepin/deepin-notifications/commit/36ca1d34f215012bf3df16ebb45840dd0d917ed4))
+*   bubble show below control center ([f70ab268](https://github.com/linuxdeepin/deepin-notifications/commit/f70ab268b154edca0663b2a5c6d92ef315187e2d))
+* **icon:**  lost icon ([35d0df3d](https://github.com/linuxdeepin/deepin-notifications/commit/35d0df3d5d6b05b67144309f600b9f936f926ca8))
+
+
+
 <a name=""></a>
 ##  3.3.0 (2018-05-24)
 
