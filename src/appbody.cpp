@@ -29,8 +29,6 @@ AppBody::AppBody(QWidget *parent)
     m_titleLbl = new appBodyLabel;
     m_bodyLbl = new appBodyLabel;
 
-    m_titleLbl->setWordWrap(true);
-
     m_titleLbl->setStyleSheet("font-weight: 460; color: #303030;");
     m_bodyLbl->setStyleSheet("color: rgba(0,0,0,0.9);");
 
