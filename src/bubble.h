@@ -68,7 +68,6 @@ public Q_SLOTS:
 
 protected:
     void mousePressEvent(QMouseEvent *) Q_DECL_OVERRIDE;
-    void moveEvent(QMoveEvent *) Q_DECL_OVERRIDE;
     void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
     void hideEvent(QHideEvent *event) Q_DECL_OVERRIDE;
 
@@ -96,7 +95,6 @@ private:
     AppBody *m_body = nullptr;
     ActionButton *m_actionButton = nullptr;
 
-    QPropertyAnimation *m_inAnimation = nullptr;
     QPropertyAnimation *m_outAnimation = nullptr;
     QPropertyAnimation *m_moveAnimation = nullptr;
     QTimer *m_outTimer = nullptr;
