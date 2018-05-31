@@ -31,22 +31,14 @@ appBodyLabel::appBodyLabel(QWidget *parent) : QLabel(parent)
 {
     setWordWrap(true);
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);
+    connect(qApp, &QApplication::fontDatabaseChanged, this, &appBodyLabel::onFontChanged);
 }
 
 void appBodyLabel::setText(const QString &text)
 {
     m_text = text;
 
-    QTextOption appNameOption;
-    appNameOption.setAlignment(Qt::AlignLeft | Qt::AlignTop);
-    appNameOption.setWrapMode(QTextOption::WordWrap);
-
-    QFont appNamefont(qApp->font());
-    const QFontMetrics fm(appNamefont);
-
-    QLabel::setText(holdTextInRect(fm, m_text, rect()));
-
-    update();
+    emit qApp->fontDatabaseChanged();
 }
 
 const QString appBodyLabel::holdTextInRect(const QFontMetrics &fm, const QString &text, const QRect &rect) const
@@ -71,4 +63,17 @@ const QString appBodyLabel::holdTextInRect(const QFontMetrics &fm, const QString
     }
 
     return str;
+}
+
+void appBodyLabel::onFontChanged()
+{
+    QTextOption appNameOption;
+    appNameOption.setAlignment(Qt::AlignLeft | Qt::AlignTop);
+    appNameOption.setWrapMode(QTextOption::WordWrap);
+
+    QFont appNamefont(qApp->font());
+    const QFontMetrics fm(appNamefont);
+
+    QLabel::setText(holdTextInRect(fm, m_text, rect()));
+    update();
 }
