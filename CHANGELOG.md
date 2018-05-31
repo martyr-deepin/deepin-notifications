@@ -1,3 +1,13 @@
+<a name="3.3.2"></a>
+### 3.3.2 (2018-05-31)
+
+
+#### Bug Fixes
+
+*   display error when font size changed ([6a58a5f4](https://github.com/linuxdeepin/deepin-notifications/commit/6a58a5f450c4222f1182718cafc5c819f90cb85b))
+
+
+
 <a name="3.3.1"></a>
 ### 3.3.1 (2018-05-29)
 
