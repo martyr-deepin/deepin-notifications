@@ -24,7 +24,7 @@
 
 #include <QWidget>
 
-class AppBody : public QWidget
+class AppBody : public QFrame
 {
     Q_OBJECT
 public:

@@ -31,6 +31,7 @@ public:
 private:
     const QString holdTextInRect(const QFontMetrics &fm, const QString &text, const QRect &rect) const;
     void onFontChanged();
+    void resizeEvent(QResizeEvent *e);
 
 private:
     QString m_text;

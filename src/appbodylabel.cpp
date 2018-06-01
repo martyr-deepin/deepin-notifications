@@ -30,7 +30,8 @@ static const QString HTMLTemplate = "<body>%1</body>";
 appBodyLabel::appBodyLabel(QWidget *parent) : QLabel(parent)
 {
     setWordWrap(true);
-    setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);
+    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
     connect(qApp, &QApplication::fontDatabaseChanged, this, &appBodyLabel::onFontChanged);
 }
 
@@ -76,4 +77,11 @@ void appBodyLabel::onFontChanged()
 
     QLabel::setText(holdTextInRect(fm, m_text, rect()));
     update();
+}
+
+void appBodyLabel::resizeEvent(QResizeEvent *e)
+{
+    QLabel::resizeEvent(e);
+
+    onFontChanged();
 }

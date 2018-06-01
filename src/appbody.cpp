@@ -22,40 +22,34 @@
 #include <QVBoxLayout>
 
 AppBody::AppBody(QWidget *parent)
-    : QWidget(parent)
+    : QFrame(parent)
 {
-    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-
     m_titleLbl = new appBodyLabel;
     m_bodyLbl = new appBodyLabel;
 
-    m_titleLbl->setStyleSheet("font-weight: 460; color: #303030;");
-    m_bodyLbl->setStyleSheet("color: rgba(0,0,0,0.9);");
+    m_titleLbl->setStyleSheet("QLabel { font-weight: 460; color: #303030; }");
+    m_bodyLbl->setStyleSheet("QLabel { color: rgba(0,0,0,0.9); }");
 
     QVBoxLayout *layout = new QVBoxLayout;
     layout->setMargin(0);
     layout->setSpacing(2);
-
     layout->addStretch();
-
     layout->addWidget(m_titleLbl);
     layout->addWidget(m_bodyLbl);
-
     layout->addStretch();
 
     setLayout(layout);
+    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 }
 
 void AppBody::setTitle(const QString &title)
 {
-    m_titleLbl->setVisible(!title.isEmpty());
-
     m_titleLbl->setText(title);
+    m_titleLbl->setVisible(!title.isEmpty());
 }
 
 void AppBody::setText(const QString &text)
 {
-    m_bodyLbl->setVisible(!text.isEmpty());
-
     m_bodyLbl->setText(text);
+    m_bodyLbl->setVisible(!text.isEmpty());
 }

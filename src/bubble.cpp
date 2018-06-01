@@ -69,7 +69,6 @@ Bubble::Bubble(NotificationEntity *entity)
     m_quitTimer->setSingleShot(true);
 
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::Tool);
-
     setAttribute(Qt::WA_TranslucentBackground);
 
     m_wmHelper = DWindowManagerHelper::instance();
