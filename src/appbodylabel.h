@@ -27,14 +27,18 @@ class appBodyLabel : public QLabel
 public:
     explicit appBodyLabel(QWidget *parent = nullptr);
     void setText(const QString &text);
+    QSize sizeHint() const override;
 
 private:
     const QString holdTextInRect(const QFontMetrics &fm, const QString &text, const QRect &rect) const;
-    void onFontChanged();
-    void resizeEvent(QResizeEvent *e);
+    void resizeEvent(QResizeEvent *e) override;
+    void paintEvent(QPaintEvent *event) override;
 
 private:
+    void updateLineCount();
+
     QString m_text;
+    int m_lineCount = 0;
 };
 
 #endif // APPBODYLABEL_H

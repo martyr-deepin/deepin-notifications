@@ -23,23 +23,99 @@
 #include <QPainter>
 #include <QDebug>
 #include <QApplication>
-
-static const QString DefaultCSS = "body { color: rgba(0,0,0,0.9);}";
-static const QString HTMLTemplate = "<body>%1</body>";
+#include <QTextLine>
+#include <QPaintEngine>
 
 appBodyLabel::appBodyLabel(QWidget *parent) : QLabel(parent)
 {
     setWordWrap(true);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
-    connect(qApp, &QApplication::fontDatabaseChanged, this, &appBodyLabel::onFontChanged);
 }
 
 void appBodyLabel::setText(const QString &text)
 {
-    m_text = text;
+    if (m_text == text) {
+        return;
+    }
 
-    emit qApp->fontDatabaseChanged();
+    m_text = text;
+    int oldLineCount = m_lineCount;
+
+    updateLineCount();
+
+    if (oldLineCount != m_lineCount)
+        updateGeometry();
+    else
+        update();
+}
+
+// return line count
+static int drawText(QPainter *painter, const QRectF &rect, int lineHeight, QTextLayout *layout, Qt::TextElideMode mode)
+{
+    int lineCount = 0;
+    qreal height = 0;
+    QString text = layout->text();
+    QTextOption &text_option = *const_cast<QTextOption*>(&layout->textOption());
+
+    if (painter)
+        text_option.setTextDirection(painter->layoutDirection());
+
+    layout->beginLayout();
+
+    QTextLine line = layout->createLine();
+    QPointF offset = rect.topLeft();
+
+    while (line.isValid()) {
+        ++lineCount;
+        height += lineHeight;
+
+        if (height + lineHeight > rect.height()) {
+            QString end_str = text.mid(line.textStart());
+
+            if (painter)
+                end_str = painter->fontMetrics().elidedText(end_str, mode, qRound(rect.width() - 1));
+
+            layout->endLayout();
+            layout->setText(end_str);
+
+            text_option.setWrapMode(QTextOption::NoWrap);
+            layout->beginLayout();
+            line = layout->createLine();
+            line.setLineWidth(rect.width() - 1);
+            text = end_str;
+        } else {
+            line.setLineWidth(rect.width());
+        }
+
+        line.setPosition(offset);
+
+        if (painter) {
+            line.draw(painter, QPointF(0, 0));
+        }
+
+        offset.setY(offset.y() + lineHeight);
+
+//        // find '\n'
+//        int text_length_line = line.textLength();
+//        for (int start = line.textStart(); start < line.textStart() + text_length_line; ++start) {
+//            if (text.at(start) == '\n')
+//                height += lineHeight;
+//        }
+
+        if (height + lineHeight > rect.height())
+            break;
+
+        line = layout->createLine();
+    }
+
+    layout->endLayout();
+
+    return lineCount;
+}
+
+QSize appBodyLabel::sizeHint() const
+{
+    return QSize(width(), fontMetrics().height() * m_lineCount);
 }
 
 const QString appBodyLabel::holdTextInRect(const QFontMetrics &fm, const QString &text, const QRect &rect) const
@@ -66,22 +142,57 @@ const QString appBodyLabel::holdTextInRect(const QFontMetrics &fm, const QString
     return str;
 }
 
-void appBodyLabel::onFontChanged()
-{
-    QTextOption appNameOption;
-    appNameOption.setAlignment(Qt::AlignLeft | Qt::AlignTop);
-    appNameOption.setWrapMode(QTextOption::WordWrap);
-
-    QFont appNamefont(qApp->font());
-    const QFontMetrics fm(appNamefont);
-
-    QLabel::setText(holdTextInRect(fm, m_text, rect()));
-    update();
-}
-
 void appBodyLabel::resizeEvent(QResizeEvent *e)
 {
     QLabel::resizeEvent(e);
 
-    onFontChanged();
+    int oldLineCount = m_lineCount;
+
+    updateLineCount();
+
+    if (oldLineCount != m_lineCount)
+        updateGeometry();
+}
+
+void appBodyLabel::paintEvent(QPaintEvent *event)
+{
+    if (m_text.isEmpty())
+        return;
+
+    Q_UNUSED(event)
+    QPainter pa(this);
+    QTextLayout layout(m_text, font(), this);
+    QTextOption option;
+
+    option.setWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);
+    option.setAlignment(Qt::AlignVCenter);
+
+    layout.setTextOption(option);
+
+    QRectF rect(this->rect());
+    const QPointF &center = rect.center();
+    int lineHeight = fontMetrics().height();
+    int lineCount = m_lineCount;
+
+    while (lineCount > 1 && lineCount * lineHeight > height()) {
+        --lineCount;
+    }
+
+    rect.setHeight(lineCount * lineHeight);
+    rect.moveCenter(center);
+
+    drawText(&pa, rect, lineHeight, &layout, Qt::ElideRight);
+}
+
+void appBodyLabel::updateLineCount()
+{
+    QTextLayout layout(m_text, font());
+    QTextOption option;
+
+    option.setWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);
+    option.setAlignment(Qt::AlignVCenter);
+
+    layout.setTextOption(option);
+
+    m_lineCount = drawText(nullptr, QRectF(QPointF(0, 0), QSizeF(width(), INT_MAX)), fontMetrics().height(), &layout, Qt::ElideNone);
 }

@@ -33,10 +33,8 @@ AppBody::AppBody(QWidget *parent)
     QVBoxLayout *layout = new QVBoxLayout;
     layout->setMargin(0);
     layout->setSpacing(2);
-    layout->addStretch();
-    layout->addWidget(m_titleLbl);
-    layout->addWidget(m_bodyLbl);
-    layout->addStretch();
+    layout->addWidget(m_titleLbl, 0, Qt::AlignVCenter);
+    layout->addWidget(m_bodyLbl, 0, Qt::AlignVCenter);
 
     setLayout(layout);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
