@@ -137,7 +137,7 @@ uint BubbleManager::Notify(const QString &appName, uint replacesId,
                                                               QString::number(expireTimeout),
                                                               this);
 
-    if (!m_currentNotify.isNull() && (m_currentNotify->id() == QString::number(replacesId)
+    if (!m_currentNotify.isNull() && replacesId != 0 && (m_currentNotify->id() == QString::number(replacesId)
                                       || m_currentNotify->replacesId() == QString::number(replacesId))) {
         m_bubble->setEntity(notification);
 
