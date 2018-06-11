@@ -330,11 +330,15 @@ int BubbleManager::getY()
     QPair<QRect, bool> pair = screensInfo(QCursor::pos());
     const QRect &rect = pair.first;
 
+    qDebug() << "screen Rect:" << rect;
+
     if (!pair.second)
         return  rect.y();
 
     if (!m_dbusdockinterface->isValid())
         return rect.y();
+
+    qDebug() << "dock Rect:" << m_dockGeometry << m_dockPosition;
 
     if (m_dockPosition == DockPosition::Top)
         return m_dockGeometry.bottom();
