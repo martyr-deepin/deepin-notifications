@@ -179,13 +179,12 @@ void BubbleManager::RemoveRecord(const QString &id)
     file.remove();
 }
 
-// TODO: The directory cannot be deleted
 void BubbleManager::ClearRecords()
 {
     m_persistence->removeAll();
 
-    QDir dir;
-    dir.rmdir(CachePath);
+    QDir dir(CachePath);
+    dir.removeRecursively();
 }
 
 void BubbleManager::onRecordAdded(NotificationEntity *entity)
