@@ -25,10 +25,12 @@
 #include <QApplication>
 #include <QTextLine>
 #include <QPaintEngine>
+#include <QStyle>
 
-appBodyLabel::appBodyLabel(QWidget *parent) : QLabel(parent)
+appBodyLabel::appBodyLabel(QWidget *parent)
+    : QFrame(parent)
+    , m_alignment(Qt::AlignVCenter)
 {
-    setWordWrap(true);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 }
 
@@ -118,6 +120,18 @@ QSize appBodyLabel::sizeHint() const
     return QSize(width(), fontMetrics().height() * m_lineCount);
 }
 
+QSize appBodyLabel::minimumSizeHint() const
+{
+    QSize size(width(), fontMetrics().height());
+
+    return size;
+}
+
+void appBodyLabel::setAlignment(Qt::Alignment alignment)
+{
+    m_alignment = alignment;
+}
+
 const QString appBodyLabel::holdTextInRect(const QFontMetrics &fm, const QString &text, const QRect &rect) const
 {
     const int textFlag = Qt::AlignTop | Qt::AlignLeft | Qt::TextWordWrap;
@@ -144,7 +158,7 @@ const QString appBodyLabel::holdTextInRect(const QFontMetrics &fm, const QString
 
 void appBodyLabel::resizeEvent(QResizeEvent *e)
 {
-    QLabel::resizeEvent(e);
+    QFrame::resizeEvent(e);
 
     int oldLineCount = m_lineCount;
 
@@ -165,12 +179,11 @@ void appBodyLabel::paintEvent(QPaintEvent *event)
     QTextOption option;
 
     option.setWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);
-    option.setAlignment(Qt::AlignVCenter);
+    option.setAlignment(m_alignment);
 
     layout.setTextOption(option);
 
-    QRectF rect(this->rect());
-    const QPointF &center = rect.center();
+    QRect rect(this->rect());
     int lineHeight = fontMetrics().height();
     int lineCount = m_lineCount;
 
@@ -179,7 +192,7 @@ void appBodyLabel::paintEvent(QPaintEvent *event)
     }
 
     rect.setHeight(lineCount * lineHeight);
-    rect.moveCenter(center);
+    rect = QStyle::alignedRect(layoutDirection(), m_alignment, rect.size(), this->rect());
 
     drawText(&pa, rect, lineHeight, &layout, Qt::ElideRight);
 }
@@ -190,7 +203,7 @@ void appBodyLabel::updateLineCount()
     QTextOption option;
 
     option.setWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);
-    option.setAlignment(Qt::AlignVCenter);
+    option.setAlignment(m_alignment);
 
     layout.setTextOption(option);
 
