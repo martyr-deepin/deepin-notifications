@@ -1,3 +1,13 @@
+<a name="3.3.4"></a>
+## 3.3.4 (2018-06-12)
+
+
+#### Bug Fixes
+
+* **body:**  spacing is too large ([7cefdc42](https://github.com/linuxdeepin/deepin-notifications/commit/7cefdc42c610c5d65427993c04ab7f28d58fbc2a))
+
+
+
 <a name="3.3.3"></a>
 ### 3.3.3 (2018-06-07)
 
