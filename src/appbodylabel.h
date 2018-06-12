@@ -19,15 +19,17 @@
 #ifndef APPBODYLABEL_H
 #define APPBODYLABEL_H
 
-#include <QLabel>
+#include <QFrame>
 
-class appBodyLabel : public QLabel
+class appBodyLabel : public QFrame
 {
     Q_OBJECT
 public:
     explicit appBodyLabel(QWidget *parent = nullptr);
     void setText(const QString &text);
     QSize sizeHint() const override;
+    QSize minimumSizeHint() const override;
+    void setAlignment(Qt::Alignment alignment);
 
 private:
     const QString holdTextInRect(const QFontMetrics &fm, const QString &text, const QRect &rect) const;
@@ -39,6 +41,7 @@ private:
 
     QString m_text;
     int m_lineCount = 0;
+    Qt::Alignment m_alignment;
 };
 
 #endif // APPBODYLABEL_H

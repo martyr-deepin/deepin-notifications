@@ -33,6 +33,9 @@ public:
     void setText(const QString & text);
 
 private:
+    void updateAlignment();
+
+private:
     appBodyLabel *m_titleLbl;
     appBodyLabel *m_bodyLbl;
 };
