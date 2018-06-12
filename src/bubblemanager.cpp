@@ -67,6 +67,10 @@ BubbleManager::BubbleManager(QObject *parent)
     m_dbusControlCenter = new DBusControlCenter(ControlCenterDBusService, ControlCenterDBusPath,
                                                     QDBusConnection::sessionBus(), this);
 
+    m_dockDeamonInter = new DockDaemonInter(DockDaemonDBusServie, DockDaemonDBusPath,
+                                            QDBusConnection::sessionBus(), this);
+    m_dockDeamonInter->setSync(false);
+
     connect(m_bubble, SIGNAL(expired(int)), this, SLOT(bubbleExpired(int)));
     connect(m_bubble, SIGNAL(dismissed(int)), this, SLOT(bubbleDismissed(int)));
     connect(m_bubble, SIGNAL(replacedByOther(int)), this, SLOT(bubbleReplacedByOther(int)));
@@ -81,9 +85,13 @@ BubbleManager::BubbleManager(QObject *parent)
     connect(m_dbusdockinterface, &DBusDockInterface::geometryChanged, this, &BubbleManager::onDockRectChanged);
     connect(m_persistence, &Persistence::RecordAdded, this, &BubbleManager::onRecordAdded);
 
-    // get correct value for m_dockGeometry, m_ccGeometry, m_dockPosition
+    connect(m_dockDeamonInter, &DockDaemonInter::PositionChanged, this, &BubbleManager::onDockPositionChanged);
+
+    // get correct value for m_dockGeometry, m_dockPosition, m_ccGeometry
     if (m_dbusdockinterface->isValid())
         onDockRectChanged(m_dbusdockinterface->geometry());
+    if (m_dockDeamonInter->isValid())
+        m_dockPosition = static_cast<DockPosition>(m_dockDeamonInter->position());
     if (m_dbusControlCenter->isValid())
         onCCDestRectChanged(m_dbusControlCenter->rect());
 
@@ -329,6 +337,7 @@ int BubbleManager::getY()
     QPair<QRect, bool> pair = screensInfo(QCursor::pos());
     const QRect &rect = pair.first;
 
+    /* TODO: remove */
     qDebug() << "screen Rect:" << rect;
 
     if (!pair.second)
@@ -337,6 +346,7 @@ int BubbleManager::getY()
     if (!m_dbusdockinterface->isValid())
         return rect.y();
 
+    /* TODO: remove */
     qDebug() << "dock Rect:" << m_dockGeometry << m_dockPosition;
 
     if (m_dockPosition == DockPosition::Top)
@@ -360,22 +370,12 @@ void BubbleManager::onDockRectChanged(const QRect &geometry)
 {
     m_dockGeometry = geometry;
 
-    const QRect &screenRect = screensInfo(QCursor::pos()).first;
-    if (m_dockGeometry.width() < m_dockGeometry.height()) { // dock is in vertical mode
-        if (m_dockGeometry.center().x() >= screenRect.center().x()) { // dock is on the right
-            m_dockPosition = DockPosition::Right;
-        } else {
-            m_dockPosition = DockPosition::Left;
-        }
-    } else { // dock is in horizontal mode
-        if (m_dockGeometry.center().y() < screenRect.center().y()) { // dock is on the top
-            m_dockPosition = DockPosition::Top;
-        } else {
-            m_dockPosition = DockPosition::Bottom;
-        }
-    }
-
     m_bubble->setBasePosition(getX(), getY());
+}
+
+void BubbleManager::onDockPositionChanged(int position)
+{
+    m_dockPosition = static_cast<DockPosition>(position);
 }
 
 void BubbleManager::onDbusNameOwnerChanged(QString name, QString, QString newName)

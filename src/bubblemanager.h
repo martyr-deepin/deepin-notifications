@@ -32,6 +32,9 @@
 #include <QGuiApplication>
 #include "bubble.h"
 #include "dbusdock_interface.h"
+#include <com_deepin_dde_daemon_dock.h>
+
+using DockDaemonInter =  com::deepin::dde::daemon::Dock;
 
 static const QString ControlCenterDBusService = "com.deepin.dde.ControlCenter";
 static const QString ControlCenterDBusPath = "/com/deepin/dde/ControlCenter";
@@ -45,7 +48,10 @@ static const QString DDENotifyDBusServer = "com.deepin.dde.Notification";
 static const QString DDENotifyDBusPath = "/com/deepin/dde/Notification";
 static const QString Login1DBusService = "org.freedesktop.login1";
 static const QString Login1DBusPath = "/org/freedesktop/login1";
+static const QString DockDaemonDBusServie = "com.deepin.dde.daemon.Dock";
+static const QString DockDaemonDBusPath = "/com/deepin/dde/daemon/Dock";
 static const int ControlCenterWidth = 400;
+
 class DBusControlCenter;
 class DBusDaemonInterface;
 class Login1ManagerInterface;
@@ -66,10 +72,10 @@ public:
     };
 
     enum DockPosition {
-        Left = 1,
-        Top = 2,
-        Right = 3,
-        Bottom = 4
+        Top = 0,
+        Right = 1,
+        Bottom = 2,
+        Left = 3
     };
 
 Q_SIGNALS:
@@ -100,6 +106,7 @@ private Q_SLOTS:
 
     void onCCDestRectChanged(const QRect &destRect);
     void onDockRectChanged(const QRect &geometry);
+    void onDockPositionChanged(int position);
     void onDbusNameOwnerChanged(QString, QString, QString);
     void onPrepareForSleep(bool);
 
@@ -132,6 +139,7 @@ private:
     DBusDaemonInterface *m_dbusDaemonInterface;
     Login1ManagerInterface *m_login1ManagerInterface;
     DBusDockInterface *m_dbusdockinterface;
+    DockDaemonInter *m_dockDeamonInter;
 
     QQueue<NotificationEntity*> m_entities;
     QPointer<NotificationEntity> m_currentNotify;
