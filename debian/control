@@ -4,7 +4,7 @@ Priority: extra
 Maintainer: Deepin Sysdev <sysdev@deepin.com>
 Build-Depends: debhelper (>= 9), pkg-config, libgtk2.0-dev, 
  qt5-default, qtdeclarative5-dev, libqt5svg5-dev, libdtkwidget-dev,
- libgsettings-qt-dev
+ libgsettings-qt-dev, libdframeworkdbus-dev
 Standards-Version: 3.9.5
 Homepage: http://www.deepin.com
 
