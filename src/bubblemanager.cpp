@@ -307,11 +307,11 @@ int BubbleManager::getX()
     // directly show the notify on the screen containing mouse,
     // because dock and control-centor will only be displayed on the primary screen.
     if (!pair.second)
-        return  rect.width();
+        return  rect.x() + rect.width();
 
     // DBus object is invalid, return screen right
     if (!m_dbusControlCenter->isValid() && !m_dbusdockinterface->isValid())
-        return rect.width();
+        return rect.x() + rect.width();
 
     // if dock dbus is valid and dock position is right
     if (m_dbusdockinterface->isValid() && m_dockPosition == DockPosition::Right) {
@@ -329,7 +329,7 @@ int BubbleManager::getX()
         return m_dbusControlCenter->rect().x();
     }
 
-    return rect.width();
+    return rect.x() + rect.width();
 }
 
 int BubbleManager::getY()
