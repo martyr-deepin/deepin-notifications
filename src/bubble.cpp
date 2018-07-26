@@ -106,8 +106,10 @@ void Bubble::setEntity(NotificationEntity* entity)
     m_entity = entity;
 
     m_outTimer->stop();
-    if(entity->timeout()=="-1")
+    if (entity->timeout() == "-1")
         m_outTimer->setInterval(5000);
+    else if (entity->timeout() == "0")
+        m_outTimer->setInterval(60 * 1000);
     else
         m_outTimer->setInterval(entity->timeout().toUInt());
 
@@ -258,12 +260,7 @@ void Bubble::initAnimations()
 void Bubble::initTimers()
 {
     m_outTimer = new QTimer(this);
-    if (!m_entity){
-        m_outTimer->setInterval(5000);
-    }
-    else{
-        m_outTimer->setInterval(m_entity->timeout().toUInt());
-    }
+    m_outTimer->setInterval(5000);
     m_outTimer->setSingleShot(true);
     connect(m_outTimer, &QTimer::timeout, this, &Bubble::onOutTimerTimeout);
 }
