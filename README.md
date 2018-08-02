@@ -1,3 +1,5 @@
+**WARNING**: this project is no longer under development, and the code of this project is merged into [dde-session-ui ](https://github.com/linuxdeepin/dde-session-ui/tree/master/dde-osd) project, so please go to dde-session-ui project for later updates and submitting PRs.
+
 # Deepin Notifications
 
 **Description**:  An implementation of [Gnome Desktop Notifications Specification](https://developer.gnome.org/notification-spec/)
