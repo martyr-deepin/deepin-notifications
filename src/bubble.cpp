@@ -22,25 +22,25 @@
 
 #include "bubble.h"
 
-#include <QLabel>
-#include <QDebug>
-#include <QTimer>
-#include <QPropertyAnimation>
-#include <QDesktopWidget>
-#include <QJsonArray>
-#include <QJsonObject>
-#include <QJsonDocument>
 #include <QApplication>
-#include <QProcess>
 #include <QDBusArgument>
-#include <QMoveEvent>
+#include <QDebug>
+#include <QDesktopWidget>
 #include <QGSettings>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QLabel>
+#include <QMoveEvent>
+#include <QProcess>
+#include <QPropertyAnimation>
+#include <QTimer>
 
-#include "notificationentity.h"
-#include "appicon.h"
-#include "appbody.h"
 #include "actionbutton.h"
+#include "appbody.h"
+#include "appicon.h"
 #include "icondata.h"
+#include "notificationentity.h"
 
 DWIDGET_USE_NAMESPACE
 
@@ -56,7 +56,7 @@ static const int Padding = 20;
 static const int BubbleWidth = 300;
 static const int BubbleHeight = 70;
 
-Bubble::Bubble(NotificationEntity *entity)
+Bubble::Bubble(NotificationEntity* entity)
     : DBlurEffectWidget(nullptr)
     , m_entity(entity)
     , m_icon(new AppIcon(this))
@@ -93,18 +93,25 @@ Bubble::Bubble(NotificationEntity *entity)
     connect(m_quitTimer, &QTimer::timeout, this, &Bubble::onDelayQuit);
 }
 
-NotificationEntity *Bubble::entity() const
+NotificationEntity* Bubble::entity() const
 {
     return m_entity;
 }
 
-void Bubble::setEntity(NotificationEntity *entity)
+void Bubble::setEntity(NotificationEntity* entity)
 {
-    if (!entity) return;
+    if (!entity)
+        return;
 
     m_entity = entity;
 
     m_outTimer->stop();
+    if (entity->timeout() == "-1")
+        m_outTimer->setInterval(5000);
+    else if (entity->timeout() == "0")
+        m_outTimer->setInterval(60 * 1000);
+    else
+        m_outTimer->setInterval(entity->timeout().toUInt());
 
     updateContent();
 
@@ -112,7 +119,6 @@ void Bubble::setEntity(NotificationEntity *entity)
 
     m_outTimer->start();
 }
-
 
 void Bubble::setBasePosition(int x, int y, QRect rect)
 {
@@ -126,8 +132,8 @@ void Bubble::setBasePosition(int x, int y, QRect rect)
     resize(dSize);
 
     if (m_outAnimation->state() != QPropertyAnimation::Running) {
-        const QRect normalGeo( dPos, dSize );
-        QRect outGeo( normalGeo.right(), normalGeo.y(), 0, normalGeo.height());
+        const QRect normalGeo(dPos, dSize);
+        QRect outGeo(normalGeo.right(), normalGeo.y(), 0, normalGeo.height());
 
         m_outAnimation->setStartValue(normalGeo);
         m_outAnimation->setEndValue(outGeo);
@@ -148,7 +154,7 @@ void Bubble::compositeChanged()
     }
 }
 
-void Bubble::mousePressEvent(QMouseEvent *)
+void Bubble::mousePressEvent(QMouseEvent*)
 {
     if (!m_defaultAction.isEmpty()) {
         Q_EMIT actionInvoked(m_entity->id().toUInt(), m_defaultAction);
@@ -160,7 +166,7 @@ void Bubble::mousePressEvent(QMouseEvent *)
     m_outTimer->stop();
 }
 
-void Bubble::showEvent(QShowEvent *event)
+void Bubble::showEvent(QShowEvent* event)
 {
     DBlurEffectWidget::showEvent(event);
 
@@ -171,14 +177,14 @@ void Bubble::showEvent(QShowEvent *event)
     m_quitTimer->start();
 }
 
-void Bubble::hideEvent(QHideEvent *event)
+void Bubble::hideEvent(QHideEvent* event)
 {
     DBlurEffectWidget::hideEvent(event);
 
     m_quitTimer->start();
 }
 
-void Bubble::onActionButtonClicked(const QString &actionId)
+void Bubble::onActionButtonClicked(const QString& actionId)
 {
     QMap<QString, QVariant> hints = m_entity->hints();
     QMap<QString, QVariant>::const_iterator i = hints.constBegin();
@@ -262,7 +268,7 @@ void Bubble::initTimers()
 bool Bubble::containsMouse() const
 {
     QRect rectToGlobal = QRect(mapToGlobal(rect().topLeft()),
-                               mapToGlobal(rect().bottomRight()));
+        mapToGlobal(rect().bottomRight()));
     return rectToGlobal.contains(QCursor::pos());
 }
 
@@ -291,7 +297,6 @@ void Bubble::processActions()
         m_actionButton->show();
         m_body->setFixedSize(150, BubbleHeight);
     }
-
 }
 
 void Bubble::processIconData()
@@ -299,7 +304,7 @@ void Bubble::processIconData()
     const QString imagePath = m_entity->hints().contains("image-path") ? m_entity->hints()["image-path"].toString() : "";
 
     if (imagePath.isEmpty()) {
-        if (m_entity->hints()["image-data"].canConvert<QDBusArgument>()){
+        if (m_entity->hints()["image-data"].canConvert<QDBusArgument>()) {
             QDBusArgument argument = m_entity->hints()["image-data"].value<QDBusArgument>();
             m_icon->setPixmap(converToPixmap(argument));
         } else if (m_entity->hints()["icon_data"].canConvert<QDBusArgument>()) {
@@ -313,7 +318,7 @@ void Bubble::processIconData()
     }
 }
 
-void Bubble::saveImg(const QImage &image)
+void Bubble::saveImg(const QImage& image)
 {
     QDir dir;
     dir.mkdir(CachePath);
@@ -324,7 +329,7 @@ void Bubble::saveImg(const QImage &image)
 inline void copyLineRGB32(QRgb* dst, const char* src, int width)
 {
     const char* end = src + width * 3;
-    for (; src != end; ++dst, src+=3) {
+    for (; src != end; ++dst, src += 3) {
         *dst = qRgb(src[0], src[1], src[2]);
     }
 }
@@ -332,7 +337,7 @@ inline void copyLineRGB32(QRgb* dst, const char* src, int width)
 inline void copyLineARGB32(QRgb* dst, const char* src, int width)
 {
     const char* end = src + width * 4;
-    for (; src != end; ++dst, src+=4) {
+    for (; src != end; ++dst, src += 4) {
         *dst = qRgba(src[0], src[1], src[2], src[3]);
     }
 }
@@ -347,12 +352,12 @@ static QImage decodeNotificationSpecImageHint(const QDBusArgument& arg)
     arg.beginStructure();
     arg >> width >> height >> rowStride >> hasAlpha >> bitsPerSample >> channels >> pixels;
     arg.endStructure();
-    //qDebug() << width << height << rowStride << hasAlpha << bitsPerSample << channels;
+//qDebug() << width << height << rowStride << hasAlpha << bitsPerSample << channels;
 
-    #define SANITY_CHECK(condition) \
-    if (!(condition)) { \
+#define SANITY_CHECK(condition)                               \
+    if (!(condition)) {                                       \
         qWarning() << "Sanity check failed on" << #condition; \
-        return QImage(); \
+        return QImage();                                      \
     }
 
     SANITY_CHECK(width > 0);
@@ -361,7 +366,7 @@ static QImage decodeNotificationSpecImageHint(const QDBusArgument& arg)
     SANITY_CHECK(height < 2048);
     SANITY_CHECK(rowStride > 0);
 
-    #undef SANITY_CHECK
+#undef SANITY_CHECK
 
     QImage::Format format = QImage::Format_Invalid;
     void (*fcn)(QRgb*, const char*, int) = 0;
@@ -382,7 +387,7 @@ static QImage decodeNotificationSpecImageHint(const QDBusArgument& arg)
     QImage image(width, height, format);
     ptr = pixels.data();
     end = ptr + pixels.length();
-    for (int y=0; y<height; ++y, ptr += rowStride) {
+    for (int y = 0; y < height; ++y, ptr += rowStride) {
         if (ptr + channels * width > end) {
             qWarning() << "Image data is incomplete. y:" << y << "height:" << height;
             break;
@@ -393,14 +398,14 @@ static QImage decodeNotificationSpecImageHint(const QDBusArgument& arg)
     return image;
 }
 
-const QPixmap Bubble::converToPixmap(const QDBusArgument &value)
+const QPixmap Bubble::converToPixmap(const QDBusArgument& value)
 {
     // use plasma notify source code to conver photo, solving encoded question.
-    const QImage &img = decodeNotificationSpecImageHint(value);
+    const QImage& img = decodeNotificationSpecImageHint(value);
     saveImg(img);
     return QPixmap::fromImage(img).scaled(m_icon->width(), m_icon->height(),
-                                          Qt::KeepAspectRatioByExpanding,
-                                          Qt::SmoothTransformation);
+        Qt::KeepAspectRatioByExpanding,
+        Qt::SmoothTransformation);
 }
 
 void Bubble::onDelayQuit()
@@ -412,14 +417,14 @@ void Bubble::onDelayQuit()
     }
 }
 
-void Bubble::resetMoveAnim(const QRect &rect)
+void Bubble::resetMoveAnim(const QRect& rect)
 {
     if (isVisible() && m_outAnimation->state() != QPropertyAnimation::Running) {
-        const QPoint &endPoint = QPoint(rect.x() - Padding - BubbleWidth, y());
+        const QPoint& endPoint = QPoint(rect.x() - Padding - BubbleWidth, y());
         m_moveAnimation->setStartValue(QPoint(x(), y()));
         m_moveAnimation->setEndValue(endPoint);
 
-        const QRect &startRect = QRect(endPoint, QSize(BubbleWidth, BubbleHeight));
+        const QRect& startRect = QRect(endPoint, QSize(BubbleWidth, BubbleHeight));
         m_outAnimation->setStartValue(startRect);
         m_outAnimation->setEndValue(QRect(startRect.right(), startRect.y(), 0, BubbleHeight));
 
